@@ -194,36 +194,106 @@
             background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent);
             margin: 8px 14px 0;
         }
-        /* Dos clips: capçalera + secció Wind */
-        .wind-clip-header {
-            padding: 4px 4px 0;
-            overflow: hidden;
-            height: 58px;
+        /* Wind Widget */
+        .wind-widget {
+            padding: 14px;
         }
-        .wind-clip-header iframe {
-            width: 310px;
-            height: 800px;
-            border: none;
-            background: #fff;
-            border-radius: 8px 8px 0 0;
-            margin-top: 0;
-            margin-left: -2px;
-            pointer-events: none;
+        .wind-hero {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 12px;
         }
-        .wind-clip-wind {
-            padding: 0 4px 4px;
-            overflow: hidden;
-            height: 78px;
+        /* Compass / direcció */
+        .wind-compass {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
         }
-        .wind-clip-wind iframe {
-            width: 310px;
-            height: 800px;
-            border: none;
-            background: #fff;
-            border-radius: 0 0 8px 8px;
-            margin-top: -178px;
-            margin-left: -2px;
-            pointer-events: none;
+        .wind-compass svg {
+            width: 100%;
+            height: 100%;
+        }
+        .wind-compass-labels {
+            font-size: 8px;
+            fill: rgba(255,255,255,0.35);
+            font-weight: 600;
+        }
+        .wind-arrow {
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: 50px 50px;
+        }
+        .wind-dir-label {
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65em;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        /* Velocitat destacada */
+        .wind-speed-hero {
+            text-align: center;
+        }
+        .wind-speed-value {
+            font-size: 2.8em;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(135deg, #4ecdc4, #66bb6a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .wind-speed-unit {
+            font-size: 0.7em;
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .wind-speed-label {
+            font-size: 0.6em;
+            color: rgba(255,255,255,0.3);
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        /* KPI row */
+        .wind-kpis {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+        .wind-kpi {
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .wind-kpi-value {
+            font-size: 1.15em;
+            font-weight: 800;
+            color: #e0e0e0;
+        }
+        .wind-kpi-label {
+            font-size: 0.52em;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        .wind-kpi-gust .wind-kpi-value {
+            color: #ff8a65;
+        }
+        .wind-updated {
+            text-align: center;
+            font-size: 0.5em;
+            color: rgba(255,255,255,0.2);
+            margin-top: 8px;
         }
         .wind-see-all {
             display: block;
@@ -236,17 +306,13 @@
         }
         .wind-see-all:hover { color: #66bb6a; }
 
-        /* Vent mòbil: frame amb iframes a amplada completa */
+        /* Vent mòbil */
         .wind-mobile {
             display: none;
             padding: 10px;
         }
         .wind-mobile .wind-frame {
             position: static;
-        }
-        .wind-mobile .wind-clip-header iframe,
-        .wind-mobile .wind-clip-wind iframe {
-            width: 100%;
         }
 
         /* Frames de categoria */
@@ -383,28 +449,16 @@
     <!-- CONTINGUT PRINCIPAL (esquerra) -->
     <div class="content">
 
-        <!-- VENT MÒBIL (iframe retallat, mateixa info que desktop) -->
+        <!-- VENT MÒBIL -->
         <div class="wind-mobile">
-            <div class="wind-frame">
+            <div class="wind-frame" id="wind-mobile-frame">
                 <div class="wind-frame-header">
                     <span class="wind-frame-icon">&#127788;</span>
                     <span class="wind-frame-title">Vent en directe</span>
                 </div>
                 <hr class="wind-frame-line">
-                <div class="wind-clip-header">
-                    <iframe
-                        src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
-                        title="Capçalera Meteo CNS"
-                        loading="lazy"
-                        ></iframe>
-                </div>
-                <div class="wind-clip-wind">
-                    <iframe
-                        src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
-                        title="Wind - Davis WeatherLink"
-                        loading="lazy"
-                        ></iframe>
-                </div>
+                <div class="wind-widget" id="wind-widget-mobile"></div>
+                <a class="wind-see-all" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
             </div>
         </div>
 
@@ -493,29 +547,101 @@
                 <span class="wind-frame-title">Vent en directe</span>
             </div>
             <hr class="wind-frame-line">
-            <div class="wind-clip-header">
-                <iframe
-                    src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
-                    title="Capçalera Meteo CNS"
-                    loading="lazy"
-                ></iframe>
-            </div>
-            <div class="wind-clip-wind">
-                <iframe
-                    src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
-                    title="Wind - Davis WeatherLink"
-                    loading="lazy"
-                ></iframe>
-            </div>
-            <a class="wind-see-all" href="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim">
-                Totes les dades &rarr;
-            </a>
+            <div class="wind-widget" id="wind-widget-desktop"></div>
+            <a class="wind-see-all" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
         </div>
     </aside>
 
 </div>
 
 <footer>Copyright Patinaire Verdi</footer>
+
+<script>
+(function() {
+    const API = 'https://cns-wind-api.xroigg737.workers.dev';
+    const DIRS = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+
+    function degToCompass(deg) {
+        return DIRS[Math.round(deg / 22.5) % 16];
+    }
+
+    function renderWidget(container, data) {
+        const dir = data.dir || 0;
+        const dirLabel = degToCompass(dir);
+        const speed = data.speed_kn != null ? data.speed_kn : '--';
+        const avg10 = data.avg_10m_kn != null ? data.avg_10m_kn : '--';
+        const gust = data.gust_10m_kn != null ? data.gust_10m_kn : '--';
+        const gustDir = data.gust_10m_dir != null ? degToCompass(data.gust_10m_dir) : '--';
+        const temp = data.temp_c != null ? data.temp_c + '°C' : '--';
+        const ts = data.timestamp ? new Date(data.timestamp * 1000) : null;
+        const timeStr = ts ? ts.toLocaleTimeString('ca-ES', {hour:'2-digit', minute:'2-digit'}) : '--:--';
+
+        container.innerHTML = `
+            <div class="wind-hero">
+                <div class="wind-compass">
+                    <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(78,205,196,0.2)" stroke-width="2"
+                            stroke-dasharray="${Math.min(speed/25,1) * 289} 289" stroke-linecap="round"
+                            transform="rotate(-90 50 50)"/>
+                        <g class="wind-compass-labels">
+                            <text x="50" y="12" text-anchor="middle">N</text>
+                            <text x="92" y="53" text-anchor="middle">E</text>
+                            <text x="50" y="96" text-anchor="middle">S</text>
+                            <text x="8" y="53" text-anchor="middle">W</text>
+                        </g>
+                        <g class="wind-arrow" style="transform:rotate(${dir}deg)">
+                            <line x1="50" y1="50" x2="50" y2="18" stroke="#4ecdc4" stroke-width="2.5" stroke-linecap="round"/>
+                            <polygon points="50,14 46,24 54,24" fill="#4ecdc4"/>
+                            <circle cx="50" cy="50" r="3.5" fill="#4ecdc4"/>
+                        </g>
+                    </svg>
+                    <div class="wind-dir-label">${dirLabel} (${dir}°)</div>
+                </div>
+                <div class="wind-speed-hero">
+                    <div class="wind-speed-value">${speed}</div>
+                    <div class="wind-speed-unit">kn</div>
+                    <div class="wind-speed-label">Vent actual</div>
+                </div>
+            </div>
+            <div class="wind-kpis">
+                <div class="wind-kpi wind-kpi-gust">
+                    <div class="wind-kpi-value">${gust} <small style="font-size:0.6em;opacity:0.6">kn</small></div>
+                    <div class="wind-kpi-label">Ratxa ${gustDir}</div>
+                </div>
+                <div class="wind-kpi">
+                    <div class="wind-kpi-value">${avg10} <small style="font-size:0.6em;opacity:0.6">kn</small></div>
+                    <div class="wind-kpi-label">Mitja 10m</div>
+                </div>
+                <div class="wind-kpi">
+                    <div class="wind-kpi-value">${temp}</div>
+                    <div class="wind-kpi-label">Temperatura</div>
+                </div>
+            </div>
+            <div class="wind-updated">Actualitzat: ${timeStr}</div>
+        `;
+    }
+
+    function renderError(container) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.8em;">Carregant dades del vent...</div>';
+    }
+
+    async function fetchWind() {
+        try {
+            const res = await fetch(API);
+            if (!res.ok) throw new Error('API error');
+            const data = await res.json();
+            document.querySelectorAll('.wind-widget').forEach(el => renderWidget(el, data));
+        } catch(e) {
+            document.querySelectorAll('.wind-widget').forEach(el => renderError(el));
+        }
+    }
+
+    // Carrega inicial + refresh cada 60s
+    fetchWind();
+    setInterval(fetchWind, 60000);
+})();
+</script>
 
 </body>
 </html>
