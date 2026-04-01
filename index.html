@@ -134,6 +134,52 @@
             line-height: 1;
         }
         @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .iframe-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.92);
+            align-items: center;
+            justify-content: center;
+            animation: lbFadeIn 0.25s ease;
+        }
+        .iframe-lightbox.active { display: flex; }
+        .iframe-lightbox-wrap {
+            position: relative;
+            width: 420px;
+            height: 520px;
+            overflow: hidden;
+            border-radius: 14px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+            background: #2d2d2d;
+        }
+        .iframe-lightbox-wrap iframe {
+            position: absolute;
+            top: -180px;
+            left: -50px;
+            width: 600px;
+            height: 900px;
+            border: none;
+            transform: scale(1.1);
+            transform-origin: top left;
+        }
+        .iframe-lightbox-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            color: #fff;
+            font-size: 2em;
+            font-weight: 300;
+            cursor: pointer;
+            line-height: 1;
+            z-index: 10;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+        }
+        @media(max-width:768px) {
+            .iframe-lightbox-wrap { width: 95vw; height: 480px; }
+            .iframe-lightbox-wrap iframe { top: -160px; left: -30px; width: 500px; height: 800px; transform: scale(1.05); }
+        }
         .header-text {
             text-align: left;
         }
@@ -493,6 +539,13 @@
     <img src="img/verdi.jpg" alt="Patí català navegant">
 </div>
 
+<div class="iframe-lightbox" id="casteLB" onclick="this.classList.remove('active');document.getElementById('casteIframe').src='';">
+    <div class="iframe-lightbox-wrap" onclick="event.stopPropagation();">
+        <span class="iframe-lightbox-close" onclick="document.getElementById('casteLB').classList.remove('active');document.getElementById('casteIframe').src='';">&times;</span>
+        <iframe id="casteIframe" src="" loading="lazy"></iframe>
+    </div>
+</div>
+
 <div class="layout">
 
     <!-- CONTINGUT PRINCIPAL (esquerra) -->
@@ -600,7 +653,7 @@
                         <span class="card-badge badge-meteo">WeatherCloud</span>
                     </div>
                 </a>
-                <a class="card" href="https://www.17nudos.com/" target="_blank">
+                <a class="card" href="#" onclick="event.preventDefault();document.getElementById('casteLB').classList.add('active');document.getElementById('casteIframe').src='https://www.17nudos.com/';">
                     <img class="card-img" src="img/davis-vantage-pro2.jpg" alt="Estació WeatherLink Castelldefels" loading="lazy">
                     <div class="card-body">
                         <div class="card-name">Vent Castelldefels</div>
