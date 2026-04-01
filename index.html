@@ -100,7 +100,40 @@
             border: 2px solid rgba(255,255,255,0.35);
             box-shadow: 0 4px 18px rgba(0,0,0,0.4), 0 0 20px rgba(244,162,97,0.25);
             flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
+        .header-photo:hover { transform: scale(1.08); }
+        .photo-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            animation: lbFadeIn 0.25s ease;
+        }
+        .photo-lightbox.active { display: flex; }
+        .photo-lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+            object-fit: contain;
+        }
+        .photo-lightbox-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 2em;
+            font-weight: 300;
+            cursor: pointer;
+            line-height: 1;
+        }
+        @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
         .header-text {
             text-align: left;
         }
@@ -447,12 +480,17 @@
 
 <header>
     <div class="header-content">
-        <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant">
+        <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
         </div>
     </div>
 </header>
+
+<div class="photo-lightbox" id="photoLB" onclick="this.classList.remove('active')">
+    <span class="photo-lightbox-close">&times;</span>
+    <img src="img/verdi.jpg" alt="Patí català navegant">
+</div>
 
 <div class="layout">
 
