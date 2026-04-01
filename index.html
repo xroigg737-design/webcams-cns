@@ -355,31 +355,52 @@
         }
         .wind-see-all:hover { color: #66bb6a; }
 
-        /* Wind-2: WeatherCloud gauges iframe */
-        .wind2-clip {
-            overflow: hidden;
-            height: 480px;
-            border-radius: 8px;
-            margin: 4px 4px 0;
+        /* Wind-2: Custom gauges grid */
+        .w2-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            padding: 10px 12px;
         }
-        .wind2-clip iframe {
-            width: 1100px;
-            height: 1400px;
-            border: none;
-            margin-top: -52px;
-            margin-left: -5px;
-            transform: scale(0.28);
-            transform-origin: 0 0;
-            pointer-events: auto;
+        .w2-grid-dir {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 12px 12px;
         }
-        @media (min-width: 769px) {
-            .wind2-clip {
-                height: 340px;
-            }
-            .wind2-clip iframe {
-                transform: scale(0.42);
-                margin-top: -52px;
-            }
+        .w2-gauge {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 10px 6px 8px;
+            text-align: center;
+        }
+        .w2-gauge svg {
+            width: 100%;
+            max-width: 130px;
+            display: block;
+            margin: 0 auto;
+            overflow: visible;
+        }
+        .w2-title {
+            font-size: 0.5em;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .w2-value {
+            font-size: 1.2em;
+            font-weight: 900;
+            color: #fff;
+            margin-top: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+        .w2-value small {
+            font-size: 0.5em;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
         }
 
         /* Vent mòbil */
@@ -613,20 +634,14 @@
         </section>
         -->
 
-        <!-- WIND-2: Gauges WeatherCloud -->
+        <!-- WIND-2: Gauges Vent custom -->
         <section class="category">
             <div class="category-header">
                 <span class="category-icon">&#128168;</span>
                 <span class="category-title title-meteo">Gauges Vent</span>
             </div>
             <hr class="category-line line-meteo">
-            <div class="wind2-clip">
-                <iframe
-                    src="https://app.weathercloud.net/d1807591580?units=nautical#wind"
-                    title="WeatherCloud Wind Gauges"
-                    loading="lazy"
-                ></iframe>
-            </div>
+            <div id="wind2-gauges"></div>
             <a class="wind-see-all" href="https://app.weathercloud.net/d1807591580?units=nautical#wind">Veure tots els gauges &rarr;</a>
         </section>
 
@@ -816,12 +831,125 @@
         el.innerHTML = '<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.25);font-size:0.8em;">Carregant vent\u2026</div>';
     }
 
+    /* ===== WIND-2: 5 GAUGES INDIVIDUALS ===== */
+
+    function speedGaugeSVG(value, max, color) {
+        const cx = 65, cy = 60, R = 50, sw = 8;
+        const pct = Math.min(value / max, 1);
+        const endA = 180 + pct * 180;
+        // Background arc
+        const bgD = arc(cx, cy, R, 180, 360);
+        // Active arc
+        const actD = arc(cx, cy, R, 180, endA);
+        // Ticks
+        const tickVals = [0, Math.round(max*0.25), Math.round(max*0.5), Math.round(max*0.75), max];
+        const ticksSvg = tickVals.map(v => {
+            const a = Math.PI/180 * (180 + (v/max)*180);
+            const cos = Math.cos(a), sin = Math.sin(a);
+            return `<line x1="${cx+(R+5)*cos}" y1="${cy+(R+5)*sin}" x2="${cx+(R-5)*cos}" y2="${cy+(R-5)*sin}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                    <text x="${cx+(R+14)*cos}" y="${cy+(R+14)*sin}" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.25)" font-size="7">${v}</text>`;
+        }).join('');
+        // Needle
+        const nA = Math.PI/180 * endA;
+        const nLen = R - 12;
+        return `<svg viewBox="0 0 130 78">
+            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${sw}" stroke-linecap="round"/>
+            <path d="${actD}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" opacity="0.7"/>
+            ${ticksSvg}
+            <line x1="${cx}" y1="${cy}" x2="${cx+nLen*Math.cos(nA)}" y2="${cy+nLen*Math.sin(nA)}" stroke="${color}" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
+            <circle cx="${cx}" cy="${cy}" r="3" fill="${color}" opacity="0.8"/>
+            <circle cx="${cx}" cy="${cy}" r="1.5" fill="#0b1f33"/>
+            <text x="${cx}" y="${cy+3}" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="5.5" font-weight="600">kn</text>
+        </svg>`;
+    }
+
+    function compassSVG(deg) {
+        const cx = 65, cy = 65, R = 52;
+        const labels = [
+            {t:'N',a:270},{t:'NE',a:315},{t:'E',a:0},{t:'SE',a:45},
+            {t:'S',a:90},{t:'SW',a:135},{t:'W',a:180},{t:'NW',a:225}
+        ];
+        const labelsSvg = labels.map(l => {
+            const a = Math.PI/180 * l.a;
+            const x = cx + (R+1) * Math.cos(a), y = cy + (R+1) * Math.sin(a);
+            const isMajor = l.t.length === 1;
+            return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle"
+                fill="rgba(255,255,255,${isMajor?0.35:0.18})" font-size="${isMajor?8:6}" font-weight="600">${l.t}</text>`;
+        }).join('');
+        // Tick marks every 30deg
+        const ticksSvg = Array.from({length:12}, (_,i) => {
+            const a = Math.PI/180 * (i*30);
+            const r1 = R - 12, r2 = R - (i%3===0 ? 6 : 9);
+            return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy+r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy+r2*Math.sin(a)}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`;
+        }).join('');
+        // Arrow pointing in wind direction (rotate by deg, 0=N means up)
+        const arrowRot = deg;
+        return `<svg viewBox="0 0 130 130">
+            <circle cx="${cx}" cy="${cy}" r="${R-8}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+            ${ticksSvg}
+            ${labelsSvg}
+            <g style="transform:rotate(${arrowRot}deg);transform-origin:${cx}px ${cy}px;transition:transform 1s ease">
+                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-38}" stroke="#4ecdc4" stroke-width="2" stroke-linecap="round"/>
+                <polygon points="${cx},${cy-42} ${cx-4},${cy-32} ${cx+4},${cy-32}" fill="#4ecdc4" opacity="0.8"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+20}" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" stroke-linecap="round"/>
+            </g>
+            <circle cx="${cx}" cy="${cy}" r="3" fill="#4ecdc4" opacity="0.5"/>
+        </svg>`;
+    }
+
+    function renderGauges(container, d) {
+        const spd  = d.speed_kn ?? 0;
+        const spdS = d.speed_kn != null ? d.speed_kn : '--';
+        const avg  = d.avg_10m_kn ?? 0;
+        const avgS = d.avg_10m_kn != null ? d.avg_10m_kn : '--';
+        const gst  = d.gust_10m_kn ?? 0;
+        const gstS = d.gust_10m_kn != null ? d.gust_10m_kn : '--';
+        const dir  = d.dir ?? 0;
+        const dirS = degToCompass(dir);
+        const dirAvg = d.dir_avg_10m ?? 0;
+        const dirAvgS = degToCompass(dirAvg);
+
+        container.innerHTML = `
+            <div class="w2-grid">
+                <div class="w2-gauge">
+                    <div class="w2-title">Velocitat</div>
+                    ${speedGaugeSVG(spd, 50, '#4ecdc4')}
+                    <div class="w2-value">${spdS} <small>kn</small></div>
+                </div>
+                <div class="w2-gauge">
+                    <div class="w2-title">Mitjana</div>
+                    ${speedGaugeSVG(avg, 50, '#66bb6a')}
+                    <div class="w2-value">${avgS} <small>kn</small></div>
+                </div>
+                <div class="w2-gauge">
+                    <div class="w2-title">Ratxa</div>
+                    ${speedGaugeSVG(gst, 50, '#ff8a65')}
+                    <div class="w2-value">${gstS} <small>kn</small></div>
+                </div>
+            </div>
+            <div class="w2-grid-dir">
+                <div class="w2-gauge">
+                    <div class="w2-title">Direcci\u00f3</div>
+                    ${compassSVG(dir)}
+                    <div class="w2-value">${dir}\u00b0 <small>${dirS}</small></div>
+                </div>
+                <div class="w2-gauge">
+                    <div class="w2-title">Dir. Mitjana</div>
+                    ${compassSVG(dirAvg)}
+                    <div class="w2-value">${dirAvg}\u00b0 <small>${dirAvgS}</small></div>
+                </div>
+            </div>
+        `;
+    }
+
     async function fetchWind() {
         try {
             const r = await fetch(API);
             if (!r.ok) throw new Error();
             const d = await r.json();
             document.querySelectorAll('.wind-widget').forEach(el => renderWidget(el, d));
+            const g = document.getElementById('wind2-gauges');
+            if (g) renderGauges(g, d);
         } catch(e) {
             document.querySelectorAll('.wind-widget').forEach(el => renderError(el));
         }
