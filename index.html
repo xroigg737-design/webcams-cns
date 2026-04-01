@@ -356,6 +356,50 @@
 
 
 
+        /* Wind-2: Mapa + fletxa vent */
+        .wind-map {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0b1f33;
+        }
+        .wind-map img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.75;
+        }
+        .wind-map-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .wind-map-overlay svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 0 12px rgba(0,0,0,0.6));
+            transition: transform 1s ease;
+        }
+        .wind-map-label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(11,31,51,0.85);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 700;
+            color: #eef4ff;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
         /* Vent mòbil */
         .wind-mobile {
             display: none;
@@ -566,6 +610,33 @@
             </div>
         </section>
 
+        <!-- WIND-2: Mapa amb direcció vent -->
+        <section class="category">
+            <div class="category-header">
+                <span class="category-icon">&#128268;</span>
+                <span class="category-title title-meteo">Direcció del vent al port</span>
+            </div>
+            <hr class="category-line line-meteo">
+            <div class="wind-frame" style="margin:0 10px;">
+                <div class="wind-map" id="wind-map">
+                    <img src="https://tile.openstreetmap.org/16/33097/24514.png" alt="Port CNS">
+                    <div class="wind-map-overlay" id="wind-map-arrow">
+                        <svg viewBox="0 0 100 100">
+                            <defs>
+                                <marker id="wm-head" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                                    <polygon points="0,0 6,3 0,6" fill="#5ef0e6"/>
+                                </marker>
+                            </defs>
+                            <line x1="50" y1="80" x2="50" y2="15" stroke="#5ef0e6" stroke-width="5" stroke-linecap="round" marker-end="url(#wm-head)"/>
+                            <polygon points="50,8 42,22 58,22" fill="#5ef0e6"/>
+                            <circle cx="50" cy="50" r="5" fill="#5ef0e6" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="wind-map-label" id="wind-map-label">--</div>
+                </div>
+            </div>
+        </section>
+
         <!-- REGATES (preparat) -->
         <!--
         <section class="category">
@@ -769,7 +840,24 @@
         el.innerHTML = '<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.25);font-size:0.8em;">Carregant vent\u2026</div>';
     }
 
-    /* ===== WIND-2: 5 GAUGES INDIVIDUALS ===== */
+    function updateWindMap(d) {
+        const arrow = document.getElementById('wind-map-arrow');
+        const label = document.getElementById('wind-map-label');
+        if (!arrow || !label) return;
+        const dir = d.dir || 0;
+        const spd = d.speed_kn ?? 0;
+        const dirS = degToCompass(dir);
+        const ventNom = degToVentCatala(dir);
+        const col = arcColor(spd);
+        arrow.querySelector('svg').style.transform = `rotate(${dir}deg)`;
+        arrow.querySelectorAll('line, polygon').forEach(el => {
+            if (el.tagName === 'line') el.setAttribute('stroke', col);
+            else el.setAttribute('fill', col);
+        });
+        arrow.querySelector('circle').setAttribute('fill', col);
+        label.textContent = `${ventNom} · ${dirS} ${dir}° · ${spd} kn`;
+        label.style.color = col;
+    }
 
     async function fetchWind() {
         try {
@@ -777,6 +865,7 @@
             if (!r.ok) throw new Error();
             const d = await r.json();
             document.querySelectorAll('.wind-widget').forEach(el => renderWidget(el, d));
+            updateWindMap(d);
         } catch(e) {
             document.querySelectorAll('.wind-widget').forEach(el => renderError(el));
         }
