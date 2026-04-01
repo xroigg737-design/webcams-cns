@@ -357,62 +357,64 @@
         }
         .wind-see-all:hover { color: #7eeae2; }
 
-        /* Wind-2: Gauges grid — HIGH READABILITY */
+        /* Wind-2: Gauges grid — MAXIMUM READABILITY */
         .w2-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            padding: 14px 12px;
+            gap: 8px;
+            padding: 12px 10px 6px;
         }
         .w2-grid-dir {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 0 12px 14px;
-            max-width: 340px;
+            gap: 8px;
+            padding: 4px 10px 12px;
+            max-width: 360px;
             margin: 0 auto;
         }
         .w2-gauge {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(170deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+            border: 1px solid rgba(255,255,255,0.12);
             border-radius: 14px;
-            padding: 14px 8px 12px;
+            padding: 10px 6px 10px;
             text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
         }
         .w2-gauge svg {
             width: 100%;
-            max-width: 150px;
+            max-width: 140px;
             display: block;
-            margin: 0 auto 4px;
+            margin: 0 auto 0;
             overflow: visible;
         }
         .w2-title {
-            font-size: 0.62em;
-            color: #8ab4d6;
+            font-size: 0.58em;
+            color: #a0c8e8;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 700;
-            margin-bottom: 6px;
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 2px;
         }
         .w2-value {
-            font-size: 1.5em;
+            font-size: 2em;
             font-weight: 900;
-            color: #eaf2ff;
-            margin-top: 4px;
+            color: #eef4ff;
+            margin-top: 0;
             font-variant-numeric: tabular-nums;
-            line-height: 1.1;
+            line-height: 1;
         }
         .w2-value small {
-            font-size: 0.5em;
+            font-size: 0.4em;
             font-weight: 700;
-            color: rgba(234,242,255,0.5);
+            color: rgba(234,242,255,0.55);
             margin-left: 2px;
         }
         @media (max-width: 480px) {
-            .w2-grid { gap: 6px; padding: 10px 8px; }
-            .w2-grid-dir { gap: 6px; padding: 0 8px 10px; }
-            .w2-gauge { padding: 10px 4px 8px; }
-            .w2-value { font-size: 1.3em; }
+            .w2-grid { gap: 5px; padding: 10px 6px 4px; }
+            .w2-grid-dir { gap: 5px; padding: 2px 6px 10px; }
+            .w2-gauge { padding: 8px 4px 8px; border-radius: 12px; }
+            .w2-value { font-size: 1.6em; }
+            .w2-title { font-size: 0.52em; }
         }
 
         /* Vent mòbil */
@@ -846,62 +848,47 @@
     /* ===== WIND-2: 5 GAUGES INDIVIDUALS ===== */
 
     function speedGaugeSVG(value, max, color, colorBright) {
-        const cx = 65, cy = 62, R = 50, sw = 14;
+        const cx = 65, cy = 58, R = 46, sw = 20;
         const pct = Math.min(value / max, 1);
         const endA = 180 + pct * 180;
         const bgD = arc(cx, cy, R, 180, 360);
         const actD = arc(cx, cy, R, 180, endA);
-        // Only 3 ticks: 0, mid, max — clean
-        const tickVals = [0, max];
-        const ticksSvg = tickVals.map(v => {
-            const a = Math.PI/180 * (180 + (v/max)*180);
-            const cos = Math.cos(a), sin = Math.sin(a);
-            return `<text x="${cx+(R+13)*cos}" y="${cy+(R+13)*sin}" text-anchor="middle" dominant-baseline="middle" fill="rgba(234,242,255,0.4)" font-size="8" font-weight="700">${v}</text>`;
-        }).join('');
-        return `<svg viewBox="0 0 130 80">
-            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="${sw}" stroke-linecap="round"/>
-            <path d="${actD}" fill="none" stroke="${colorBright || color}" stroke-width="${sw}" stroke-linecap="round" opacity="0.85"/>
-            ${ticksSvg}
+        const cb = colorBright || color;
+        return `<svg viewBox="0 0 130 68">
+            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="${sw}" stroke-linecap="round"/>
+            <path d="${actD}" fill="none" stroke="${cb}" stroke-width="${sw}" stroke-linecap="round"/>
         </svg>`;
     }
 
     function compassSVG(deg) {
-        const cx = 65, cy = 65, R = 52;
+        const cx = 60, cy = 60, R = 48;
         const cardinals = [
             {t:'N',a:270},{t:'E',a:0},{t:'S',a:90},{t:'W',a:180}
         ];
-        const intercardinals = [
-            {t:'NE',a:315},{t:'SE',a:45},{t:'SW',a:135},{t:'NW',a:225}
-        ];
         const cSvg = cardinals.map(l => {
             const a = Math.PI/180 * l.a;
+            const isN = l.t === 'N';
             return `<text x="${cx+(R+2)*Math.cos(a)}" y="${cy+(R+2)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
-                fill="#8ab4d6" font-size="10" font-weight="800">${l.t}</text>`;
+                fill="${isN ? '#eef4ff' : '#8ab4d6'}" font-size="${isN ? 12 : 10}" font-weight="800">${l.t}</text>`;
         }).join('');
-        const icSvg = intercardinals.map(l => {
-            const a = Math.PI/180 * l.a;
-            return `<text x="${cx+(R-1)*Math.cos(a)}" y="${cy+(R-1)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
-                fill="rgba(138,180,214,0.4)" font-size="7" font-weight="600">${l.t}</text>`;
-        }).join('');
-        // Tick marks
-        const ticksSvg = Array.from({length:12}, (_,i) => {
-            const a = Math.PI/180 * (i*30);
-            const isMajor = i % 3 === 0;
-            const r1 = R - 14, r2 = R - (isMajor ? 7 : 10);
+        const ticksSvg = Array.from({length:8}, (_,i) => {
+            const a = Math.PI/180 * (i*45);
+            const isMajor = i % 2 === 0;
+            const r1 = R - 12, r2 = R - (isMajor ? 5 : 8);
             return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy+r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy+r2*Math.sin(a)}"
-                stroke="rgba(234,242,255,${isMajor?0.2:0.08})" stroke-width="${isMajor?1.5:1}"/>`;
+                stroke="rgba(234,242,255,${isMajor?0.25:0.1})" stroke-width="${isMajor?2:1}"/>`;
         }).join('');
-        return `<svg viewBox="0 0 130 130">
-            <circle cx="${cx}" cy="${cy}" r="${R-10}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+        return `<svg viewBox="0 0 120 120">
+            <circle cx="${cx}" cy="${cy}" r="${R-9}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2.5"/>
             ${ticksSvg}
-            ${cSvg}${icSvg}
+            ${cSvg}
             <g style="transform:rotate(${deg}deg);transform-origin:${cx}px ${cy}px;transition:transform 1s ease">
-                <line x1="${cx}" y1="${cy+18}" x2="${cx}" y2="${cy-36}" stroke="#5ef0e6" stroke-width="3" stroke-linecap="round"/>
-                <polygon points="${cx},${cy-40} ${cx-5},${cy-28} ${cx+5},${cy-28}" fill="#5ef0e6"/>
-                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+18}" stroke="rgba(234,242,255,0.12)" stroke-width="2" stroke-linecap="round"/>
+                <line x1="${cx}" y1="${cy+14}" x2="${cx}" y2="${cy-32}" stroke="#5ef0e6" stroke-width="3.5" stroke-linecap="round"/>
+                <polygon points="${cx},${cy-36} ${cx-6},${cy-24} ${cx+6},${cy-24}" fill="#5ef0e6"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+14}" stroke="rgba(234,242,255,0.15)" stroke-width="2" stroke-linecap="round"/>
             </g>
-            <circle cx="${cx}" cy="${cy}" r="4" fill="#5ef0e6" opacity="0.7"/>
-            <circle cx="${cx}" cy="${cy}" r="2" fill="#0b1f33"/>
+            <circle cx="${cx}" cy="${cy}" r="5" fill="#5ef0e6" opacity="0.8"/>
+            <circle cx="${cx}" cy="${cy}" r="2.5" fill="#0b1f33"/>
         </svg>`;
     }
 
