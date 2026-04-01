@@ -639,12 +639,12 @@
             <hr class="category-line line-meteo">
             <div class="wind-frame" style="margin:0 10px;">
                 <div class="wind-map" id="wind-map">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3000!2d1.8100!3d41.2340!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2ses!4v1" allowfullscreen loading="lazy"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d6000!2d1.8100!3d41.2340!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2ses!4v1" allowfullscreen loading="lazy"></iframe>
                     <div class="wind-map-overlay" id="wind-map-arrow">
                         <svg viewBox="0 0 160 160" style="width:150px;height:150px;">
-                            <line x1="80" y1="130" x2="80" y2="20" stroke="#5ef0e6" stroke-width="6" stroke-linecap="round"/>
-                            <polygon points="80,10 68,30 92,30" fill="#5ef0e6"/>
-                            <circle cx="80" cy="80" r="6" fill="#5ef0e6" opacity="0.4"/>
+                            <line x1="80" y1="130" x2="80" y2="20" stroke="#ef5350" stroke-width="6" stroke-linecap="round"/>
+                            <polygon points="80,10 68,30 92,30" fill="#ef5350"/>
+                            <circle cx="80" cy="80" r="6" fill="#ef5350" opacity="0.4"/>
                         </svg>
                         <div class="wind-map-info" id="wind-map-info">
                             <div class="wind-map-speed" id="wind-map-speed">--</div>
@@ -869,17 +869,17 @@
         const spd = d.speed_kn ?? 0;
         const dirS = degToCompass(dir);
         const ventNom = degToVentCatala(dir);
-        const col = arcColor(spd);
+        const mapCol = '#ef5350';
         arrow.querySelector('svg').style.transform = `rotate(${dir}deg)`;
         arrow.querySelectorAll('line, polygon').forEach(el => {
-            if (el.tagName === 'line') el.setAttribute('stroke', col);
-            else el.setAttribute('fill', col);
+            if (el.tagName === 'line') el.setAttribute('stroke', mapCol);
+            else el.setAttribute('fill', mapCol);
         });
-        arrow.querySelector('circle').setAttribute('fill', col);
-        if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = col; }
+        arrow.querySelector('circle').setAttribute('fill', mapCol);
+        if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) dirEl.textContent = dirS + ' ' + dir + '° · ' + ventNom;
         label.textContent = ventNom;
-        label.style.color = col;
+        label.style.color = mapCol;
     }
 
     async function fetchWind() {
