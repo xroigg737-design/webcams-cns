@@ -155,9 +155,17 @@
         }
         .wind-see-all:hover { color: #66bb6a; }
 
-        /* Card vent mòbil (substitueix iframe) */
+        /* Vent mòbil: frame amb iframes a amplada completa */
         .wind-mobile {
             display: none;
+            padding: 10px;
+        }
+        .wind-mobile .wind-frame {
+            position: static;
+        }
+        .wind-mobile .wind-clip-header iframe,
+        .wind-mobile .wind-clip-wind iframe {
+            width: 100%;
         }
 
         /* Frames de categoria */
@@ -248,6 +256,11 @@
             .layout { flex-direction: column; }
             .wind-panel { display: none; }
             .wind-mobile { display: block; }
+            .wind-mobile .wind-clip-header iframe,
+            .wind-mobile .wind-clip-wind iframe {
+                width: 100%;
+                margin-left: 0;
+            }
             .content { padding: 10px 10px 20px; }
         }
         @media (max-width: 480px) {
@@ -284,24 +297,32 @@
     <!-- CONTINGUT PRINCIPAL (esquerra) -->
     <div class="content">
 
-        <!-- VENT MÒBIL (card amb link, substitueix iframe) -->
-        <section class="category wind-mobile">
-            <div class="category-header">
-                <span class="category-icon">&#127788;</span>
-                <span class="category-title title-meteo">Vent en directe</span>
+        <!-- VENT MÒBIL (iframe retallat, mateixa info que desktop) -->
+        <div class="wind-mobile">
+            <div class="wind-frame">
+                <div class="wind-frame-header">
+                    <span class="wind-frame-icon">&#127788;</span>
+                    <span class="wind-frame-title">Vent en directe</span>
+                </div>
+                <hr class="wind-frame-line">
+                <div class="wind-clip-header">
+                    <iframe
+                        src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
+                        title="Capçalera Meteo CNS"
+                        loading="lazy"
+                        sandbox="allow-scripts allow-same-origin"
+                    ></iframe>
+                </div>
+                <div class="wind-clip-wind">
+                    <iframe
+                        src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
+                        title="Wind - Davis WeatherLink"
+                        loading="lazy"
+                        sandbox="allow-scripts allow-same-origin"
+                    ></iframe>
+                </div>
             </div>
-            <hr class="category-line line-meteo">
-            <div class="cards category-cards">
-                <a class="card" href="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim">
-                    <img class="card-img" src="img/davis-vantage-pro2.jpg" alt="Davis Vantage Pro2" loading="lazy">
-                    <div class="card-body">
-                        <div class="card-name">Vent CNS</div>
-                        <div class="card-desc">Velocitat, ratxa, direcció en knots</div>
-                        <span class="card-badge badge-meteo">&#9679; En directe</span>
-                    </div>
-                </a>
-            </div>
-        </section>
+        </div>
 
         <!-- WEBCAMS -->
         <section class="category">
