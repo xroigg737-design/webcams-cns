@@ -415,31 +415,8 @@
             flex-direction: column;
             gap: 6px;
         }
-        .wind-map-card {
+        .wind-map-sidebar .wg-sec-card {
             background: rgba(11,31,51,0.85);
-            border-radius: 8px;
-            padding: 6px 10px;
-            text-align: center;
-            min-width: 80px;
-            border-left: 3px solid rgba(255,255,255,0.2);
-        }
-        .wind-map-card-label {
-            font-size: 0.55em;
-            font-weight: 700;
-            color: rgba(234,242,255,0.6);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .wind-map-card-val {
-            font-size: 1.1em;
-            font-weight: 900;
-            color: #eef4ff;
-            font-variant-numeric: tabular-nums;
-        }
-        .wind-map-card-val small {
-            font-size: 0.65em;
-            font-weight: 600;
-            opacity: 0.6;
         }
         .wind-map-time {
             position: absolute;
@@ -698,13 +675,19 @@
                         </div>
                     </div>
                     <div class="wind-map-sidebar" id="wind-map-sidebar">
-                        <div class="wind-map-card">
-                            <div class="wind-map-card-label">Mitjana 10m</div>
-                            <div class="wind-map-card-val" id="wm-avg">-- <small>kn</small></div>
+                        <div class="wg-sec-card">
+                            <div class="wg-sec-bar wg-sec-bar-avg" id="wm-avg-bar"></div>
+                            <div class="wg-sec-info">
+                                <div class="wg-sec-label">Mitjana 10m</div>
+                                <div class="wg-sec-val" id="wm-avg">-- <small>kn</small></div>
+                            </div>
                         </div>
-                        <div class="wind-map-card">
-                            <div class="wind-map-card-label">Ratxa</div>
-                            <div class="wind-map-card-val" id="wm-gust">-- <small>kn</small></div>
+                        <div class="wg-sec-card">
+                            <div class="wg-sec-bar wg-sec-bar-gust" id="wm-gust-bar"></div>
+                            <div class="wg-sec-info">
+                                <div class="wg-sec-label">Ratxa</div>
+                                <div class="wg-sec-val" id="wm-gust">-- <small>kn</small></div>
+                            </div>
                         </div>
                     </div>
                     <div class="wind-map-time" id="wm-time">--</div>
@@ -937,18 +920,12 @@
         arrow.querySelector('circle').setAttribute('fill', mapCol);
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) dirEl.textContent = dirS + ' ' + dir + '\u00b0 \u00b7 ' + ventNom;
-        const avgVal = d.avg_10m_kn ?? 0;
-        const gustVal = d.gust_10m_kn ?? 0;
-        if (avgEl) {
-            avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn</small>';
-            avgEl.style.color = arcColor(avgVal);
-            avgEl.closest('.wind-map-card').style.borderLeftColor = arcColor(avgVal);
-        }
-        if (gustEl) {
-            gustEl.innerHTML = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
-            gustEl.style.color = arcColor(gustVal);
-            gustEl.closest('.wind-map-card').style.borderLeftColor = arcColor(gustVal);
-        }
+        if (avgEl) avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn</small>';
+        if (gustEl) gustEl.innerHTML = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
+        const avgBar = document.getElementById('wm-avg-bar');
+        const gustBar = document.getElementById('wm-gust-bar');
+        if (avgBar) avgBar.style.background = arcColor(d.avg_10m_kn ?? 0);
+        if (gustBar) gustBar.style.background = arcColor(d.gust_10m_kn ?? 0);
         if (timeEl) {
             const ts = d.timestamp ? new Date(d.timestamp * 1000) : null;
             const t = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
