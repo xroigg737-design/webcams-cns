@@ -237,34 +237,24 @@
             letter-spacing: 4px;
         }
 
-        /* 2) COMPASS — marine instrument */
-        .wg-compass-block {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            margin: 6px 0 10px;
+        /* 2) DIRECTION — below speed readout */
+        .wg-direction {
+            text-align: center;
+            margin: 2px 0 8px;
         }
-        .wg-compass-main {
-            width: 130px;
-            height: 130px;
-            flex-shrink: 0;
-        }
-        .wg-compass-main svg { width: 100%; height: 100%; }
-        .wg-compass-info {
-            text-align: left;
-        }
-        .wg-dir-big {
-            font-size: 2em;
+        .wg-dir-value {
+            font-size: 3.2em;
             font-weight: 900;
-            color: #5ef0e6;
-            letter-spacing: 2px;
             line-height: 1;
+            color: #5ef0e6;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 20px rgba(94,240,230,0.2);
         }
-        .wg-dir-deg {
-            font-size: 0.85em;
-            color: rgba(234,242,255,0.5);
-            font-weight: 600;
+        .wg-dir-label {
+            font-size: 0.5em;
+            font-weight: 700;
+            color: rgba(234,242,255,0.55);
+            letter-spacing: 4px;
         }
         .wg-status-badge {
             display: inline-block;
@@ -691,9 +681,6 @@
         // Needle
         const nLen = R - 14;
 
-        // Compass rose (larger, more visible)
-        const cc = 55, cR = 42;
-
         el.innerHTML = `
             <div class="wg-instrument">
                 <svg viewBox="0 0 280 160" style="display:block">
@@ -718,42 +705,10 @@
                 </div>
             </div>
 
-            <div class="wg-compass-block">
-                <div class="wg-compass-main">
-                    <svg viewBox="0 0 110 110">
-                        <!-- Outer ring -->
-                        <circle cx="${cc}" cy="${cc}" r="${cR}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2.5"/>
-                        <!-- Inner ring -->
-                        <circle cx="${cc}" cy="${cc}" r="${cR-12}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-                        <!-- Cardinal labels -->
-                        ${['N','E','S','W'].map((l,i) => {
-                            const a = Math.PI/180 * (270 + i*90);
-                            const isN = l==='N';
-                            return `<text x="${cc+(cR+8)*Math.cos(a)}" y="${cc+(cR+8)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
-                                fill="${isN?'#eef4ff':'#8ab4d6'}" font-size="${isN?14:11}" font-weight="800" font-family="system-ui,sans-serif">${l}</text>`;
-                        }).join('')}
-                        <!-- Tick marks (8 directions) -->
-                        ${Array.from({length:8},(_,i) => {
-                            const a = Math.PI/180*(i*45); const m=i%2===0;
-                            return `<line x1="${cc+(cR-3)*Math.cos(a)}" y1="${cc+(cR-3)*Math.sin(a)}" x2="${cc+(cR-(m?13:8))*Math.cos(a)}" y2="${cc+(cR-(m?13:8))*Math.sin(a)}"
-                                stroke="rgba(234,242,255,${m?0.3:0.12})" stroke-width="${m?2.5:1.5}"/>`;
-                        }).join('')}
-                        <!-- Arrow rotated to wind direction -->
-                        <g style="transform:rotate(${dir}deg);transform-origin:${cc}px ${cc}px;transition:transform 1s ease">
-                            <line x1="${cc}" y1="${cc+15}" x2="${cc}" y2="${cc-32}" stroke="#5ef0e6" stroke-width="3.5" stroke-linecap="round"/>
-                            <polygon points="${cc},${cc-37} ${cc-6},${cc-24} ${cc+6},${cc-24}" fill="#5ef0e6"/>
-                            <line x1="${cc}" y1="${cc}" x2="${cc}" y2="${cc+15}" stroke="rgba(234,242,255,0.12)" stroke-width="2.5"/>
-                        </g>
-                        <!-- Center dot -->
-                        <circle cx="${cc}" cy="${cc}" r="5" fill="#5ef0e6" opacity="0.8"/>
-                        <circle cx="${cc}" cy="${cc}" r="2" fill="#0b1f33"/>
-                    </svg>
-                </div>
-                <div class="wg-compass-info">
-                    <div class="wg-dir-big">${dirS}</div>
-                    <div class="wg-dir-deg">${dir}\u00b0</div>
-                    <span class="wg-status-badge ${cond.cls}">${cond.text}</span>
-                </div>
+            <div class="wg-direction">
+                <div class="wg-dir-value">${dirS} ${dir}\u00b0</div>
+                <div class="wg-dir-label">DIRECCI\u00d3</div>
+                <span class="wg-status-badge ${cond.cls}">${cond.text}</span>
             </div>
 
             <div class="wg-secondary">
