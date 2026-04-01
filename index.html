@@ -156,12 +156,6 @@
             min-width: 0;
         }
 
-        /* Panel vent (dreta) - només desktop */
-        .wind-panel {
-            width: 320px;
-            flex-shrink: 0;
-            padding: 14px 10px;
-        }
         .wind-frame {
             border-radius: 16px;
             border: 1px solid rgba(102,187,106,0.2);
@@ -200,91 +194,7 @@
         }
 
         /* 1) MAIN GAUGE — instrument style */
-        .wg-instrument {
-            position: relative;
-            width: 100%;
-            max-width: 280px;
-            margin: 0 auto 4px;
-        }
-        .wg-instrument svg {
-            width: 100%;
-            display: block;
-        }
-        .wg-needle {
-            transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: 140px 130px;
-        }
-        .wg-readout {
-            position: absolute;
-            bottom: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            pointer-events: none;
-        }
-        .wg-speed {
-            font-size: 3.2em;
-            font-weight: 900;
-            line-height: 1;
-            color: #eef4ff;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 0 20px rgba(94,240,230,0.2);
-        }
-        .wg-unit {
-            font-size: 0.5em;
-            font-weight: 700;
-            color: rgba(234,242,255,0.55);
-            letter-spacing: 4px;
-        }
-
-        /* 2) DIRECTION — below speed readout */
-        .wg-direction {
-            text-align: center;
-            margin: 2px 0 8px;
-        }
-        .wg-dir-value {
-            font-size: 2em;
-            font-weight: 900;
-            line-height: 1;
-            color: #5ef0e6;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 0 20px rgba(94,240,230,0.2);
-        }
-        .wg-dir-label {
-            font-size: 1.4em;
-            font-weight: 900;
-            color: #5ef0e6;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(94,240,230,0.2);
-        }
-        .wg-dir-avg {
-            font-size: 0.75em;
-            font-weight: 600;
-            color: rgba(234,242,255,0.45);
-            margin-top: 2px;
-        }
-        .wg-status-badge {
-            display: inline-block;
-            margin-top: 4px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.55em;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .wg-st-light  { background: rgba(94,240,230,0.15); color: #5ef0e6; }
-        .wg-st-ideal  { background: rgba(141,219,145,0.2); color: #8ddb91; }
-        .wg-st-sporty { background: rgba(255,201,102,0.2); color: #ffc966; }
-        .wg-st-strong { background: rgba(255,107,107,0.2); color: #ff6b6b; }
-
-        /* 3) SECONDARY — gust & avg */
-        .wg-secondary {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
+        /* Targetes dades vent */
         .wg-sec-card {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.08);
@@ -323,36 +233,6 @@
             font-weight: 700;
         }
 
-        /* 4) FOOTER */
-        .wg-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-        .wg-temp {
-            font-size: 0.75em;
-            color: #8ab4d6;
-            font-weight: 700;
-        }
-        .wg-updated {
-            font-size: 0.7em;
-            color: #ffd740;
-            text-align: right;
-            line-height: 1.3;
-        }
-        .wind-see-all {
-            display: block;
-            text-align: center;
-            padding: 8px;
-            font-size: 0.65em;
-            color: rgba(94,240,230,0.5);
-            text-decoration: none;
-            transition: color 0.2s;
-            font-weight: 600;
-        }
-        .wind-see-all:hover { color: #5ef0e6; }
 
 
 
@@ -443,14 +323,6 @@
         }
         .wind-map-link:hover { color: rgba(255,255,255,0.85); }
 
-        /* Vent mòbil */
-        .wind-mobile {
-            display: none;
-            padding: 10px;
-        }
-        .wind-mobile .wind-frame {
-            position: static;
-        }
 
         /* Frames de categoria */
         .category {
@@ -538,13 +410,6 @@
         /* Responsive */
         @media (max-width: 768px) {
             .layout { flex-direction: column; }
-            .wind-panel { display: none; }
-            .wind-mobile { display: block; }
-            .wind-mobile .wind-clip-header iframe,
-            .wind-mobile .wind-clip-wind iframe {
-                width: 100%;
-                margin-left: 0;
-            }
             .content { padding: 10px 10px 20px; }
         }
         @media (max-width: 480px) {
@@ -586,18 +451,48 @@
     <!-- CONTINGUT PRINCIPAL (esquerra) -->
     <div class="content">
 
-        <!-- VENT MÒBIL -->
-        <div class="wind-mobile">
-            <div class="wind-frame" id="wind-mobile-frame">
-                <div class="wind-frame-header">
-                    <span class="wind-frame-icon">&#127788;</span>
-                    <span class="wind-frame-title">Vent actual al CNS</span>
-                </div>
-                <hr class="wind-frame-line">
-                <div class="wind-widget" id="wind-widget-mobile"></div>
-                <a class="wind-see-all" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
+        <!-- VENT ACTUAL AL CNS (mapa) -->
+        <section class="category" id="wind-map-section">
+            <div class="category-header">
+                <span class="category-icon">&#128268;</span>
+                <span class="category-title title-meteo">Vent actual al CNS</span>
             </div>
-        </div>
+            <hr class="category-line line-meteo">
+            <div class="wind-frame" style="margin:0 10px;">
+                <div class="wind-map" id="wind-map">
+                    <img src="img/cns-port-sat.jpg" alt="Port Club Nàutic de Sitges">
+                    <div class="wind-map-overlay" id="wind-map-arrow">
+                        <svg viewBox="0 0 160 160" style="width:150px;height:150px;">
+                            <line x1="80" y1="130" x2="80" y2="20" stroke="#ef5350" stroke-width="6" stroke-linecap="round"/>
+                            <polygon points="80,10 68,30 92,30" fill="#ef5350"/>
+                            <circle cx="80" cy="80" r="6" fill="#ef5350" opacity="0.4"/>
+                        </svg>
+                        <div class="wind-map-info" id="wind-map-info">
+                            <div class="wind-map-speed" id="wind-map-speed">--</div>
+                            <div class="wind-map-dir" id="wind-map-dir">--</div>
+                        </div>
+                    </div>
+                    <div class="wind-map-sidebar" id="wind-map-sidebar">
+                        <div class="wg-sec-card">
+                            <div class="wg-sec-bar wg-sec-bar-avg" id="wm-avg-bar"></div>
+                            <div class="wg-sec-info">
+                                <div class="wg-sec-label">Mitjana 10m</div>
+                                <div class="wg-sec-val" id="wm-avg">-- <small>kn</small></div>
+                            </div>
+                        </div>
+                        <div class="wg-sec-card">
+                            <div class="wg-sec-bar wg-sec-bar-gust" id="wm-gust-bar"></div>
+                            <div class="wg-sec-info">
+                                <div class="wg-sec-label">Ratxa</div>
+                                <div class="wg-sec-val" id="wm-gust">-- <small>kn</small></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wind-map-time" id="wm-time">--</div>
+                    <a class="wind-map-link" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
+                </div>
+            </div>
+        </section>
 
         <!-- WEBCAMS -->
         <section class="category">
@@ -653,48 +548,6 @@
             </div>
         </section>
 
-        <!-- WIND-2: Mapa amb direcció vent -->
-        <section class="category">
-            <div class="category-header">
-                <span class="category-icon">&#128268;</span>
-                <span class="category-title title-meteo">Vent actual al CNS</span>
-            </div>
-            <hr class="category-line line-meteo">
-            <div class="wind-frame" style="margin:0 10px;">
-                <div class="wind-map" id="wind-map">
-                    <img src="img/cns-port-sat.jpg" alt="Port Club Nàutic de Sitges">
-                    <div class="wind-map-overlay" id="wind-map-arrow">
-                        <svg viewBox="0 0 160 160" style="width:150px;height:150px;">
-                            <line x1="80" y1="130" x2="80" y2="20" stroke="#ef5350" stroke-width="6" stroke-linecap="round"/>
-                            <polygon points="80,10 68,30 92,30" fill="#ef5350"/>
-                            <circle cx="80" cy="80" r="6" fill="#ef5350" opacity="0.4"/>
-                        </svg>
-                        <div class="wind-map-info" id="wind-map-info">
-                            <div class="wind-map-speed" id="wind-map-speed">--</div>
-                            <div class="wind-map-dir" id="wind-map-dir">--</div>
-                        </div>
-                    </div>
-                    <div class="wind-map-sidebar" id="wind-map-sidebar">
-                        <div class="wg-sec-card">
-                            <div class="wg-sec-bar wg-sec-bar-avg" id="wm-avg-bar"></div>
-                            <div class="wg-sec-info">
-                                <div class="wg-sec-label">Mitjana 10m</div>
-                                <div class="wg-sec-val" id="wm-avg">-- <small>kn</small></div>
-                            </div>
-                        </div>
-                        <div class="wg-sec-card">
-                            <div class="wg-sec-bar wg-sec-bar-gust" id="wm-gust-bar"></div>
-                            <div class="wg-sec-info">
-                                <div class="wg-sec-label">Ratxa</div>
-                                <div class="wg-sec-val" id="wm-gust">-- <small>kn</small></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="wind-map-time" id="wm-time">--</div>
-                    <a class="wind-map-link" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
-                </div>
-            </div>
-        </section>
 
         <!-- REGATES (preparat) -->
         <!--
@@ -720,18 +573,6 @@
 
     </div>
 
-    <!-- PANEL VENT (dreta, només desktop) -->
-    <aside class="wind-panel">
-        <div class="wind-frame">
-            <div class="wind-frame-header">
-                <span class="wind-frame-icon">&#127788;</span>
-                <span class="wind-frame-title">Vent actual al CNS</span>
-            </div>
-            <hr class="wind-frame-line">
-            <div class="wind-widget" id="wind-widget-desktop"></div>
-            <a class="wind-see-all" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
-        </div>
-    </aside>
 
 </div>
 
@@ -741,8 +582,6 @@
 (function() {
     const API = 'https://cns-wind-api.xroigg737.workers.dev';
     const DIRS = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-    const MAX_KN = 30;
-
     function degToCompass(d) { return DIRS[Math.round(d / 22.5) % 16]; }
 
     function degToVentCatala(d) {
@@ -760,143 +599,11 @@
         return closest[1];
     }
 
-    function condition(kn) {
-        if (kn < 5)  return { text: 'Vent suau', cls: 'wg-st-light' };
-        if (kn < 12) return { text: 'Ideal per navegar', cls: 'wg-st-ideal' };
-        if (kn < 18) return { text: 'Navegable \u00b7 Esportiu', cls: 'wg-st-sporty' };
-        return { text: 'Condicions exigents', cls: 'wg-st-strong' };
-    }
-
     function arcColor(kn) {
         if (kn < 5)  return '#4ecdc4';
         if (kn < 12) return '#66bb6a';
         if (kn < 18) return '#ffb74d';
         return '#ef5350';
-    }
-
-    function arc(cx, cy, r, a1, a2) {
-        const r1 = Math.PI / 180 * a1, r2 = Math.PI / 180 * a2;
-        const x1 = cx + r * Math.cos(r1), y1 = cy + r * Math.sin(r1);
-        const x2 = cx + r * Math.cos(r2), y2 = cy + r * Math.sin(r2);
-        return `M${x1},${y1} A${r},${r} 0 ${a2-a1>180?1:0} 1 ${x2},${y2}`;
-    }
-
-    function knToA(kn) { return 180 + (Math.min(kn, MAX_KN) / MAX_KN) * 180; }
-
-    function renderWidget(el, d) {
-        const spd  = d.speed_kn ?? 0;
-        const spdS = d.speed_kn != null ? d.speed_kn : '--';
-        const dir  = d.dir || 0;
-        const dirS = degToCompass(dir);
-        const ventNom = degToVentCatala(dir);
-        const dirAvg = d.dir_avg_10m;
-        const dirAvgS = dirAvg != null ? degToCompass(dirAvg) + ' ' + dirAvg + '\u00b0' : null;
-        const avg  = d.avg_10m_kn ?? 0;
-        const avgS = d.avg_10m_kn != null ? d.avg_10m_kn : '--';
-        const gst  = d.gust_10m_kn ?? 0;
-        const gstS = d.gust_10m_kn != null ? d.gust_10m_kn : '--';
-        const temp = d.temp_c != null ? d.temp_c + '\u00b0C' : '--';
-        const hum  = d.humidity != null ? Math.round(d.humidity) + '%' : '';
-        const ts   = d.timestamp ? new Date(d.timestamp * 1000) : null;
-        const time = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
-        const cond = condition(spd);
-        const nCol = arcColor(spd);
-
-        // Gauge: thick semicircle instrument
-        const cx = 140, cy = 130, R = 105, sw = 24;
-        const nA = knToA(spd);
-        const gA = knToA(gst);
-
-        // Bands with vivid colors
-        const bands = [
-            { f:0,  t:5,      c:'#2a8a82' },
-            { f:5,  t:12,     c:'#3dad5a' },
-            { f:12, t:18,     c:'#cc8a2e' },
-            { f:18, t:MAX_KN, c:'#b84a48' },
-        ];
-        const bandsSvg = bands.map(b =>
-            `<path d="${arc(cx,cy,R,knToA(b.f),knToA(b.t))}" fill="none" stroke="${b.c}" stroke-width="${sw}" opacity="0.35"/>`
-        ).join('');
-
-        // Active arc — bright
-        const activeSvg = `<path d="${arc(cx,cy,R,180,nA)}" fill="none" stroke="${nCol}" stroke-width="${sw}" stroke-linecap="round"/>`;
-
-        // Gust marker — orange triangle on outer edge
-        const gArad = Math.PI/180 * gA;
-        const gmx = cx + (R+sw/2+4)*Math.cos(gArad), gmy = cy + (R+sw/2+4)*Math.sin(gArad);
-
-        // Ticks — only 0, 10, 20, 30
-        const ticksSvg = [0,10,20,30].map(kn => {
-            const a = Math.PI/180 * knToA(kn);
-            const c = Math.cos(a), s = Math.sin(a);
-            return `<line x1="${cx+(R+sw/2+2)*c}" y1="${cy+(R+sw/2+2)*s}" x2="${cx+(R+sw/2+8)*c}" y2="${cy+(R+sw/2+8)*s}"
-                stroke="rgba(234,242,255,0.3)" stroke-width="2"/>
-                <text x="${cx+(R+sw/2+18)*c}" y="${cy+(R+sw/2+18)*s}" text-anchor="middle" dominant-baseline="middle"
-                fill="rgba(234,242,255,0.5)" font-size="11" font-weight="700">${kn}</text>`;
-        }).join('');
-
-        // Needle
-        const nLen = R - 14;
-
-        el.innerHTML = `
-            <div class="wg-instrument">
-                <svg viewBox="0 0 280 160" style="display:block">
-                    <!-- Background -->
-                    <path d="${arc(cx,cy,R,180,360)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${sw}" stroke-linecap="round"/>
-                    ${bandsSvg}
-                    ${activeSvg}
-                    ${ticksSvg}
-                    <!-- Gust marker -->
-                    <polygon points="${gmx},${gmy-5} ${gmx-3.5},${gmy+3} ${gmx+3.5},${gmy+3}" fill="#ff9a76" opacity="0.9"/>
-                    <!-- Needle -->
-                    <g class="wg-needle" style="transform:rotate(${nA-180}deg)">
-                        <line x1="${cx}" y1="${cy}" x2="${cx-nLen}" y2="${cy}"
-                            stroke="${nCol}" stroke-width="3" stroke-linecap="round"/>
-                        <circle cx="${cx}" cy="${cy}" r="6" fill="${nCol}"/>
-                        <circle cx="${cx}" cy="${cy}" r="2.5" fill="#0b1f33"/>
-                    </g>
-                </svg>
-                <div class="wg-readout">
-                    <div class="wg-speed">${spdS}</div>
-                    <div class="wg-unit">KNOTS</div>
-                </div>
-            </div>
-            <div style="text-align:center;margin:-2px 0 4px;">
-                <span class="wg-status-badge ${cond.cls}">${cond.text}</span>
-            </div>
-
-            <div class="wg-direction">
-                <div class="wg-dir-value">${dirS} ${dir}\u00b0</div>
-                <div class="wg-dir-label">${ventNom}</div>
-                ${dirAvgS ? `<div class="wg-dir-avg">Mitjana 10m: ${dirAvgS}</div>` : ''}
-            </div>
-
-            <div class="wg-secondary">
-                <div class="wg-sec-card">
-                    <div class="wg-sec-bar wg-sec-bar-avg"></div>
-                    <div class="wg-sec-info">
-                        <div class="wg-sec-label">Mitjana 10m</div>
-                        <div class="wg-sec-val">${avgS} <small>kn</small></div>
-                    </div>
-                </div>
-                <div class="wg-sec-card">
-                    <div class="wg-sec-bar wg-sec-bar-gust"></div>
-                    <div class="wg-sec-info">
-                        <div class="wg-sec-label">Ratxa</div>
-                        <div class="wg-sec-val">${gstS} <small>kn</small></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="wg-footer">
-                <span class="wg-temp">${temp}${hum ? ' \u00b7 ' + hum : ''}</span>
-                <span class="wg-updated">\u00daltima actualitzaci\u00f3:<br>${time}</span>
-            </div>
-        `;
-    }
-
-    function renderError(el) {
-        el.innerHTML = '<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.25);font-size:0.8em;">Carregant vent\u2026</div>';
     }
 
     function updateWindMap(d) {
@@ -938,10 +645,9 @@
             const r = await fetch(API);
             if (!r.ok) throw new Error();
             const d = await r.json();
-            document.querySelectorAll('.wind-widget').forEach(el => renderWidget(el, d));
             updateWindMap(d);
         } catch(e) {
-            document.querySelectorAll('.wind-widget').forEach(el => renderError(el));
+            // silently retry on next interval
         }
     }
 
