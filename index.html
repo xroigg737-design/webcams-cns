@@ -373,8 +373,8 @@
         }
         .wind-map-overlay {
             position: absolute;
-            top: 35%;
-            left: 80%;
+            top: 60%;
+            left: 40%;
             transform: translate(-50%, -50%);
             display: flex;
             align-items: center;
@@ -392,32 +392,18 @@
             text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
         }
         .wind-map-speed {
-            font-size: 2.8em;
+            font-size: 2em;
             font-weight: 900;
             color: #fff;
             line-height: 1;
             font-variant-numeric: tabular-nums;
+            white-space: nowrap;
         }
         .wind-map-dir {
             font-size: 1.2em;
             font-weight: 700;
             color: #5ef0e6;
             margin-top: 2px;
-        }
-        .wind-map-label {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            background: rgba(11,31,51,0.85);
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 0.75em;
-            font-weight: 700;
-            color: #eef4ff;
-            white-space: nowrap;
-            pointer-events: none;
         }
 
         /* Vent mòbil */
@@ -651,7 +637,6 @@
                             <div class="wind-map-dir" id="wind-map-dir">--</div>
                         </div>
                     </div>
-                    <div class="wind-map-label" id="wind-map-label">--</div>
                 </div>
             </div>
         </section>
@@ -861,10 +846,9 @@
 
     function updateWindMap(d) {
         const arrow = document.getElementById('wind-map-arrow');
-        const label = document.getElementById('wind-map-label');
         const spdEl = document.getElementById('wind-map-speed');
         const dirEl = document.getElementById('wind-map-dir');
-        if (!arrow || !label) return;
+        if (!arrow) return;
         const dir = d.dir || 0;
         const spd = d.speed_kn ?? 0;
         const dirS = degToCompass(dir);
@@ -877,9 +861,7 @@
         });
         arrow.querySelector('circle').setAttribute('fill', mapCol);
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
-        if (dirEl) dirEl.textContent = dirS + ' ' + dir + '° · ' + ventNom;
-        label.textContent = ventNom;
-        label.style.color = mapCol;
+        if (dirEl) dirEl.textContent = dirS + ' ' + dir + '\u00b0 \u00b7 ' + ventNom;
     }
 
     async function fetchWind() {
