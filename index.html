@@ -72,17 +72,46 @@
             padding: 12px 14px 24px;
         }
 
-        /* Categories */
+        /* Frames de categoria */
         .category {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(165deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            overflow: hidden;
+            backdrop-filter: blur(4px);
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px 0;
+        }
+        .category-icon {
+            font-size: 1.3em;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
         }
         .category-title {
             font-size: 0.72em;
             text-transform: uppercase;
             letter-spacing: 2.5px;
-            color: rgba(79,195,247,0.7);
-            padding: 8px 4px 6px;
-            font-weight: 600;
+            font-weight: 700;
+        }
+        .category-title.title-webcam { color: #ef5350; }
+        .category-title.title-meteo { color: #66bb6a; }
+        .category-title.title-regata { color: #ffb74d; }
+        .category-title.title-nautica { color: #4fc3f7; }
+        .category-line {
+            height: 1px;
+            margin: 8px 14px 0;
+            border: none;
+        }
+        .line-webcam { background: linear-gradient(90deg, rgba(239,83,80,0.4), transparent); }
+        .line-meteo { background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent); }
+        .line-regata { background: linear-gradient(90deg, rgba(255,183,77,0.4), transparent); }
+        .line-nautica { background: linear-gradient(90deg, rgba(79,195,247,0.4), transparent); }
+        .category-cards {
+            padding: 10px 12px 12px;
         }
 
         /* Grid de cards */
@@ -221,8 +250,12 @@
 
     <!-- WEBCAMS -->
     <section class="category">
-        <div class="category-title">&#128247; Webcams</div>
-        <div class="cards">
+        <div class="category-header">
+            <span class="category-icon">&#128247;</span>
+            <span class="category-title title-webcam">Webcams</span>
+        </div>
+        <hr class="category-line line-webcam">
+        <div class="cards category-cards">
             <a class="card" href="https://video.nest.com/live/rRaPmgiwSf" target="_blank" rel="noopener">
                 <img class="card-img" src="img/club-nautic.jpg" alt="Club Nàutic Sitges" loading="lazy">
                 <div class="card-body">
@@ -254,8 +287,12 @@
 
     <!-- METEO -->
     <section class="category">
-        <div class="category-title">&#127782;&#65039; Meteo</div>
-        <div class="cards">
+        <div class="category-header">
+            <span class="category-icon">&#127782;&#65039;</span>
+            <span class="category-title title-meteo">Meteo</span>
+        </div>
+        <hr class="category-line line-meteo">
+        <div class="cards category-cards">
             <a class="card" href="https://app.weathercloud.net/d1807591580#wind" target="_blank" rel="noopener">
                 <img class="card-img" src="img/sailing-wind.jpg" alt="Estació Meteo" loading="lazy">
                 <div class="card-body">
@@ -270,8 +307,12 @@
     <!-- REGATES (de moment buit, preparat per créixer) -->
     <!--
     <section class="category">
-        <div class="category-title">&#127942; Regates</div>
-        <div class="cards">
+        <div class="category-header">
+            <span class="category-icon">&#127942;</span>
+            <span class="category-title title-regata">Regates</span>
+        </div>
+        <hr class="category-line line-regata">
+        <div class="cards category-cards">
             <a class="card" href="#" target="_blank" rel="noopener">
                 <div class="card-icon-placeholder">&#127942;</div>
                 <div class="card-body">
