@@ -194,170 +194,168 @@
             background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent);
             margin: 8px 14px 0;
         }
-        /* ===== WIND DASHBOARD ===== */
+        /* ===== WIND DASHBOARD — NAUTICAL INSTRUMENT ===== */
         .wind-widget {
-            padding: 16px 12px 10px;
+            padding: 14px 10px 8px;
         }
 
-        /* 1) SEMICIRCULAR GAUGE */
-        .wg-gauge {
+        /* 1) MAIN GAUGE — instrument style */
+        .wg-instrument {
             position: relative;
             width: 100%;
-            max-width: 270px;
-            margin: 0 auto 6px;
+            max-width: 280px;
+            margin: 0 auto 4px;
         }
-        .wg-gauge svg {
+        .wg-instrument svg {
             width: 100%;
             display: block;
-            overflow: visible;
         }
         .wg-needle {
             transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: 135px 120px;
+            transform-origin: 140px 130px;
         }
         .wg-readout {
             position: absolute;
-            bottom: 8px;
+            bottom: 6px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
             pointer-events: none;
-            white-space: nowrap;
         }
         .wg-speed {
-            font-size: 3em;
+            font-size: 3.2em;
             font-weight: 900;
             line-height: 1;
-            color: #eaf2ff;
+            color: #eef4ff;
             font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 20px rgba(94,240,230,0.2);
         }
         .wg-unit {
-            font-size: 0.55em;
+            font-size: 0.5em;
             font-weight: 700;
-            color: rgba(234,242,255,0.6);
-            letter-spacing: 3px;
-            margin-top: 2px;
+            color: rgba(234,242,255,0.55);
+            letter-spacing: 4px;
         }
 
-        /* 2) STATUS + DIRECTION ROW */
-        .wg-status-row {
+        /* 2) COMPASS — marine instrument */
+        .wg-compass-block {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin: 8px 0 12px;
+            gap: 12px;
+            margin: 6px 0 10px;
+        }
+        .wg-compass-main {
+            width: 70px;
+            height: 70px;
+            flex-shrink: 0;
+        }
+        .wg-compass-main svg { width: 100%; height: 100%; }
+        .wg-compass-info {
+            text-align: left;
+        }
+        .wg-dir-big {
+            font-size: 1.6em;
+            font-weight: 900;
+            color: #5ef0e6;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+        .wg-dir-deg {
+            font-size: 0.75em;
+            color: rgba(234,242,255,0.5);
+            font-weight: 600;
         }
         .wg-status-badge {
-            padding: 5px 14px;
+            display: inline-block;
+            margin-top: 4px;
+            padding: 3px 10px;
             border-radius: 20px;
-            font-size: 0.65em;
+            font-size: 0.55em;
             font-weight: 800;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-        .wg-st-light  { background: rgba(78,205,196,0.2); color: #7eeae2; }
-        .wg-st-ideal  { background: rgba(102,187,106,0.25); color: #8ddb91; }
-        .wg-st-sporty { background: rgba(255,183,77,0.25); color: #ffc966; }
-        .wg-st-strong { background: rgba(239,83,80,0.25); color: #ff7b78; }
+        .wg-st-light  { background: rgba(94,240,230,0.15); color: #5ef0e6; }
+        .wg-st-ideal  { background: rgba(141,219,145,0.2); color: #8ddb91; }
+        .wg-st-sporty { background: rgba(255,201,102,0.2); color: #ffc966; }
+        .wg-st-strong { background: rgba(255,107,107,0.2); color: #ff6b6b; }
 
-        /* 3) MINI COMPASS */
-        .wg-compass {
-            width: 42px;
-            height: 42px;
-            flex-shrink: 0;
+        /* 3) SECONDARY — gust & avg */
+        .wg-secondary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
         }
-        .wg-compass svg { width: 100%; height: 100%; }
-        .wg-compass-arrow {
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: 19px 19px;
-        }
-        .wg-dir-text {
-            font-size: 0.85em;
-            font-weight: 800;
-            color: #7eeae2;
-            letter-spacing: 1.5px;
-        }
-
-        /* 4) SECONDARY DATA BARS */
-        .wg-bars {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .wg-bar-row {
+        .wg-sec-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
-        .wg-bar-label {
-            font-size: 0.65em;
+        .wg-sec-bar {
+            width: 4px;
+            height: 32px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .wg-sec-bar-avg { background: #5ef0e6; }
+        .wg-sec-bar-gust { background: #ff9a76; }
+        .wg-sec-info { flex: 1; }
+        .wg-sec-label {
+            font-size: 0.52em;
             color: #8ab4d6;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
             font-weight: 700;
-            width: 52px;
-            flex-shrink: 0;
-            text-align: right;
         }
-        .wg-bar-track {
-            flex: 1;
-            height: 8px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .wg-bar-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 1s ease;
-        }
-        .wg-bar-fill-avg {
-            background: linear-gradient(90deg, #2a9d8f, #5ef0e6);
-        }
-        .wg-bar-fill-gust {
-            background: linear-gradient(90deg, #ff8a65, #ff6b6b);
-        }
-        .wg-bar-val {
-            font-size: 0.8em;
-            font-weight: 800;
-            color: #eaf2ff;
-            width: 48px;
-            flex-shrink: 0;
+        .wg-sec-val {
+            font-size: 1.2em;
+            font-weight: 900;
+            color: #eef4ff;
             font-variant-numeric: tabular-nums;
+            line-height: 1.2;
         }
-        .wg-bar-val-gust { color: #ff9a76; }
+        .wg-sec-val small {
+            font-size: 0.5em;
+            color: rgba(234,242,255,0.45);
+            font-weight: 700;
+        }
 
-        /* 5) BOTTOM INFO */
+        /* 4) FOOTER */
         .wg-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.06);
         }
         .wg-temp {
-            font-size: 0.8em;
+            font-size: 0.75em;
             color: #8ab4d6;
             font-weight: 700;
         }
         .wg-updated {
-            font-size: 0.6em;
-            color: rgba(234,242,255,0.35);
+            font-size: 0.55em;
+            color: rgba(234,242,255,0.3);
         }
         .wind-see-all {
             display: block;
             text-align: center;
-            padding: 10px;
+            padding: 8px;
             font-size: 0.65em;
-            color: rgba(126,234,226,0.6);
+            color: rgba(94,240,230,0.5);
             text-decoration: none;
             transition: color 0.2s;
             font-weight: 600;
         }
-        .wind-see-all:hover { color: #7eeae2; }
+        .wind-see-all:hover { color: #5ef0e6; }
 
-        /* Wind-2: Gauges grid — MAXIMUM READABILITY */
+        /* Wind-2: Instrument gauges */
         .w2-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -369,52 +367,52 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             padding: 4px 10px 12px;
-            max-width: 360px;
+            max-width: 380px;
             margin: 0 auto;
         }
         .w2-gauge {
-            background: linear-gradient(170deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 14px;
-            padding: 10px 6px 10px;
+            background: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.08) 0%, rgba(11,31,51,0.9) 70%);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 12px 6px 10px;
             text-align: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
         }
         .w2-gauge svg {
             width: 100%;
-            max-width: 140px;
+            max-width: 150px;
             display: block;
-            margin: 0 auto 0;
+            margin: 0 auto;
             overflow: visible;
         }
         .w2-title {
-            font-size: 0.58em;
+            font-size: 0.55em;
             color: #a0c8e8;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 2.5px;
             font-weight: 800;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
         .w2-value {
-            font-size: 2em;
+            font-size: 2.2em;
             font-weight: 900;
             color: #eef4ff;
-            margin-top: 0;
+            margin-top: 2px;
             font-variant-numeric: tabular-nums;
             line-height: 1;
+            text-shadow: 0 0 15px rgba(94,240,230,0.15);
         }
         .w2-value small {
             font-size: 0.4em;
             font-weight: 700;
-            color: rgba(234,242,255,0.55);
+            color: rgba(234,242,255,0.5);
             margin-left: 2px;
         }
         @media (max-width: 480px) {
             .w2-grid { gap: 5px; padding: 10px 6px 4px; }
             .w2-grid-dir { gap: 5px; padding: 2px 6px 10px; }
             .w2-gauge { padding: 8px 4px 8px; border-radius: 12px; }
-            .w2-value { font-size: 1.6em; }
-            .w2-title { font-size: 0.52em; }
+            .w2-value { font-size: 1.7em; }
         }
 
         /* Vent mòbil */
@@ -718,7 +716,6 @@
         const avgS = d.avg_10m_kn != null ? d.avg_10m_kn : '--';
         const gst  = d.gust_10m_kn ?? 0;
         const gstS = d.gust_10m_kn != null ? d.gust_10m_kn : '--';
-        const gDir = d.gust_10m_dir != null ? degToCompass(d.gust_10m_dir) : '';
         const temp = d.temp_c != null ? d.temp_c + '\u00b0C' : '--';
         const hum  = d.humidity != null ? Math.round(d.humidity) + '%' : '';
         const ts   = d.timestamp ? new Date(d.timestamp * 1000) : null;
@@ -726,69 +723,61 @@
         const cond = condition(spd);
         const nCol = arcColor(spd);
 
-        // Gauge geometry
-        const cx = 135, cy = 120, R = 100, sw = 14;
+        // Gauge: thick semicircle instrument
+        const cx = 140, cy = 130, R = 105, sw = 24;
+        const nA = knToA(spd);
+        const gA = knToA(gst);
+
+        // Bands with vivid colors
         const bands = [
-            { f:0,  t:5,      c:'rgba(78,205,196,0.25)' },
-            { f:5,  t:12,     c:'rgba(102,187,106,0.3)' },
-            { f:12, t:18,     c:'rgba(255,183,77,0.3)' },
-            { f:18, t:MAX_KN, c:'rgba(239,83,80,0.25)' },
+            { f:0,  t:5,      c:'#2a8a82' },
+            { f:5,  t:12,     c:'#3dad5a' },
+            { f:12, t:18,     c:'#cc8a2e' },
+            { f:18, t:MAX_KN, c:'#b84a48' },
         ];
         const bandsSvg = bands.map(b =>
-            `<path d="${arc(cx,cy,R,knToA(b.f),knToA(b.t))}" fill="none" stroke="${b.c}" stroke-width="${sw}"/>`
+            `<path d="${arc(cx,cy,R,knToA(b.f),knToA(b.t))}" fill="none" stroke="${b.c}" stroke-width="${sw}" opacity="0.35"/>`
         ).join('');
 
-        // Ticks (only major: 0 5 10 15 20 25 30)
-        const ticks = [0,5,10,15,20,25,30].map(kn => {
+        // Active arc — bright
+        const activeSvg = `<path d="${arc(cx,cy,R,180,nA)}" fill="none" stroke="${nCol}" stroke-width="${sw}" stroke-linecap="round"/>`;
+
+        // Gust marker — orange triangle on outer edge
+        const gArad = Math.PI/180 * gA;
+        const gmx = cx + (R+sw/2+4)*Math.cos(gArad), gmy = cy + (R+sw/2+4)*Math.sin(gArad);
+
+        // Ticks — only 0, 10, 20, 30
+        const ticksSvg = [0,10,20,30].map(kn => {
             const a = Math.PI/180 * knToA(kn);
-            const cos = Math.cos(a), sin = Math.sin(a);
-            const isMajor = kn % 10 === 0;
-            const r1 = R + (isMajor ? 9 : 7), r2 = R - (isMajor ? 9 : 7);
-            const rt = R + 21;
-            return `<line x1="${cx+r1*cos}" y1="${cy+r1*sin}" x2="${cx+r2*cos}" y2="${cy+r2*sin}"
-                stroke="rgba(255,255,255,${isMajor?0.25:0.12})" stroke-width="${isMajor?1.5:1}"/>
-                <text x="${cx+rt*cos}" y="${cy+rt*sin}" text-anchor="middle" dominant-baseline="middle"
-                fill="rgba(255,255,255,${isMajor?0.35:0.2})" font-size="${isMajor?10:8}" font-weight="600">${kn}</text>`;
+            const c = Math.cos(a), s = Math.sin(a);
+            return `<line x1="${cx+(R+sw/2+2)*c}" y1="${cy+(R+sw/2+2)*s}" x2="${cx+(R+sw/2+8)*c}" y2="${cy+(R+sw/2+8)*s}"
+                stroke="rgba(234,242,255,0.3)" stroke-width="2"/>
+                <text x="${cx+(R+sw/2+18)*c}" y="${cy+(R+sw/2+18)*s}" text-anchor="middle" dominant-baseline="middle"
+                fill="rgba(234,242,255,0.5)" font-size="11" font-weight="700">${kn}</text>`;
         }).join('');
 
         // Needle
-        const nA = knToA(spd);
-        const nLen = R - 18;
-        const nRad = Math.PI/180 * nA;
+        const nLen = R - 14;
 
-        // Gust marker on arc
-        const gA = Math.PI/180 * knToA(gst);
-        const gmx = cx + R*Math.cos(gA), gmy = cy + R*Math.sin(gA);
-
-        // Compass mini
-        const cc = 19; // center of mini compass
+        // Compass rose (35px radius, for the widget)
+        const cc = 35, cR = 28;
 
         el.innerHTML = `
-            <div class="wg-gauge">
-                <svg viewBox="0 0 270 145" style="display:block">
-                    <defs>
-                        <filter id="glow-${el.id}" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur stdDeviation="3" result="blur"/>
-                            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                        </filter>
-                    </defs>
-                    <!-- Bg track -->
-                    <path d="${arc(cx,cy,R,180,360)}" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="${sw}" stroke-linecap="round"/>
-                    <!-- Bands -->
+            <div class="wg-instrument">
+                <svg viewBox="0 0 280 160" style="display:block">
+                    <!-- Background -->
+                    <path d="${arc(cx,cy,R,180,360)}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${sw}" stroke-linecap="round"/>
                     ${bandsSvg}
-                    <!-- Ticks -->
-                    ${ticks}
-                    <!-- Active arc (filled to current speed) -->
-                    <path d="${arc(cx,cy,R,180,nA)}" fill="none" stroke="${nCol}" stroke-width="${sw}"
-                        stroke-linecap="round" opacity="0.5" filter="url(#glow-${el.id})"/>
+                    ${activeSvg}
+                    ${ticksSvg}
                     <!-- Gust marker -->
-                    <circle cx="${gmx}" cy="${gmy}" r="3.5" fill="#ff8a65" opacity="0.7"/>
+                    <polygon points="${gmx},${gmy-5} ${gmx-3.5},${gmy+3} ${gmx+3.5},${gmy+3}" fill="#ff9a76" opacity="0.9"/>
                     <!-- Needle -->
                     <g class="wg-needle" style="transform:rotate(${nA-180}deg)">
                         <line x1="${cx}" y1="${cy}" x2="${cx-nLen}" y2="${cy}"
-                            stroke="${nCol}" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
-                        <circle cx="${cx}" cy="${cy}" r="4.5" fill="${nCol}" opacity="0.9"/>
-                        <circle cx="${cx}" cy="${cy}" r="2" fill="#0b1f33"/>
+                            stroke="${nCol}" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="${cx}" cy="${cy}" r="6" fill="${nCol}"/>
+                        <circle cx="${cx}" cy="${cy}" r="2.5" fill="#0b1f33"/>
                     </g>
                 </svg>
                 <div class="wg-readout">
@@ -797,40 +786,51 @@
                 </div>
             </div>
 
-            <div class="wg-status-row">
-                <div class="wg-compass">
-                    <svg viewBox="0 0 38 38">
-                        <circle cx="${cc}" cy="${cc}" r="17" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-                        <text x="${cc}" y="5" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="5.5" font-weight="700">N</text>
-                        <text x="36" y="${cc+1.5}" text-anchor="middle" fill="rgba(255,255,255,0.15)" font-size="5" font-weight="600">E</text>
-                        <text x="${cc}" y="36" text-anchor="middle" fill="rgba(255,255,255,0.15)" font-size="5" font-weight="600">S</text>
-                        <text x="2.5" y="${cc+1.5}" text-anchor="middle" fill="rgba(255,255,255,0.15)" font-size="5" font-weight="600">W</text>
-                        <g class="wg-compass-arrow" style="transform:rotate(${dir}deg)">
-                            <line x1="${cc}" y1="${cc}" x2="${cc}" y2="6" stroke="#4ecdc4" stroke-width="1.5" stroke-linecap="round"/>
-                            <polygon points="${cc},4 ${cc-2.5},10 ${cc+2.5},10" fill="#4ecdc4" opacity="0.8"/>
-                            <line x1="${cc}" y1="${cc}" x2="${cc}" y2="31" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-linecap="round"/>
+            <div class="wg-compass-block">
+                <div class="wg-compass-main">
+                    <svg viewBox="0 0 70 70">
+                        <circle cx="${cc}" cy="${cc}" r="${cR}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+                        ${['N','E','S','W'].map((l,i) => {
+                            const a = Math.PI/180 * (270 + i*90);
+                            const isN = l==='N';
+                            return `<text x="${cc+(cR+5)*Math.cos(a)}" y="${cc+(cR+5)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
+                                fill="${isN?'#eef4ff':'#8ab4d6'}" font-size="${isN?10:8}" font-weight="800">${l}</text>`;
+                        }).join('')}
+                        ${Array.from({length:8},(_,i) => {
+                            const a = Math.PI/180*(i*45); const m=i%2===0;
+                            return `<line x1="${cc+(cR-4)*Math.cos(a)}" y1="${cc+(cR-4)*Math.sin(a)}" x2="${cc+(cR-(m?10:6))*Math.cos(a)}" y2="${cc+(cR-(m?10:6))*Math.sin(a)}"
+                                stroke="rgba(234,242,255,${m?0.25:0.1})" stroke-width="${m?2:1}"/>`;
+                        }).join('')}
+                        <g style="transform:rotate(${dir}deg);transform-origin:${cc}px ${cc}px;transition:transform 1s ease">
+                            <line x1="${cc}" y1="${cc+10}" x2="${cc}" y2="${cc-22}" stroke="#5ef0e6" stroke-width="3" stroke-linecap="round"/>
+                            <polygon points="${cc},${cc-25} ${cc-4.5},${cc-16} ${cc+4.5},${cc-16}" fill="#5ef0e6"/>
+                            <line x1="${cc}" y1="${cc}" x2="${cc}" y2="${cc+10}" stroke="rgba(234,242,255,0.12)" stroke-width="2"/>
                         </g>
-                        <circle cx="${cc}" cy="${cc}" r="2" fill="#4ecdc4" opacity="0.6"/>
+                        <circle cx="${cc}" cy="${cc}" r="3.5" fill="#5ef0e6" opacity="0.8"/>
+                        <circle cx="${cc}" cy="${cc}" r="1.5" fill="#0b1f33"/>
                     </svg>
                 </div>
-                <span class="wg-dir-text">${dirS} ${dir}\u00b0</span>
-                <span class="wg-status-badge ${cond.cls}">${cond.text}</span>
+                <div class="wg-compass-info">
+                    <div class="wg-dir-big">${dirS}</div>
+                    <div class="wg-dir-deg">${dir}\u00b0</div>
+                    <span class="wg-status-badge ${cond.cls}">${cond.text}</span>
+                </div>
             </div>
 
-            <div class="wg-bars">
-                <div class="wg-bar-row">
-                    <span class="wg-bar-label">Mitja</span>
-                    <div class="wg-bar-track">
-                        <div class="wg-bar-fill wg-bar-fill-avg" style="width:${Math.min(avg/MAX_KN*100,100)}%"></div>
+            <div class="wg-secondary">
+                <div class="wg-sec-card">
+                    <div class="wg-sec-bar wg-sec-bar-avg"></div>
+                    <div class="wg-sec-info">
+                        <div class="wg-sec-label">Mitjana 10m</div>
+                        <div class="wg-sec-val">${avgS} <small>kn</small></div>
                     </div>
-                    <span class="wg-bar-val">${avgS} kn</span>
                 </div>
-                <div class="wg-bar-row">
-                    <span class="wg-bar-label">Ratxa</span>
-                    <div class="wg-bar-track">
-                        <div class="wg-bar-fill wg-bar-fill-gust" style="width:${Math.min(gst/MAX_KN*100,100)}%"></div>
+                <div class="wg-sec-card">
+                    <div class="wg-sec-bar wg-sec-bar-gust"></div>
+                    <div class="wg-sec-info">
+                        <div class="wg-sec-label">Ratxa</div>
+                        <div class="wg-sec-val">${gstS} <small>kn</small></div>
                     </div>
-                    <span class="wg-bar-val wg-bar-val-gust">${gstS} kn</span>
                 </div>
             </div>
 
@@ -848,47 +848,54 @@
     /* ===== WIND-2: 5 GAUGES INDIVIDUALS ===== */
 
     function speedGaugeSVG(value, max, color, colorBright) {
-        const cx = 65, cy = 58, R = 46, sw = 20;
+        const cx = 65, cy = 60, R = 46, sw = 22;
         const pct = Math.min(value / max, 1);
         const endA = 180 + pct * 180;
         const bgD = arc(cx, cy, R, 180, 360);
         const actD = arc(cx, cy, R, 180, endA);
         const cb = colorBright || color;
-        return `<svg viewBox="0 0 130 68">
-            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="${sw}" stroke-linecap="round"/>
+        // Minor ticks at 0 and max
+        const t0 = Math.PI, tM = 0;
+        return `<svg viewBox="0 0 130 72">
+            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${sw}" stroke-linecap="round"/>
             <path d="${actD}" fill="none" stroke="${cb}" stroke-width="${sw}" stroke-linecap="round"/>
+            <text x="${cx+R*Math.cos(t0)-10}" y="${cy+5}" text-anchor="middle" fill="rgba(234,242,255,0.35)" font-size="8" font-weight="700">0</text>
+            <text x="${cx+R*Math.cos(tM)+10}" y="${cy+5}" text-anchor="middle" fill="rgba(234,242,255,0.35)" font-size="8" font-weight="700">${max}</text>
         </svg>`;
     }
 
     function compassSVG(deg) {
         const cx = 60, cy = 60, R = 48;
-        const cardinals = [
-            {t:'N',a:270},{t:'E',a:0},{t:'S',a:90},{t:'W',a:180}
-        ];
-        const cSvg = cardinals.map(l => {
-            const a = Math.PI/180 * l.a;
-            const isN = l.t === 'N';
-            return `<text x="${cx+(R+2)*Math.cos(a)}" y="${cy+(R+2)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
-                fill="${isN ? '#eef4ff' : '#8ab4d6'}" font-size="${isN ? 12 : 10}" font-weight="800">${l.t}</text>`;
-        }).join('');
-        const ticksSvg = Array.from({length:8}, (_,i) => {
-            const a = Math.PI/180 * (i*45);
+        // Compass rose with 8 points
+        const pts = ['N','NE','E','SE','S','SW','W','NW'];
+        const ptsSvg = pts.map((t,i) => {
+            const a = Math.PI/180 * (270 + i*45);
             const isMajor = i % 2 === 0;
-            const r1 = R - 12, r2 = R - (isMajor ? 5 : 8);
+            const rr = R + (isMajor ? 3 : 0);
+            const isN = t === 'N';
+            return `<text x="${cx+rr*Math.cos(a)}" y="${cy+rr*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
+                fill="${isN?'#eef4ff': isMajor?'#8ab4d6':'rgba(138,180,214,0.4)'}" font-size="${isN?11: isMajor?9:7}" font-weight="${isMajor?800:600}">${t}</text>`;
+        }).join('');
+        // Rose lines
+        const roseSvg = Array.from({length:16}, (_,i) => {
+            const a = Math.PI/180 * (i*22.5);
+            const isMajor = i % 4 === 0;
+            const isMid = i % 2 === 0;
+            const r1 = R - 14, r2 = R - (isMajor ? 6 : isMid ? 9 : 11);
             return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy+r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy+r2*Math.sin(a)}"
-                stroke="rgba(234,242,255,${isMajor?0.25:0.1})" stroke-width="${isMajor?2:1}"/>`;
+                stroke="rgba(234,242,255,${isMajor?0.3:isMid?0.15:0.07})" stroke-width="${isMajor?2:1}"/>`;
         }).join('');
         return `<svg viewBox="0 0 120 120">
-            <circle cx="${cx}" cy="${cy}" r="${R-9}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2.5"/>
-            ${ticksSvg}
-            ${cSvg}
+            <circle cx="${cx}" cy="${cy}" r="${R-10}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+            ${roseSvg}
+            ${ptsSvg}
             <g style="transform:rotate(${deg}deg);transform-origin:${cx}px ${cy}px;transition:transform 1s ease">
-                <line x1="${cx}" y1="${cy+14}" x2="${cx}" y2="${cy-32}" stroke="#5ef0e6" stroke-width="3.5" stroke-linecap="round"/>
-                <polygon points="${cx},${cy-36} ${cx-6},${cy-24} ${cx+6},${cy-24}" fill="#5ef0e6"/>
-                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+14}" stroke="rgba(234,242,255,0.15)" stroke-width="2" stroke-linecap="round"/>
+                <line x1="${cx}" y1="${cy+12}" x2="${cx}" y2="${cy-34}" stroke="#5ef0e6" stroke-width="3.5" stroke-linecap="round"/>
+                <polygon points="${cx},${cy-38} ${cx-5},${cy-26} ${cx+5},${cy-26}" fill="#5ef0e6"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+12}" stroke="rgba(234,242,255,0.1)" stroke-width="2"/>
             </g>
-            <circle cx="${cx}" cy="${cy}" r="5" fill="#5ef0e6" opacity="0.8"/>
-            <circle cx="${cx}" cy="${cy}" r="2.5" fill="#0b1f33"/>
+            <circle cx="${cx}" cy="${cy}" r="4.5" fill="#5ef0e6" opacity="0.85"/>
+            <circle cx="${cx}" cy="${cy}" r="2" fill="#0b1f33"/>
         </svg>`;
     }
 
