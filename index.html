@@ -406,6 +406,52 @@
             color: #5ef0e6;
             margin-top: 2px;
         }
+        .wind-map-sidebar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .wind-map-card {
+            background: rgba(11,31,51,0.85);
+            border-radius: 8px;
+            padding: 6px 10px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .wind-map-card-label {
+            font-size: 0.55em;
+            font-weight: 700;
+            color: rgba(234,242,255,0.6);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .wind-map-card-val {
+            font-size: 1.1em;
+            font-weight: 900;
+            color: #eef4ff;
+            font-variant-numeric: tabular-nums;
+        }
+        .wind-map-card-val small {
+            font-size: 0.65em;
+            font-weight: 600;
+            opacity: 0.6;
+        }
+        .wind-map-time {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            font-size: 0.7em;
+            font-weight: 700;
+            color: #ffd740;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6);
+            white-space: nowrap;
+        }
 
         /* Vent mòbil */
         .wind-mobile {
@@ -638,6 +684,17 @@
                             <div class="wind-map-dir" id="wind-map-dir">--</div>
                         </div>
                     </div>
+                    <div class="wind-map-sidebar" id="wind-map-sidebar">
+                        <div class="wind-map-card">
+                            <div class="wind-map-card-label">Mitjana 10m</div>
+                            <div class="wind-map-card-val" id="wm-avg">-- <small>kn</small></div>
+                        </div>
+                        <div class="wind-map-card">
+                            <div class="wind-map-card-label">Ratxa</div>
+                            <div class="wind-map-card-val" id="wm-gust">-- <small>kn</small></div>
+                        </div>
+                    </div>
+                    <div class="wind-map-time" id="wm-time">--</div>
                 </div>
             </div>
         </section>
@@ -849,12 +906,15 @@
         const arrow = document.getElementById('wind-map-arrow');
         const spdEl = document.getElementById('wind-map-speed');
         const dirEl = document.getElementById('wind-map-dir');
+        const avgEl = document.getElementById('wm-avg');
+        const gustEl = document.getElementById('wm-gust');
+        const timeEl = document.getElementById('wm-time');
         if (!arrow) return;
         const dir = d.dir || 0;
         const spd = d.speed_kn ?? 0;
         const dirS = degToCompass(dir);
         const ventNom = degToVentCatala(dir);
-        const mapCol = '#ef5350';
+        const mapCol = arcColor(spd);
         arrow.querySelector('svg').style.transform = `rotate(${dir}deg)`;
         arrow.querySelectorAll('line, polygon').forEach(el => {
             if (el.tagName === 'line') el.setAttribute('stroke', mapCol);
@@ -863,6 +923,13 @@
         arrow.querySelector('circle').setAttribute('fill', mapCol);
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) dirEl.textContent = dirS + ' ' + dir + '\u00b0 \u00b7 ' + ventNom;
+        if (avgEl) avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn</small>';
+        if (gustEl) gustEl.innerHTML = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
+        if (timeEl) {
+            const ts = d.timestamp ? new Date(d.timestamp * 1000) : null;
+            const t = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
+            timeEl.textContent = '\u00daltima actualitzaci\u00f3: ' + t;
+        }
     }
 
     async function fetchWind() {
