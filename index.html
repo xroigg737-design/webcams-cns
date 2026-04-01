@@ -628,8 +628,9 @@
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) dirEl.textContent = dirS + ' ' + dir + '\u00b0 \u00b7 ' + ventNom;
         const dirAvg = d.dir_avg_10m;
-        const dirAvgTxt = dirAvg != null ? ' &middot; ' + degToCompass(dirAvg) + ' ' + dirAvg + '°' : '';
-        if (avgEl) avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn' + dirAvgTxt + '</small>';
+        const avgCol = arcColor(d.avg_10m_kn ?? 0);
+        const dirAvgTxt = dirAvg != null ? ' <span style="font-size:0.85em;color:' + avgCol + ';font-weight:900">&middot; ' + degToCompass(dirAvg) + ' ' + dirAvg + '°</span>' : '';
+        if (avgEl) avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn</small>' + dirAvgTxt;
         if (gustEl) gustEl.innerHTML = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
         const avgBar = document.getElementById('wm-avg-bar');
         const gustBar = document.getElementById('wm-gust-bar');
