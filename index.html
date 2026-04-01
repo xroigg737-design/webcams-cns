@@ -606,6 +606,21 @@
 
     function degToCompass(d) { return DIRS[Math.round(d / 22.5) % 16]; }
 
+    function degToVentCatala(d) {
+        const vents = [
+            [0,'Tramuntana'],[45,'Gregal'],[90,'Llevantet'],[135,'Xaloc'],
+            [180,'Migjorn'],[225,'Garbinet'],[270,'Ponent'],[315,'Mestral']
+        ];
+        const norm = ((d % 360) + 360) % 360;
+        let closest = vents[0];
+        let minDiff = 360;
+        for (const [ang, nom] of vents) {
+            const diff = Math.abs(((norm - ang + 180) % 360) - 180);
+            if (diff < minDiff) { minDiff = diff; closest = [ang, nom]; }
+        }
+        return closest[1];
+    }
+
     function condition(kn) {
         if (kn < 5)  return { text: 'Vent suau', cls: 'wg-st-light' };
         if (kn < 12) return { text: 'Ideal per navegar', cls: 'wg-st-ideal' };
@@ -634,6 +649,7 @@
         const spdS = d.speed_kn != null ? d.speed_kn : '--';
         const dir  = d.dir || 0;
         const dirS = degToCompass(dir);
+        const ventNom = degToVentCatala(dir);
         const avg  = d.avg_10m_kn ?? 0;
         const avgS = d.avg_10m_kn != null ? d.avg_10m_kn : '--';
         const gst  = d.gust_10m_kn ?? 0;
@@ -710,7 +726,7 @@
 
             <div class="wg-direction">
                 <div class="wg-dir-value">${dirS} ${dir}\u00b0</div>
-                <div class="wg-dir-label">DIRECCI\u00d3</div>
+                <div class="wg-dir-label">${ventNom}</div>
             </div>
 
             <div class="wg-secondary">
