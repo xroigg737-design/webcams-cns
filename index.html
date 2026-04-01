@@ -355,65 +355,7 @@
         }
         .wind-see-all:hover { color: #5ef0e6; }
 
-        /* Wind-2: Instrument gauges */
-        .w2-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            padding: 12px 10px 6px;
-        }
-        .w2-grid-dir {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding: 4px 10px 12px;
-            max-width: 380px;
-            margin: 0 auto;
-        }
-        .w2-gauge {
-            background: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.08) 0%, rgba(11,31,51,0.9) 70%);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 12px 6px 10px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-        }
-        .w2-gauge svg {
-            width: 100%;
-            max-width: 150px;
-            display: block;
-            margin: 0 auto;
-            overflow: visible;
-        }
-        .w2-title {
-            font-size: 0.55em;
-            color: #a0c8e8;
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-        .w2-value {
-            font-size: 2.2em;
-            font-weight: 900;
-            color: #eef4ff;
-            margin-top: 2px;
-            font-variant-numeric: tabular-nums;
-            line-height: 1;
-            text-shadow: 0 0 15px rgba(94,240,230,0.15);
-        }
-        .w2-value small {
-            font-size: 0.4em;
-            font-weight: 700;
-            color: rgba(234,242,255,0.5);
-            margin-left: 2px;
-        }
-        @media (max-width: 480px) {
-            .w2-grid { gap: 5px; padding: 10px 6px 4px; }
-            .w2-grid-dir { gap: 5px; padding: 2px 6px 10px; }
-            .w2-gauge { padding: 8px 4px 8px; border-radius: 12px; }
-            .w2-value { font-size: 1.7em; }
-        }
+
 
         /* Vent mòbil */
         .wind-mobile {
@@ -646,16 +588,6 @@
         </section>
         -->
 
-        <!-- WIND-2: Gauges Vent custom -->
-        <section class="category">
-            <div class="category-header">
-                <span class="category-icon">&#128168;</span>
-                <span class="category-title title-meteo">Gauges Vent</span>
-            </div>
-            <hr class="category-line line-meteo">
-            <div id="wind2-gauges"></div>
-            <a class="wind-see-all" href="https://app.weathercloud.net/d1807591580?units=nautical#wind">Veure tots els gauges &rarr;</a>
-        </section>
 
     </div>
 
@@ -847,111 +779,12 @@
 
     /* ===== WIND-2: 5 GAUGES INDIVIDUALS ===== */
 
-    function speedGaugeSVG(value, max, color, colorBright) {
-        const cx = 65, cy = 60, R = 46, sw = 22;
-        const pct = Math.min(value / max, 1);
-        const endA = 180 + pct * 180;
-        const bgD = arc(cx, cy, R, 180, 360);
-        const actD = arc(cx, cy, R, 180, endA);
-        const cb = colorBright || color;
-        // Minor ticks at 0 and max
-        const t0 = Math.PI, tM = 0;
-        return `<svg viewBox="0 0 130 72">
-            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${sw}" stroke-linecap="round"/>
-            <path d="${actD}" fill="none" stroke="${cb}" stroke-width="${sw}" stroke-linecap="round"/>
-            <text x="${cx+R*Math.cos(t0)-10}" y="${cy+5}" text-anchor="middle" fill="rgba(234,242,255,0.35)" font-size="8" font-weight="700">0</text>
-            <text x="${cx+R*Math.cos(tM)+10}" y="${cy+5}" text-anchor="middle" fill="rgba(234,242,255,0.35)" font-size="8" font-weight="700">${max}</text>
-        </svg>`;
-    }
-
-    function compassSVG(deg) {
-        const cx = 60, cy = 60, R = 48;
-        // Compass rose with 8 points
-        const pts = ['N','NE','E','SE','S','SW','W','NW'];
-        const ptsSvg = pts.map((t,i) => {
-            const a = Math.PI/180 * (270 + i*45);
-            const isMajor = i % 2 === 0;
-            const rr = R + (isMajor ? 3 : 0);
-            const isN = t === 'N';
-            return `<text x="${cx+rr*Math.cos(a)}" y="${cy+rr*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
-                fill="${isN?'#eef4ff': isMajor?'#8ab4d6':'rgba(138,180,214,0.4)'}" font-size="${isN?11: isMajor?9:7}" font-weight="${isMajor?800:600}">${t}</text>`;
-        }).join('');
-        // Rose lines
-        const roseSvg = Array.from({length:16}, (_,i) => {
-            const a = Math.PI/180 * (i*22.5);
-            const isMajor = i % 4 === 0;
-            const isMid = i % 2 === 0;
-            const r1 = R - 14, r2 = R - (isMajor ? 6 : isMid ? 9 : 11);
-            return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy+r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy+r2*Math.sin(a)}"
-                stroke="rgba(234,242,255,${isMajor?0.3:isMid?0.15:0.07})" stroke-width="${isMajor?2:1}"/>`;
-        }).join('');
-        return `<svg viewBox="0 0 120 120">
-            <circle cx="${cx}" cy="${cy}" r="${R-10}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
-            ${roseSvg}
-            ${ptsSvg}
-            <g style="transform:rotate(${deg}deg);transform-origin:${cx}px ${cy}px;transition:transform 1s ease">
-                <line x1="${cx}" y1="${cy+12}" x2="${cx}" y2="${cy-34}" stroke="#5ef0e6" stroke-width="3.5" stroke-linecap="round"/>
-                <polygon points="${cx},${cy-38} ${cx-5},${cy-26} ${cx+5},${cy-26}" fill="#5ef0e6"/>
-                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+12}" stroke="rgba(234,242,255,0.1)" stroke-width="2"/>
-            </g>
-            <circle cx="${cx}" cy="${cy}" r="4.5" fill="#5ef0e6" opacity="0.85"/>
-            <circle cx="${cx}" cy="${cy}" r="2" fill="#0b1f33"/>
-        </svg>`;
-    }
-
-    function renderGauges(container, d) {
-        const spd  = d.speed_kn ?? 0;
-        const spdS = d.speed_kn != null ? d.speed_kn : '--';
-        const avg  = d.avg_10m_kn ?? 0;
-        const avgS = d.avg_10m_kn != null ? d.avg_10m_kn : '--';
-        const gst  = d.gust_10m_kn ?? 0;
-        const gstS = d.gust_10m_kn != null ? d.gust_10m_kn : '--';
-        const dir  = d.dir ?? 0;
-        const dirS = degToCompass(dir);
-        const dirAvg = d.dir_avg_10m ?? 0;
-        const dirAvgS = degToCompass(dirAvg);
-
-        container.innerHTML = `
-            <div class="w2-grid">
-                <div class="w2-gauge">
-                    <div class="w2-title">Velocitat</div>
-                    ${speedGaugeSVG(spd, 50, '#4ecdc4', '#5ef0e6')}
-                    <div class="w2-value">${spdS} <small>kn</small></div>
-                </div>
-                <div class="w2-gauge">
-                    <div class="w2-title">Mitjana</div>
-                    ${speedGaugeSVG(avg, 50, '#66bb6a', '#8ddb91')}
-                    <div class="w2-value">${avgS} <small>kn</small></div>
-                </div>
-                <div class="w2-gauge">
-                    <div class="w2-title">Ratxa</div>
-                    ${speedGaugeSVG(gst, 50, '#ff8a65', '#ff9a76')}
-                    <div class="w2-value">${gstS} <small>kn</small></div>
-                </div>
-            </div>
-            <div class="w2-grid-dir">
-                <div class="w2-gauge">
-                    <div class="w2-title">Direcci\u00f3</div>
-                    ${compassSVG(dir)}
-                    <div class="w2-value">${dir}\u00b0 <small>${dirS}</small></div>
-                </div>
-                <div class="w2-gauge">
-                    <div class="w2-title">Dir. Mitjana</div>
-                    ${compassSVG(dirAvg)}
-                    <div class="w2-value">${dirAvg}\u00b0 <small>${dirAvgS}</small></div>
-                </div>
-            </div>
-        `;
-    }
-
     async function fetchWind() {
         try {
             const r = await fetch(API);
             if (!r.ok) throw new Error();
             const d = await r.json();
             document.querySelectorAll('.wind-widget').forEach(el => renderWidget(el, d));
-            const g = document.getElementById('wind2-gauges');
-            if (g) renderGauges(g, d);
         } catch(e) {
             document.querySelectorAll('.wind-widget').forEach(el => renderError(el));
         }
