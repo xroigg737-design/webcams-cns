@@ -50,12 +50,19 @@
         .sail-scene {
             display: flex;
             justify-content: center;
-            align-items: flex-end;
-            gap: 12px;
-            margin-bottom: 8px;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 10px;
         }
-        .sail-scene svg {
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+        .sail-logo {
+            height: 36px;
+            width: auto;
+            filter: brightness(0) invert(1);
+            opacity: 0.75;
+            transition: opacity 0.3s;
+        }
+        .sail-logo:hover {
+            opacity: 1;
         }
         header h1 {
             font-size: 2em;
@@ -322,36 +329,9 @@
 
 <header>
     <div class="sail-scene">
-        <!-- Patí Català -->
-        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-            <line x1="25" y1="3" x2="25" y2="38" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
-            <path d="M25 4 L25 35 L14 32 Z" fill="rgba(255,255,255,0.85)"/>
-            <path d="M25 4 L30 7 L25 9" fill="#ef5350" opacity="0.8"/>
-            <rect x="14" y="37" width="22" height="2" rx="1" fill="rgba(255,255,255,0.6)"/>
-            <path d="M14 40 Q14 44 16 44 L18 44 Q20 44 20 40" fill="rgba(255,255,255,0.7)"/>
-            <path d="M30 40 Q30 44 32 44 L34 44 Q36 44 36 40" fill="rgba(255,255,255,0.7)"/>
-            <text x="25" y="49" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="5" font-weight="600">PATÍ</text>
-        </svg>
-        <!-- Laser / ILCA -->
-        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-            <line x1="22" y1="3" x2="22" y2="38" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
-            <path d="M22 4 L22 35 L10 31 Z" fill="rgba(79,195,247,0.8)"/>
-            <path d="M22 4 L28 7 L22 9" fill="#ef5350" opacity="0.8"/>
-            <path d="M12 37 Q18 42 25 42 Q32 42 38 37 L36 39 Q31 44 25 44 Q19 44 14 39 Z" fill="rgba(255,255,255,0.75)"/>
-            <line x1="18" y1="33" x2="32" y2="38" stroke="rgba(255,255,255,0.4)" stroke-width="0.7"/>
-            <text x="25" y="49" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="5" font-weight="600">LASER</text>
-        </svg>
-        <!-- Hobie Cat -->
-        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-            <line x1="24" y1="2" x2="24" y2="36" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
-            <path d="M24 3 L24 33 L12 29 Z" fill="rgba(255,255,255,0.85)"/>
-            <path d="M24 8 L24 30 L33 27 Z" fill="rgba(79,195,247,0.7)"/>
-            <path d="M24 3 L30 6 L24 8" fill="#ef5350" opacity="0.8"/>
-            <rect x="12" y="35" width="24" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
-            <path d="M12 38 Q13 43 15 43 L17 43 Q19 43 19 38" fill="rgba(255,255,255,0.7)"/>
-            <path d="M31 38 Q32 43 34 43 L36 43 Q37 43 37 38" fill="rgba(255,255,255,0.7)"/>
-            <text x="25" y="49" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="5" font-weight="600">HOBIE</text>
-        </svg>
+        <img class="sail-logo" src="img/pati-catala.jpg" alt="Patí Català">
+        <img class="sail-logo" src="img/laser.png" alt="Laser">
+        <img class="sail-logo" src="img/hobie-cat.jpg" alt="Hobie Cat">
     </div>
     <h1>A Tot Drap<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
     <div class="subtitle">Club Nàutic Sitges</div>
