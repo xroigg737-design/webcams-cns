@@ -421,6 +421,7 @@
             padding: 6px 10px;
             text-align: center;
             min-width: 80px;
+            border-left: 3px solid rgba(255,255,255,0.2);
         }
         .wind-map-card-label {
             font-size: 0.55em;
@@ -443,8 +444,7 @@
         .wind-map-time {
             position: absolute;
             bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 10px;
             z-index: 3;
             font-size: 0.7em;
             font-weight: 700;
@@ -452,6 +452,19 @@
             text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6);
             white-space: nowrap;
         }
+        .wind-map-link {
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            z-index: 3;
+            font-size: 0.65em;
+            font-weight: 600;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+            transition: color 0.2s;
+        }
+        .wind-map-link:hover { color: rgba(255,255,255,0.85); }
 
         /* Vent mòbil */
         .wind-mobile {
@@ -695,6 +708,7 @@
                         </div>
                     </div>
                     <div class="wind-map-time" id="wm-time">--</div>
+                    <a class="wind-map-link" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
                 </div>
             </div>
         </section>
@@ -923,8 +937,18 @@
         arrow.querySelector('circle').setAttribute('fill', mapCol);
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) dirEl.textContent = dirS + ' ' + dir + '\u00b0 \u00b7 ' + ventNom;
-        if (avgEl) avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn</small>';
-        if (gustEl) gustEl.innerHTML = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
+        const avgVal = d.avg_10m_kn ?? 0;
+        const gustVal = d.gust_10m_kn ?? 0;
+        if (avgEl) {
+            avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn</small>';
+            avgEl.style.color = arcColor(avgVal);
+            avgEl.closest('.wind-map-card').style.borderLeftColor = arcColor(avgVal);
+        }
+        if (gustEl) {
+            gustEl.innerHTML = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
+            gustEl.style.color = arcColor(gustVal);
+            gustEl.closest('.wind-map-card').style.borderLeftColor = arcColor(gustVal);
+        }
         if (timeEl) {
             const ts = d.timestamp ? new Date(d.timestamp * 1000) : null;
             const t = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
