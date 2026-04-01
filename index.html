@@ -243,7 +243,7 @@
             margin: 2px 0 8px;
         }
         .wg-dir-value {
-            font-size: 3.2em;
+            font-size: 2em;
             font-weight: 900;
             line-height: 1;
             color: #5ef0e6;
@@ -495,7 +495,7 @@
             <div class="wind-frame" id="wind-mobile-frame">
                 <div class="wind-frame-header">
                     <span class="wind-frame-icon">&#127788;</span>
-                    <span class="wind-frame-title">Vent en directe</span>
+                    <span class="wind-frame-title">Vent actual al CNS</span>
                 </div>
                 <hr class="wind-frame-line">
                 <div class="wind-widget" id="wind-widget-mobile"></div>
@@ -586,7 +586,7 @@
         <div class="wind-frame">
             <div class="wind-frame-header">
                 <span class="wind-frame-icon">&#127788;</span>
-                <span class="wind-frame-title">Vent en directe</span>
+                <span class="wind-frame-title">Vent actual al CNS</span>
             </div>
             <hr class="wind-frame-line">
             <div class="wind-widget" id="wind-widget-desktop"></div>
@@ -704,11 +704,13 @@
                     <div class="wg-unit">KNOTS</div>
                 </div>
             </div>
+            <div style="text-align:center;margin:-2px 0 4px;">
+                <span class="wg-status-badge ${cond.cls}">${cond.text}</span>
+            </div>
 
             <div class="wg-direction">
                 <div class="wg-dir-value">${dirS} ${dir}\u00b0</div>
                 <div class="wg-dir-label">DIRECCI\u00d3</div>
-                <span class="wg-status-badge ${cond.cls}">${cond.text}</span>
             </div>
 
             <div class="wg-secondary">
