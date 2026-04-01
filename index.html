@@ -242,12 +242,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 14px;
             margin: 6px 0 10px;
         }
         .wg-compass-main {
-            width: 70px;
-            height: 70px;
+            width: 130px;
+            height: 130px;
             flex-shrink: 0;
         }
         .wg-compass-main svg { width: 100%; height: 100%; }
@@ -255,14 +255,14 @@
             text-align: left;
         }
         .wg-dir-big {
-            font-size: 1.6em;
+            font-size: 2em;
             font-weight: 900;
             color: #5ef0e6;
             letter-spacing: 2px;
             line-height: 1;
         }
         .wg-dir-deg {
-            font-size: 0.75em;
+            font-size: 0.85em;
             color: rgba(234,242,255,0.5);
             font-weight: 600;
         }
@@ -691,8 +691,8 @@
         // Needle
         const nLen = R - 14;
 
-        // Compass rose (35px radius, for the widget)
-        const cc = 35, cR = 28;
+        // Compass rose (larger, more visible)
+        const cc = 55, cR = 42;
 
         el.innerHTML = `
             <div class="wg-instrument">
@@ -720,26 +720,33 @@
 
             <div class="wg-compass-block">
                 <div class="wg-compass-main">
-                    <svg viewBox="0 0 70 70">
-                        <circle cx="${cc}" cy="${cc}" r="${cR}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+                    <svg viewBox="0 0 110 110">
+                        <!-- Outer ring -->
+                        <circle cx="${cc}" cy="${cc}" r="${cR}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2.5"/>
+                        <!-- Inner ring -->
+                        <circle cx="${cc}" cy="${cc}" r="${cR-12}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                        <!-- Cardinal labels -->
                         ${['N','E','S','W'].map((l,i) => {
                             const a = Math.PI/180 * (270 + i*90);
                             const isN = l==='N';
-                            return `<text x="${cc+(cR+5)*Math.cos(a)}" y="${cc+(cR+5)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
-                                fill="${isN?'#eef4ff':'#8ab4d6'}" font-size="${isN?10:8}" font-weight="800">${l}</text>`;
+                            return `<text x="${cc+(cR+8)*Math.cos(a)}" y="${cc+(cR+8)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
+                                fill="${isN?'#eef4ff':'#8ab4d6'}" font-size="${isN?14:11}" font-weight="800" font-family="system-ui,sans-serif">${l}</text>`;
                         }).join('')}
+                        <!-- Tick marks (8 directions) -->
                         ${Array.from({length:8},(_,i) => {
                             const a = Math.PI/180*(i*45); const m=i%2===0;
-                            return `<line x1="${cc+(cR-4)*Math.cos(a)}" y1="${cc+(cR-4)*Math.sin(a)}" x2="${cc+(cR-(m?10:6))*Math.cos(a)}" y2="${cc+(cR-(m?10:6))*Math.sin(a)}"
-                                stroke="rgba(234,242,255,${m?0.25:0.1})" stroke-width="${m?2:1}"/>`;
+                            return `<line x1="${cc+(cR-3)*Math.cos(a)}" y1="${cc+(cR-3)*Math.sin(a)}" x2="${cc+(cR-(m?13:8))*Math.cos(a)}" y2="${cc+(cR-(m?13:8))*Math.sin(a)}"
+                                stroke="rgba(234,242,255,${m?0.3:0.12})" stroke-width="${m?2.5:1.5}"/>`;
                         }).join('')}
+                        <!-- Arrow rotated to wind direction -->
                         <g style="transform:rotate(${dir}deg);transform-origin:${cc}px ${cc}px;transition:transform 1s ease">
-                            <line x1="${cc}" y1="${cc+10}" x2="${cc}" y2="${cc-22}" stroke="#5ef0e6" stroke-width="3" stroke-linecap="round"/>
-                            <polygon points="${cc},${cc-25} ${cc-4.5},${cc-16} ${cc+4.5},${cc-16}" fill="#5ef0e6"/>
-                            <line x1="${cc}" y1="${cc}" x2="${cc}" y2="${cc+10}" stroke="rgba(234,242,255,0.12)" stroke-width="2"/>
+                            <line x1="${cc}" y1="${cc+15}" x2="${cc}" y2="${cc-32}" stroke="#5ef0e6" stroke-width="3.5" stroke-linecap="round"/>
+                            <polygon points="${cc},${cc-37} ${cc-6},${cc-24} ${cc+6},${cc-24}" fill="#5ef0e6"/>
+                            <line x1="${cc}" y1="${cc}" x2="${cc}" y2="${cc+15}" stroke="rgba(234,242,255,0.12)" stroke-width="2.5"/>
                         </g>
-                        <circle cx="${cc}" cy="${cc}" r="3.5" fill="#5ef0e6" opacity="0.8"/>
-                        <circle cx="${cc}" cy="${cc}" r="1.5" fill="#0b1f33"/>
+                        <!-- Center dot -->
+                        <circle cx="${cc}" cy="${cc}" r="5" fill="#5ef0e6" opacity="0.8"/>
+                        <circle cx="${cc}" cy="${cc}" r="2" fill="#0b1f33"/>
                     </svg>
                 </div>
                 <div class="wg-compass-info">
