@@ -378,6 +378,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
             z-index: 2;
         }
         .wind-map-overlay svg {
@@ -385,6 +386,23 @@
             height: 120px;
             filter: drop-shadow(0 0 12px rgba(0,0,0,0.6));
             transition: transform 1s ease;
+        }
+        .wind-map-info {
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
+        }
+        .wind-map-speed {
+            font-size: 2.8em;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .wind-map-dir {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #5ef0e6;
+            margin-top: 2px;
         }
         .wind-map-label {
             position: absolute;
@@ -621,18 +639,17 @@
             <hr class="category-line line-meteo">
             <div class="wind-frame" style="margin:0 10px;">
                 <div class="wind-map" id="wind-map">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1500!2d1.8115!3d41.2333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a3962bfab8e2e5%3A0x1c0b8c0e3a9b3b0!2sClub%20N%C3%A0utic%20de%20Sitges!5e1!3m2!1sen!2ses!4v1" allowfullscreen loading="lazy"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3000!2d1.8100!3d41.2340!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2ses!4v1" allowfullscreen loading="lazy"></iframe>
                     <div class="wind-map-overlay" id="wind-map-arrow">
-                        <svg viewBox="0 0 100 100">
-                            <defs>
-                                <marker id="wm-head" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                                    <polygon points="0,0 6,3 0,6" fill="#5ef0e6"/>
-                                </marker>
-                            </defs>
-                            <line x1="50" y1="80" x2="50" y2="15" stroke="#5ef0e6" stroke-width="5" stroke-linecap="round" marker-end="url(#wm-head)"/>
-                            <polygon points="50,8 42,22 58,22" fill="#5ef0e6"/>
-                            <circle cx="50" cy="50" r="5" fill="#5ef0e6" opacity="0.5"/>
+                        <svg viewBox="0 0 160 160" style="width:150px;height:150px;">
+                            <line x1="80" y1="130" x2="80" y2="20" stroke="#5ef0e6" stroke-width="6" stroke-linecap="round"/>
+                            <polygon points="80,10 68,30 92,30" fill="#5ef0e6"/>
+                            <circle cx="80" cy="80" r="6" fill="#5ef0e6" opacity="0.4"/>
                         </svg>
+                        <div class="wind-map-info" id="wind-map-info">
+                            <div class="wind-map-speed" id="wind-map-speed">--</div>
+                            <div class="wind-map-dir" id="wind-map-dir">--</div>
+                        </div>
                     </div>
                     <div class="wind-map-label" id="wind-map-label">--</div>
                 </div>
@@ -845,6 +862,8 @@
     function updateWindMap(d) {
         const arrow = document.getElementById('wind-map-arrow');
         const label = document.getElementById('wind-map-label');
+        const spdEl = document.getElementById('wind-map-speed');
+        const dirEl = document.getElementById('wind-map-dir');
         if (!arrow || !label) return;
         const dir = d.dir || 0;
         const spd = d.speed_kn ?? 0;
@@ -857,7 +876,9 @@
             else el.setAttribute('fill', col);
         });
         arrow.querySelector('circle').setAttribute('fill', col);
-        label.textContent = `${ventNom} · ${dirS} ${dir}° · ${spd} kn`;
+        if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = col; }
+        if (dirEl) dirEl.textContent = dirS + ' ' + dir + '° · ' + ventNom;
+        label.textContent = ventNom;
         label.style.color = col;
     }
 
