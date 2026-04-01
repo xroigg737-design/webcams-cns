@@ -251,10 +251,17 @@
             text-shadow: 0 0 20px rgba(94,240,230,0.2);
         }
         .wg-dir-label {
-            font-size: 0.5em;
-            font-weight: 700;
-            color: rgba(234,242,255,0.55);
-            letter-spacing: 4px;
+            font-size: 1.4em;
+            font-weight: 900;
+            color: #5ef0e6;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(94,240,230,0.2);
+        }
+        .wg-dir-avg {
+            font-size: 0.75em;
+            font-weight: 600;
+            color: rgba(234,242,255,0.45);
+            margin-top: 2px;
         }
         .wg-status-badge {
             display: inline-block;
@@ -650,6 +657,8 @@
         const dir  = d.dir || 0;
         const dirS = degToCompass(dir);
         const ventNom = degToVentCatala(dir);
+        const dirAvg = d.dir_avg_10m;
+        const dirAvgS = dirAvg != null ? degToCompass(dirAvg) + ' ' + dirAvg + '\u00b0' : null;
         const avg  = d.avg_10m_kn ?? 0;
         const avgS = d.avg_10m_kn != null ? d.avg_10m_kn : '--';
         const gst  = d.gust_10m_kn ?? 0;
@@ -727,6 +736,7 @@
             <div class="wg-direction">
                 <div class="wg-dir-value">${dirS} ${dir}\u00b0</div>
                 <div class="wg-dir-label">${ventNom}</div>
+                ${dirAvgS ? `<div class="wg-dir-avg">Mitjana 10m: ${dirAvgS}</div>` : ''}
             </div>
 
             <div class="wg-secondary">
