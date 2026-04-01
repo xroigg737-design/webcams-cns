@@ -61,114 +61,59 @@
         }
         .back-link:hover { color: #4fc3f7; }
 
-        /* Layout principal: panel vent + contingut */
+        /* Layout principal: meteo panel + contingut */
         .layout {
             display: flex;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             gap: 0;
         }
 
-        /* Panel de vent (esquerra) */
-        .wind-panel {
-            width: 220px;
+        /* Panel meteo (esquerra) */
+        .meteo-panel {
+            width: 280px;
             flex-shrink: 0;
             padding: 14px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
-        .wind-frame {
+        .meteo-frame {
             border-radius: 16px;
-            border: 1px solid rgba(79,195,247,0.15);
-            background: linear-gradient(165deg, rgba(79,195,247,0.06) 0%, rgba(255,255,255,0.02) 100%);
-            padding: 12px 10px;
+            border: 1px solid rgba(102,187,106,0.2);
+            background: linear-gradient(165deg, rgba(102,187,106,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            overflow: hidden;
             backdrop-filter: blur(4px);
         }
-        .wind-frame-title {
-            font-size: 0.65em;
+        .meteo-frame-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px 0;
+        }
+        .meteo-frame-icon {
+            font-size: 1.3em;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+        }
+        .meteo-frame-title {
+            font-size: 0.68em;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: rgba(79,195,247,0.7);
+            color: #66bb6a;
             font-weight: 700;
-            text-align: center;
-            margin-bottom: 10px;
         }
-        .wind-frame-line {
+        .meteo-frame-line {
             height: 1px;
             border: none;
-            background: linear-gradient(90deg, transparent, rgba(79,195,247,0.3), transparent);
-            margin-bottom: 10px;
+            background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent);
+            margin: 8px 14px 0;
         }
-
-        /* Gauge circular */
-        .gauge {
-            text-align: center;
-            margin-bottom: 6px;
-        }
-        .gauge:last-child { margin-bottom: 0; }
-        .gauge-label {
-            font-size: 0.6em;
-            color: rgba(255,255,255,0.5);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-        .gauge-svg {
-            display: block;
-            margin: 0 auto;
-        }
-        .gauge-value {
-            font-size: 1.4em;
-            font-weight: 800;
-            fill: #e0f7fa;
-        }
-        .gauge-unit {
-            font-size: 0.45em;
-            fill: rgba(255,255,255,0.4);
-        }
-        .gauge-arc-bg {
-            fill: none;
-            stroke: rgba(255,255,255,0.06);
-            stroke-width: 8;
-            stroke-linecap: round;
-        }
-        .gauge-arc {
-            fill: none;
-            stroke-width: 8;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 1s ease, stroke 0.5s ease;
-        }
-        /* Compass */
-        .compass-ring {
-            fill: none;
-            stroke: rgba(255,255,255,0.08);
-            stroke-width: 2;
-        }
-        .compass-tick { stroke: rgba(255,255,255,0.2); stroke-width: 1.5; }
-        .compass-label { font-size: 0.5em; fill: rgba(255,255,255,0.4); font-weight: 600; }
-        .compass-needle {
-            transition: transform 1s ease;
-            transform-origin: 55px 55px;
-        }
-
-        .wind-updated {
-            font-size: 0.55em;
-            color: rgba(255,255,255,0.25);
-            text-align: center;
-            margin-top: 4px;
-        }
-        .wind-error {
-            font-size: 0.65em;
-            color: rgba(239,83,80,0.7);
-            text-align: center;
+        .meteo-iframe-wrapper {
             padding: 8px;
         }
-        .wind-loading {
-            font-size: 0.65em;
-            color: rgba(79,195,247,0.5);
-            text-align: center;
-            padding: 20px 8px;
+        .meteo-iframe-wrapper iframe {
+            width: 100%;
+            height: 640px;
+            border: none;
+            border-radius: 10px;
+            background: #fff;
         }
 
         /* Contingut principal (dreta) */
@@ -264,30 +209,13 @@
         /* Responsive */
         @media (max-width: 768px) {
             .layout { flex-direction: column; }
-            .wind-panel {
+            .meteo-panel {
                 width: 100%;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
                 padding: 10px;
             }
-            .wind-frame {
-                width: 100%;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 4px;
-                padding: 10px;
+            .meteo-iframe-wrapper iframe {
+                height: 500px;
             }
-            .wind-frame-title {
-                width: 100%;
-                margin-bottom: 6px;
-            }
-            .wind-frame-line {
-                width: 100%;
-                margin-bottom: 6px;
-            }
-            .gauge { margin-bottom: 2px; }
             .content { padding: 10px 10px 20px; }
         }
         @media (max-width: 480px) {
@@ -297,6 +225,9 @@
             .card-img { height: 75px; }
             .card-body { padding: 8px; }
             .card-name { font-size: 0.78em; }
+            .meteo-iframe-wrapper iframe {
+                height: 450px;
+            }
         }
         @media (max-width: 340px) {
             .cards { grid-template-columns: 1fr; }
@@ -304,7 +235,7 @@
         @media (min-width: 769px) {
             .cards { grid-template-columns: 1fr 1fr; }
         }
-        @media (min-width: 900px) {
+        @media (min-width: 1000px) {
             .cards { grid-template-columns: 1fr 1fr 1fr; }
         }
     </style>
@@ -321,12 +252,23 @@
 
 <div class="layout">
 
-    <!-- PANEL DE VENT (esquerra) -->
-    <aside class="wind-panel">
-        <div class="wind-frame" id="wind-gauges">
-            <div class="wind-frame-title">&#127788; Vent en directe</div>
-            <hr class="wind-frame-line">
-            <div class="wind-loading" id="wind-loading">Carregant dades...</div>
+    <!-- PANEL METEO (esquerra) -->
+    <aside class="meteo-panel">
+        <div class="meteo-frame">
+            <div class="meteo-frame-header">
+                <span class="meteo-frame-icon">&#127782;&#65039;</span>
+                <span class="meteo-frame-title">Meteo en directe</span>
+            </div>
+            <hr class="meteo-frame-line">
+            <div class="meteo-iframe-wrapper">
+                <iframe
+                    src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
+                    title="Estació Meteo CNS - Davis WeatherLink"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; encrypted-media"
+                    sandbox="allow-scripts allow-same-origin"
+                ></iframe>
+            </div>
         </div>
     </aside>
 
@@ -412,184 +354,6 @@
 </div>
 
 <footer>CNS Vela Lleugera &middot; Sitges</footer>
-
-<script>
-// === CONFIG ===
-// IMPORTANT: Canvia aquesta URL pel teu Cloudflare Worker un cop desplegat
-const WORKER_URL = 'https://meteo-cns.ELTEUUSUARI.workers.dev';
-const REFRESH_INTERVAL = 60000; // 60 segons
-
-// === GAUGE SVG GENERATORS ===
-function createSpeedGauge(id, label, size) {
-    const r = size * 0.38;
-    const cx = size / 2, cy = size / 2;
-    // Arc de 240 graus (des de 150 a 390 graus)
-    const startAngle = 150, endAngle = 390, range = endAngle - startAngle;
-    const circumference = 2 * Math.PI * r;
-    const arcLength = (range / 360) * circumference;
-
-    return `
-    <div class="gauge" id="gauge-${id}">
-        <div class="gauge-label">${label}</div>
-        <svg class="gauge-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-            <!-- Arc background -->
-            <circle class="gauge-arc-bg" cx="${cx}" cy="${cy}" r="${r}"
-                stroke-dasharray="${arcLength} ${circumference}"
-                stroke-dashoffset="0"
-                transform="rotate(${startAngle} ${cx} ${cy})" />
-            <!-- Arc value -->
-            <circle class="gauge-arc" id="arc-${id}" cx="${cx}" cy="${cy}" r="${r}"
-                stroke="#4fc3f7"
-                stroke-dasharray="${arcLength} ${circumference}"
-                stroke-dashoffset="${arcLength}"
-                transform="rotate(${startAngle} ${cx} ${cy})" />
-            <!-- Value text -->
-            <text class="gauge-value" id="val-${id}" x="${cx}" y="${cy + 2}" text-anchor="middle" dominant-baseline="middle">--</text>
-            <text class="gauge-unit" x="${cx}" y="${cy + 14}" text-anchor="middle">kn</text>
-        </svg>
-    </div>`;
-}
-
-function createCompassGauge(id, label, size) {
-    const cx = size / 2, cy = size / 2, r = size * 0.4;
-    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
-    let ticks = '';
-    let labels = '';
-    dirs.forEach((d, i) => {
-        const angle = i * 45 - 90;
-        const rad = angle * Math.PI / 180;
-        const x1 = cx + (r - 6) * Math.cos(rad);
-        const y1 = cy + (r - 6) * Math.sin(rad);
-        const x2 = cx + r * Math.cos(rad);
-        const y2 = cy + r * Math.sin(rad);
-        ticks += `<line class="compass-tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
-        const lx = cx + (r + 9) * Math.cos(rad);
-        const ly = cy + (r + 9) * Math.sin(rad);
-        labels += `<text class="compass-label" x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle">${d}</text>`;
-    });
-
-    return `
-    <div class="gauge" id="gauge-${id}">
-        <div class="gauge-label">${label}</div>
-        <svg class="gauge-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-            <circle class="compass-ring" cx="${cx}" cy="${cy}" r="${r}" />
-            ${ticks}
-            ${labels}
-            <!-- Needle -->
-            <g class="compass-needle" id="needle-${id}">
-                <polygon points="${cx},${cy - r + 10} ${cx - 4},${cy} ${cx + 4},${cy}" fill="#ef5350" opacity="0.9"/>
-                <polygon points="${cx},${cy + r - 15} ${cx - 3},${cy} ${cx + 3},${cy}" fill="rgba(255,255,255,0.2)"/>
-                <circle cx="${cx}" cy="${cy}" r="3" fill="#fff" opacity="0.8"/>
-            </g>
-            <!-- Degrees text -->
-            <text class="gauge-value" id="val-${id}" x="${cx}" y="${cy + 20}" text-anchor="middle" style="font-size:0.7em">--°</text>
-        </svg>
-    </div>`;
-}
-
-// === BUILD GAUGES ===
-function buildGauges() {
-    const container = document.getElementById('wind-gauges');
-    const isMobile = window.innerWidth <= 768;
-    const speedSize = isMobile ? 100 : 120;
-    const compassSize = isMobile ? 110 : 130;
-
-    // Remove loading message
-    const loading = document.getElementById('wind-loading');
-    if (loading) loading.remove();
-
-    const gaugesHTML =
-        createSpeedGauge('wspd', 'Velocitat', speedSize) +
-        createSpeedGauge('wspdavg', 'Mitjana', speedSize) +
-        createSpeedGauge('wspdhi', 'Ratxa', speedSize) +
-        createCompassGauge('wdir', 'Direcció', compassSize) +
-        createCompassGauge('wdiravg', 'Dir. Mitjana', compassSize) +
-        '<div class="wind-updated" id="wind-updated"></div>';
-
-    container.insertAdjacentHTML('beforeend', gaugesHTML);
-}
-
-// === UPDATE GAUGES ===
-function updateSpeedGauge(id, value, maxKn) {
-    if (maxKn === undefined) maxKn = 40;
-    const el = document.getElementById('val-' + id);
-    const arc = document.getElementById('arc-' + id);
-    if (!el || !arc) return;
-
-    if (value === null || value === undefined) {
-        el.textContent = '--';
-        return;
-    }
-
-    el.textContent = value.toFixed(1);
-
-    // Calculate arc offset
-    const pct = Math.min(value / maxKn, 1);
-    const svg = arc.closest('svg');
-    const r = parseFloat(arc.getAttribute('r'));
-    const circumference = 2 * Math.PI * r;
-    const arcLength = (240 / 360) * circumference;
-    const offset = arcLength * (1 - pct);
-    arc.style.strokeDashoffset = offset;
-
-    // Color based on wind strength (Beaufort-ish)
-    let color = '#4fc3f7'; // blau suau
-    if (value >= 6) color = '#66bb6a';  // verd
-    if (value >= 12) color = '#ffb74d'; // taronja
-    if (value >= 20) color = '#ef5350'; // vermell
-    if (value >= 30) color = '#ce93d8'; // lila
-    arc.style.stroke = color;
-}
-
-function updateCompassGauge(id, degrees) {
-    const el = document.getElementById('val-' + id);
-    const needle = document.getElementById('needle-' + id);
-    if (!el || !needle) return;
-
-    if (degrees === null || degrees === undefined) {
-        el.textContent = '--°';
-        return;
-    }
-
-    el.textContent = Math.round(degrees) + '°';
-    needle.style.transform = `rotate(${degrees}deg)`;
-}
-
-// === FETCH DATA ===
-async function fetchWindData() {
-    try {
-        const resp = await fetch(WORKER_URL);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        const data = await resp.json();
-
-        if (data.error) throw new Error(data.error);
-
-        updateSpeedGauge('wspd', data.wspd);
-        updateSpeedGauge('wspdavg', data.wspdavg);
-        updateSpeedGauge('wspdhi', data.wspdhi);
-        updateCompassGauge('wdir', data.wdir);
-        updateCompassGauge('wdiravg', data.wdiravg);
-
-        // Update timestamp
-        const updEl = document.getElementById('wind-updated');
-        if (updEl && data.updated) {
-            const d = new Date(data.updated * 1000);
-            updEl.textContent = 'Actualitzat: ' + d.toLocaleTimeString('ca');
-        }
-    } catch (e) {
-        console.warn('Wind data error:', e.message);
-        const updEl = document.getElementById('wind-updated');
-        if (updEl) updEl.textContent = 'Error carregant dades';
-    }
-}
-
-// === INIT ===
-document.addEventListener('DOMContentLoaded', () => {
-    buildGauges();
-    fetchWindData();
-    setInterval(fetchWindData, REFRESH_INTERVAL);
-});
-</script>
 
 </body>
 </html>
