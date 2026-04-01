@@ -337,8 +337,10 @@
             font-weight: 700;
         }
         .wg-updated {
-            font-size: 0.55em;
-            color: rgba(234,242,255,0.3);
+            font-size: 0.7em;
+            color: rgba(234,242,255,0.45);
+            text-align: right;
+            line-height: 1.3;
         }
         .wind-see-all {
             display: block;
@@ -758,7 +760,7 @@
 
             <div class="wg-footer">
                 <span class="wg-temp">${temp}${hum ? ' \u00b7 ' + hum : ''}</span>
-                <span class="wg-updated">${time}</span>
+                <span class="wg-updated">\u00daltima actualitzaci\u00f3:<br>${time}</span>
             </div>
         `;
     }
