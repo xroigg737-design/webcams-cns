@@ -225,18 +225,18 @@
             white-space: nowrap;
         }
         .wg-speed {
-            font-size: 2.6em;
+            font-size: 3em;
             font-weight: 900;
             line-height: 1;
-            color: #fff;
+            color: #eaf2ff;
             font-variant-numeric: tabular-nums;
         }
         .wg-unit {
-            font-size: 0.5em;
+            font-size: 0.55em;
             font-weight: 700;
-            color: rgba(255,255,255,0.4);
+            color: rgba(234,242,255,0.6);
             letter-spacing: 3px;
-            margin-top: 1px;
+            margin-top: 2px;
         }
 
         /* 2) STATUS + DIRECTION ROW */
@@ -248,22 +248,22 @@
             margin: 8px 0 12px;
         }
         .wg-status-badge {
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 0.58em;
-            font-weight: 700;
+            font-size: 0.65em;
+            font-weight: 800;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-        .wg-st-light  { background: rgba(78,205,196,0.12); color: #4ecdc4; }
-        .wg-st-ideal  { background: rgba(102,187,106,0.15); color: #66bb6a; }
-        .wg-st-sporty { background: rgba(255,183,77,0.15); color: #ffb74d; }
-        .wg-st-strong { background: rgba(239,83,80,0.15); color: #ef5350; }
+        .wg-st-light  { background: rgba(78,205,196,0.2); color: #7eeae2; }
+        .wg-st-ideal  { background: rgba(102,187,106,0.25); color: #8ddb91; }
+        .wg-st-sporty { background: rgba(255,183,77,0.25); color: #ffc966; }
+        .wg-st-strong { background: rgba(239,83,80,0.25); color: #ff7b78; }
 
         /* 3) MINI COMPASS */
         .wg-compass {
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             flex-shrink: 0;
         }
         .wg-compass svg { width: 100%; height: 100%; }
@@ -272,135 +272,147 @@
             transform-origin: 19px 19px;
         }
         .wg-dir-text {
-            font-size: 0.7em;
-            font-weight: 700;
-            color: #4ecdc4;
-            letter-spacing: 1px;
+            font-size: 0.85em;
+            font-weight: 800;
+            color: #7eeae2;
+            letter-spacing: 1.5px;
         }
 
         /* 4) SECONDARY DATA BARS */
         .wg-bars {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
         .wg-bar-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .wg-bar-label {
-            font-size: 0.55em;
-            color: rgba(255,255,255,0.4);
+            font-size: 0.65em;
+            color: #8ab4d6;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            font-weight: 700;
             width: 52px;
             flex-shrink: 0;
             text-align: right;
         }
         .wg-bar-track {
             flex: 1;
-            height: 6px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 3px;
+            height: 8px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
             overflow: hidden;
         }
         .wg-bar-fill {
             height: 100%;
-            border-radius: 3px;
+            border-radius: 4px;
             transition: width 1s ease;
         }
         .wg-bar-fill-avg {
-            background: linear-gradient(90deg, #1a6b8a, #4ecdc4);
+            background: linear-gradient(90deg, #2a9d8f, #5ef0e6);
         }
         .wg-bar-fill-gust {
-            background: linear-gradient(90deg, #ff8a65, #ef5350);
+            background: linear-gradient(90deg, #ff8a65, #ff6b6b);
         }
         .wg-bar-val {
-            font-size: 0.7em;
+            font-size: 0.8em;
             font-weight: 800;
-            color: #e0e0e0;
-            width: 42px;
+            color: #eaf2ff;
+            width: 48px;
             flex-shrink: 0;
             font-variant-numeric: tabular-nums;
         }
-        .wg-bar-val-gust { color: #ff8a65; }
+        .wg-bar-val-gust { color: #ff9a76; }
 
         /* 5) BOTTOM INFO */
         .wg-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
         .wg-temp {
-            font-size: 0.7em;
-            color: rgba(255,255,255,0.45);
-            font-weight: 600;
+            font-size: 0.8em;
+            color: #8ab4d6;
+            font-weight: 700;
         }
         .wg-updated {
-            font-size: 0.5em;
-            color: rgba(255,255,255,0.2);
+            font-size: 0.6em;
+            color: rgba(234,242,255,0.35);
         }
         .wind-see-all {
             display: block;
             text-align: center;
-            padding: 8px;
-            font-size: 0.6em;
-            color: rgba(102,187,106,0.5);
+            padding: 10px;
+            font-size: 0.65em;
+            color: rgba(126,234,226,0.6);
             text-decoration: none;
             transition: color 0.2s;
+            font-weight: 600;
         }
-        .wind-see-all:hover { color: #66bb6a; }
+        .wind-see-all:hover { color: #7eeae2; }
 
-        /* Wind-2: Custom gauges grid */
+        /* Wind-2: Gauges grid — HIGH READABILITY */
         .w2-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            padding: 10px 12px;
+            gap: 10px;
+            padding: 14px 12px;
         }
         .w2-grid-dir {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding: 0 12px 12px;
+            gap: 10px;
+            padding: 0 12px 14px;
+            max-width: 340px;
+            margin: 0 auto;
         }
         .w2-gauge {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 10px 6px 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px 8px 12px;
             text-align: center;
         }
         .w2-gauge svg {
             width: 100%;
-            max-width: 130px;
+            max-width: 150px;
             display: block;
-            margin: 0 auto;
+            margin: 0 auto 4px;
             overflow: visible;
         }
         .w2-title {
-            font-size: 0.5em;
-            color: rgba(255,255,255,0.4);
+            font-size: 0.62em;
+            color: #8ab4d6;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
         .w2-value {
-            font-size: 1.2em;
+            font-size: 1.5em;
             font-weight: 900;
-            color: #fff;
-            margin-top: 2px;
+            color: #eaf2ff;
+            margin-top: 4px;
             font-variant-numeric: tabular-nums;
+            line-height: 1.1;
         }
         .w2-value small {
             font-size: 0.5em;
-            font-weight: 600;
-            color: rgba(255,255,255,0.35);
+            font-weight: 700;
+            color: rgba(234,242,255,0.5);
+            margin-left: 2px;
+        }
+        @media (max-width: 480px) {
+            .w2-grid { gap: 6px; padding: 10px 8px; }
+            .w2-grid-dir { gap: 6px; padding: 0 8px 10px; }
+            .w2-gauge { padding: 10px 4px 8px; }
+            .w2-value { font-size: 1.3em; }
         }
 
         /* Vent mòbil */
@@ -833,67 +845,63 @@
 
     /* ===== WIND-2: 5 GAUGES INDIVIDUALS ===== */
 
-    function speedGaugeSVG(value, max, color) {
-        const cx = 65, cy = 60, R = 50, sw = 8;
+    function speedGaugeSVG(value, max, color, colorBright) {
+        const cx = 65, cy = 62, R = 50, sw = 14;
         const pct = Math.min(value / max, 1);
         const endA = 180 + pct * 180;
-        // Background arc
         const bgD = arc(cx, cy, R, 180, 360);
-        // Active arc
         const actD = arc(cx, cy, R, 180, endA);
-        // Ticks
-        const tickVals = [0, Math.round(max*0.25), Math.round(max*0.5), Math.round(max*0.75), max];
+        // Only 3 ticks: 0, mid, max — clean
+        const tickVals = [0, max];
         const ticksSvg = tickVals.map(v => {
             const a = Math.PI/180 * (180 + (v/max)*180);
             const cos = Math.cos(a), sin = Math.sin(a);
-            return `<line x1="${cx+(R+5)*cos}" y1="${cy+(R+5)*sin}" x2="${cx+(R-5)*cos}" y2="${cy+(R-5)*sin}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-                    <text x="${cx+(R+14)*cos}" y="${cy+(R+14)*sin}" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.25)" font-size="7">${v}</text>`;
+            return `<text x="${cx+(R+13)*cos}" y="${cy+(R+13)*sin}" text-anchor="middle" dominant-baseline="middle" fill="rgba(234,242,255,0.4)" font-size="8" font-weight="700">${v}</text>`;
         }).join('');
-        // Needle
-        const nA = Math.PI/180 * endA;
-        const nLen = R - 12;
-        return `<svg viewBox="0 0 130 78">
-            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${sw}" stroke-linecap="round"/>
-            <path d="${actD}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" opacity="0.7"/>
+        return `<svg viewBox="0 0 130 80">
+            <path d="${bgD}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="${sw}" stroke-linecap="round"/>
+            <path d="${actD}" fill="none" stroke="${colorBright || color}" stroke-width="${sw}" stroke-linecap="round" opacity="0.85"/>
             ${ticksSvg}
-            <line x1="${cx}" y1="${cy}" x2="${cx+nLen*Math.cos(nA)}" y2="${cy+nLen*Math.sin(nA)}" stroke="${color}" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>
-            <circle cx="${cx}" cy="${cy}" r="3" fill="${color}" opacity="0.8"/>
-            <circle cx="${cx}" cy="${cy}" r="1.5" fill="#0b1f33"/>
-            <text x="${cx}" y="${cy+3}" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="5.5" font-weight="600">kn</text>
         </svg>`;
     }
 
     function compassSVG(deg) {
         const cx = 65, cy = 65, R = 52;
-        const labels = [
-            {t:'N',a:270},{t:'NE',a:315},{t:'E',a:0},{t:'SE',a:45},
-            {t:'S',a:90},{t:'SW',a:135},{t:'W',a:180},{t:'NW',a:225}
+        const cardinals = [
+            {t:'N',a:270},{t:'E',a:0},{t:'S',a:90},{t:'W',a:180}
         ];
-        const labelsSvg = labels.map(l => {
+        const intercardinals = [
+            {t:'NE',a:315},{t:'SE',a:45},{t:'SW',a:135},{t:'NW',a:225}
+        ];
+        const cSvg = cardinals.map(l => {
             const a = Math.PI/180 * l.a;
-            const x = cx + (R+1) * Math.cos(a), y = cy + (R+1) * Math.sin(a);
-            const isMajor = l.t.length === 1;
-            return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle"
-                fill="rgba(255,255,255,${isMajor?0.35:0.18})" font-size="${isMajor?8:6}" font-weight="600">${l.t}</text>`;
+            return `<text x="${cx+(R+2)*Math.cos(a)}" y="${cy+(R+2)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
+                fill="#8ab4d6" font-size="10" font-weight="800">${l.t}</text>`;
         }).join('');
-        // Tick marks every 30deg
+        const icSvg = intercardinals.map(l => {
+            const a = Math.PI/180 * l.a;
+            return `<text x="${cx+(R-1)*Math.cos(a)}" y="${cy+(R-1)*Math.sin(a)}" text-anchor="middle" dominant-baseline="middle"
+                fill="rgba(138,180,214,0.4)" font-size="7" font-weight="600">${l.t}</text>`;
+        }).join('');
+        // Tick marks
         const ticksSvg = Array.from({length:12}, (_,i) => {
             const a = Math.PI/180 * (i*30);
-            const r1 = R - 12, r2 = R - (i%3===0 ? 6 : 9);
-            return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy+r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy+r2*Math.sin(a)}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`;
+            const isMajor = i % 3 === 0;
+            const r1 = R - 14, r2 = R - (isMajor ? 7 : 10);
+            return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy+r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy+r2*Math.sin(a)}"
+                stroke="rgba(234,242,255,${isMajor?0.2:0.08})" stroke-width="${isMajor?1.5:1}"/>`;
         }).join('');
-        // Arrow pointing in wind direction (rotate by deg, 0=N means up)
-        const arrowRot = deg;
         return `<svg viewBox="0 0 130 130">
-            <circle cx="${cx}" cy="${cy}" r="${R-8}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+            <circle cx="${cx}" cy="${cy}" r="${R-10}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
             ${ticksSvg}
-            ${labelsSvg}
-            <g style="transform:rotate(${arrowRot}deg);transform-origin:${cx}px ${cy}px;transition:transform 1s ease">
-                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-38}" stroke="#4ecdc4" stroke-width="2" stroke-linecap="round"/>
-                <polygon points="${cx},${cy-42} ${cx-4},${cy-32} ${cx+4},${cy-32}" fill="#4ecdc4" opacity="0.8"/>
-                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+20}" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" stroke-linecap="round"/>
+            ${cSvg}${icSvg}
+            <g style="transform:rotate(${deg}deg);transform-origin:${cx}px ${cy}px;transition:transform 1s ease">
+                <line x1="${cx}" y1="${cy+18}" x2="${cx}" y2="${cy-36}" stroke="#5ef0e6" stroke-width="3" stroke-linecap="round"/>
+                <polygon points="${cx},${cy-40} ${cx-5},${cy-28} ${cx+5},${cy-28}" fill="#5ef0e6"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy+18}" stroke="rgba(234,242,255,0.12)" stroke-width="2" stroke-linecap="round"/>
             </g>
-            <circle cx="${cx}" cy="${cy}" r="3" fill="#4ecdc4" opacity="0.5"/>
+            <circle cx="${cx}" cy="${cy}" r="4" fill="#5ef0e6" opacity="0.7"/>
+            <circle cx="${cx}" cy="${cy}" r="2" fill="#0b1f33"/>
         </svg>`;
     }
 
@@ -913,17 +921,17 @@
             <div class="w2-grid">
                 <div class="w2-gauge">
                     <div class="w2-title">Velocitat</div>
-                    ${speedGaugeSVG(spd, 50, '#4ecdc4')}
+                    ${speedGaugeSVG(spd, 50, '#4ecdc4', '#5ef0e6')}
                     <div class="w2-value">${spdS} <small>kn</small></div>
                 </div>
                 <div class="w2-gauge">
                     <div class="w2-title">Mitjana</div>
-                    ${speedGaugeSVG(avg, 50, '#66bb6a')}
+                    ${speedGaugeSVG(avg, 50, '#66bb6a', '#8ddb91')}
                     <div class="w2-value">${avgS} <small>kn</small></div>
                 </div>
                 <div class="w2-gauge">
                     <div class="w2-title">Ratxa</div>
-                    ${speedGaugeSVG(gst, 50, '#ff8a65')}
+                    ${speedGaugeSVG(gst, 50, '#ff8a65', '#ff9a76')}
                     <div class="w2-value">${gstS} <small>kn</small></div>
                 </div>
             </div>
