@@ -77,7 +77,7 @@
 
         /* Panel vent (dreta) - només desktop */
         .wind-panel {
-            width: 310px;
+            width: 320px;
             flex-shrink: 0;
             padding: 14px 10px;
         }
@@ -113,19 +113,34 @@
             background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent);
             margin: 8px 14px 0;
         }
-        /* Iframe retallat: capçalera negra + temp + secció Wind */
-        .wind-iframe-clip {
-            padding: 4px;
+        /* Dos clips: capçalera + secció Wind */
+        .wind-clip-header {
+            padding: 4px 4px 0;
             overflow: hidden;
-            height: 195px;
+            height: 52px;
         }
-        .wind-iframe-clip iframe {
-            width: 300px;
+        .wind-clip-header iframe {
+            width: 310px;
             height: 800px;
             border: none;
-            border-radius: 8px;
             background: #fff;
+            border-radius: 8px 8px 0 0;
             margin-top: 0;
+            margin-left: -2px;
+            pointer-events: none;
+        }
+        .wind-clip-wind {
+            padding: 0 4px 4px;
+            overflow: hidden;
+            height: 62px;
+        }
+        .wind-clip-wind iframe {
+            width: 310px;
+            height: 800px;
+            border: none;
+            background: #fff;
+            border-radius: 0 0 8px 8px;
+            margin-top: -178px;
             margin-left: -2px;
             pointer-events: none;
         }
@@ -373,7 +388,15 @@
                 <span class="wind-frame-title">Vent en directe</span>
             </div>
             <hr class="wind-frame-line">
-            <div class="wind-iframe-clip">
+            <div class="wind-clip-header">
+                <iframe
+                    src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
+                    title="Capçalera Meteo CNS"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin"
+                ></iframe>
+            </div>
+            <div class="wind-clip-wind">
                 <iframe
                     src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
                     title="Wind - Davis WeatherLink"
