@@ -61,20 +61,27 @@
         }
         .back-link:hover { color: #4fc3f7; }
 
-        /* Layout principal */
+        /* Layout: contingut (esquerra) + wind panel (dreta) */
         .layout {
             display: flex;
             max-width: 1100px;
             margin: 0 auto;
         }
 
-        /* Panel meteo (esquerra) - només desktop */
-        .meteo-panel {
-            width: 300px;
+        /* Contingut principal (esquerra) */
+        .content {
+            flex: 1;
+            padding: 12px 14px 24px;
+            min-width: 0;
+        }
+
+        /* Panel vent (dreta) - només desktop */
+        .wind-panel {
+            width: 280px;
             flex-shrink: 0;
             padding: 14px 10px;
         }
-        .meteo-frame {
+        .wind-frame {
             border-radius: 16px;
             border: 1px solid rgba(102,187,106,0.2);
             background: linear-gradient(165deg, rgba(102,187,106,0.06) 0%, rgba(255,255,255,0.02) 100%);
@@ -83,64 +90,58 @@
             position: sticky;
             top: 10px;
         }
-        .meteo-frame-header {
+        .wind-frame-header {
             display: flex;
             align-items: center;
             gap: 8px;
             padding: 12px 14px 0;
         }
-        .meteo-frame-icon {
+        .wind-frame-icon {
             font-size: 1.3em;
             filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
         }
-        .meteo-frame-title {
+        .wind-frame-title {
             font-size: 0.68em;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: #66bb6a;
             font-weight: 700;
         }
-        .meteo-frame-line {
+        .wind-frame-line {
             height: 1px;
             border: none;
             background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent);
             margin: 8px 14px 0;
         }
-        /* Iframe retallat: mostra només la secció de vent */
-        .meteo-iframe-clip {
-            padding: 8px;
+        /* Iframe retallat: mostra NOMÉS la secció Wind */
+        .wind-iframe-clip {
+            padding: 6px 8px;
             overflow: hidden;
-            height: 420px;
+            height: 70px;
         }
-        .meteo-iframe-clip iframe {
-            width: 100%;
-            height: 1200px;
+        .wind-iframe-clip iframe {
+            width: 260px;
+            height: 800px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             background: #fff;
-            margin-top: -340px;
+            margin-top: -195px;
+            pointer-events: none;
         }
-        .meteo-see-all {
+        .wind-see-all {
             display: block;
             text-align: center;
             padding: 8px;
-            font-size: 0.65em;
-            color: rgba(102,187,106,0.6);
+            font-size: 0.6em;
+            color: rgba(102,187,106,0.5);
             text-decoration: none;
             transition: color 0.2s;
         }
-        .meteo-see-all:hover { color: #66bb6a; }
+        .wind-see-all:hover { color: #66bb6a; }
 
-        /* Card meteo mòbil (substitueix iframe) */
-        .meteo-mobile {
+        /* Card vent mòbil (substitueix iframe) */
+        .wind-mobile {
             display: none;
-        }
-
-        /* Contingut principal (dreta) */
-        .content {
-            flex: 1;
-            padding: 12px 14px 24px;
-            min-width: 0;
         }
 
         /* Frames de categoria */
@@ -229,8 +230,8 @@
         /* Responsive */
         @media (max-width: 768px) {
             .layout { flex-direction: column; }
-            .meteo-panel { display: none; }
-            .meteo-mobile { display: block; }
+            .wind-panel { display: none; }
+            .wind-mobile { display: block; }
             .content { padding: 10px 10px 20px; }
         }
         @media (max-width: 480px) {
@@ -264,33 +265,11 @@
 
 <div class="layout">
 
-    <!-- PANEL METEO (esquerra, només desktop) -->
-    <aside class="meteo-panel">
-        <div class="meteo-frame">
-            <div class="meteo-frame-header">
-                <span class="meteo-frame-icon">&#127788;</span>
-                <span class="meteo-frame-title">Vent en directe</span>
-            </div>
-            <hr class="meteo-frame-line">
-            <div class="meteo-iframe-clip">
-                <iframe
-                    src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
-                    title="Estació Meteo CNS - Davis WeatherLink"
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin"
-                ></iframe>
-            </div>
-            <a class="meteo-see-all" href="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim">
-                Veure totes les dades &rarr;
-            </a>
-        </div>
-    </aside>
-
-    <!-- CONTINGUT PRINCIPAL (dreta) -->
+    <!-- CONTINGUT PRINCIPAL (esquerra) -->
     <div class="content">
 
-        <!-- METEO MÒBIL (card amb link, substitueix iframe) -->
-        <section class="category meteo-mobile">
+        <!-- VENT MÒBIL (card amb link, substitueix iframe) -->
+        <section class="category wind-mobile">
             <div class="category-header">
                 <span class="category-icon">&#127788;</span>
                 <span class="category-title title-meteo">Vent en directe</span>
@@ -300,17 +279,9 @@
                 <a class="card" href="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim">
                     <img class="card-img" src="img/davis-vantage-pro2.jpg" alt="Davis Vantage Pro2" loading="lazy">
                     <div class="card-body">
-                        <div class="card-name">Vent i Meteo CNS</div>
-                        <div class="card-desc">Dades en directe - Davis WeatherLink</div>
+                        <div class="card-name">Vent CNS</div>
+                        <div class="card-desc">Velocitat, ratxa, direcció en knots</div>
                         <span class="card-badge badge-meteo">&#9679; En directe</span>
-                    </div>
-                </a>
-                <a class="card" href="https://app.weathercloud.net/d1807591580#wind">
-                    <img class="card-img" src="img/sailing-wind.jpg" alt="WeatherCloud" loading="lazy">
-                    <div class="card-body">
-                        <div class="card-name">Estació Meteo CNS</div>
-                        <div class="card-desc">Vent, temp, pressió</div>
-                        <span class="card-badge badge-meteo">WeatherCloud</span>
                     </div>
                 </a>
             </div>
@@ -351,7 +322,7 @@
             </div>
         </section>
 
-        <!-- METEO desktop -->
+        <!-- METEO -->
         <section class="category">
             <div class="category-header">
                 <span class="category-icon">&#127782;&#65039;</span>
@@ -392,6 +363,29 @@
         -->
 
     </div>
+
+    <!-- PANEL VENT (dreta, només desktop) -->
+    <aside class="wind-panel">
+        <div class="wind-frame">
+            <div class="wind-frame-header">
+                <span class="wind-frame-icon">&#127788;</span>
+                <span class="wind-frame-title">Vent en directe</span>
+            </div>
+            <hr class="wind-frame-line">
+            <div class="wind-iframe-clip">
+                <iframe
+                    src="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim"
+                    title="Wind - Davis WeatherLink"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin"
+                ></iframe>
+            </div>
+            <a class="wind-see-all" href="https://www.weatherlink.com/embeddablePage/show/e2bfe610ebcf45d9bd5dc2e21fd553fe/slim">
+                Totes les dades &rarr;
+            </a>
+        </div>
+    </aside>
+
 </div>
 
 <footer>CNS Vela Lleugera &middot; Sitges</footer>
