@@ -15,9 +15,9 @@
 
         /* Header */
         header {
-            background: linear-gradient(135deg, #0a3d62 0%, #1a6b8a 40%, #0d47a1 100%);
+            background: linear-gradient(135deg, #0a3d62 0%, #0d5280 30%, #1a6b8a 60%, #0d47a1 100%);
             text-align: center;
-            padding: 28px 16px 20px;
+            padding: 30px 16px 24px;
             position: relative;
             overflow: hidden;
         }
@@ -30,25 +30,56 @@
             background: #0a1628;
             clip-path: ellipse(55% 100% at 50% 100%);
         }
+        /* Ones animades al header */
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 18px;
+            left: -10%;
+            width: 120%;
+            height: 30px;
+            background: repeating-linear-gradient(90deg,
+                transparent 0%, rgba(255,255,255,0.03) 25%, transparent 50%);
+            background-size: 200px 30px;
+            animation: waves 8s linear infinite;
+        }
+        @keyframes waves {
+            from { transform: translateX(0); }
+            to { transform: translateX(-200px); }
+        }
+        .sail-scene {
+            position: relative;
+            margin-bottom: 8px;
+        }
+        .sail-scene svg {
+            filter: drop-shadow(0 3px 8px rgba(0,0,0,0.4));
+        }
         header h1 {
-            font-size: 1.5em;
-            font-weight: 800;
-            background: linear-gradient(90deg, #4fc3f7, #81d4fa, #e0f7fa);
+            font-size: 2em;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #fff 0%, #e0f7fa 30%, #4fc3f7 60%, #81d4fa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: none;
+            line-height: 1.1;
+        }
+        header h1 .title-accent {
+            display: block;
+            font-size: 0.45em;
+            letter-spacing: 6px;
+            font-weight: 600;
+            background: linear-gradient(90deg, rgba(255,255,255,0.4), rgba(79,195,247,0.6));
+            -webkit-background-clip: text;
+            background-clip: text;
         }
         header .subtitle {
-            font-size: 0.8em;
-            color: rgba(255,255,255,0.55);
-            margin-top: 4px;
-            letter-spacing: 2px;
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.45);
+            margin-top: 6px;
+            letter-spacing: 3px;
             text-transform: uppercase;
-        }
-        .sail-icons {
-            font-size: 1.4em;
-            margin-bottom: 6px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         .back-link {
             position: absolute;
@@ -264,8 +295,8 @@
             .content { padding: 10px 10px 20px; }
         }
         @media (max-width: 480px) {
-            header { padding: 22px 12px 16px; }
-            header h1 { font-size: 1.3em; }
+            header { padding: 20px 12px 16px; }
+            header h1 { font-size: 1.6em; letter-spacing: 2px; }
             .cards { gap: 8px; }
             .card-img { height: 75px; }
             .card-body { padding: 8px; }
@@ -287,8 +318,24 @@
 <a class="back-link" href="../index.html">&larr; Tornar</a>
 
 <header>
-    <div class="sail-icons">&#9973; &#127754;</div>
-    <h1>A Tot Drap &ndash; Sitges</h1>
+    <div class="sail-scene">
+        <svg width="80" height="70" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Vela major -->
+            <path d="M40 5 L40 55 L18 50 Z" fill="rgba(255,255,255,0.9)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+            <!-- Vela genova -->
+            <path d="M40 8 L40 48 L58 45 Z" fill="rgba(79,195,247,0.7)" stroke="rgba(79,195,247,0.3)" stroke-width="0.5"/>
+            <!-- Pal -->
+            <line x1="40" y1="3" x2="40" y2="58" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+            <!-- Casc -->
+            <path d="M22 55 Q28 62 40 62 Q52 62 58 55 L56 58 Q50 65 40 65 Q30 65 24 58 Z" fill="rgba(255,255,255,0.85)"/>
+            <!-- Ones -->
+            <path d="M10 63 Q20 58 30 63 Q40 68 50 63 Q60 58 70 63" stroke="rgba(79,195,247,0.5)" stroke-width="1.5" fill="none"/>
+            <path d="M5 67 Q15 62 25 67 Q35 72 45 67 Q55 62 65 67 Q75 62 80 67" stroke="rgba(79,195,247,0.3)" stroke-width="1" fill="none"/>
+            <!-- Gallardet -->
+            <path d="M40 5 L50 8 L40 11" fill="#ef5350" opacity="0.8"/>
+        </svg>
+    </div>
+    <h1>A Tot Drap<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
     <div class="subtitle">Club Nàutic Sitges</div>
 </header>
 
