@@ -870,7 +870,7 @@
             const w = this.w, h = this.h, spd = this.windSpeed;
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
-            const TL = 25;
+            const TL = 40;
 
             // Velocitat: 5kn→0.4, 12kn→0.96, 20kn→1.6 px/frame
             const pxSpeed = spd < 0.5 ? 0.02 : spd * 0.08;
@@ -895,18 +895,16 @@
                 const lf = p.age / this.MAX_AGE;
                 const lifeFade = lf < 0.08 ? lf/0.08 : lf > 0.85 ? (1-lf)/0.15 : 1;
 
-                // Dibuixar trail amb opacitat decreixent
+                // Dibuixar trail com a línia contínua
                 const t = p.trail;
-                if (t.length > 1) {
-                    for (let j = 1; j < t.length; j++) {
-                        const seg = j / t.length;
-                        const a = lifeFade * seg;
-                        if (a < 0.03) continue;
+                if (t.length > 2) {
+                    const a = lifeFade * 0.7;
+                    if (a > 0.03) {
                         ctx.beginPath();
-                        ctx.moveTo(t[j-1].x, t[j-1].y);
-                        ctx.lineTo(t[j].x, t[j].y);
+                        ctx.moveTo(t[0].x, t[0].y);
+                        for (let j = 1; j < t.length; j++) ctx.lineTo(t[j].x, t[j].y);
                         ctx.strokeStyle = 'rgba('+g+','+g+','+g+','+a.toFixed(2)+')';
-                        ctx.lineWidth = 0.8 * (0.3 + seg * 0.7);
+                        ctx.lineWidth = 0.8;
                         ctx.stroke();
                     }
                 }
