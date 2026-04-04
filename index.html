@@ -879,12 +879,12 @@
             for (let i = 0; i < pts.length; i++) {
                 const p = pts[i];
 
-                // Turbulència Perlin-like senzilla
-                const n1 = Math.sin(p.x * 0.012 + t * 0.7) * Math.cos(p.y * 0.015 + t * 0.5);
-                const n2 = Math.cos(p.x * 0.018 - t * 0.6) * Math.sin(p.y * 0.011 + t * 0.8);
-                const turb = 0.5 + wSpd * 0.04;
-                const vx = bvx + n1 * turb;
-                const vy = bvy + n2 * turb;
+                // Variació mínima per evitar que totes les línies siguin idèntiques
+                // Només un petit jitter aleatori per frame, NO sinusoïdal (evita ondulacions)
+                const jx = (Math.random() - 0.5) * 0.15;
+                const jy = (Math.random() - 0.5) * 0.15;
+                const vx = bvx + jx;
+                const vy = bvy + jy;
 
                 // Guardar posició anterior
                 p.px = p.x;
