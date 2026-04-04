@@ -768,30 +768,31 @@
         }
     }
 
-    // ── Windy-style wind flow (2 canvas: color overlay + particle trails) ──
+    // ── Windy-style wind flow (2 canvas: color overlay + trail particles) ──
 
     // Escala Windy: retorna [r,g,b] per velocitat en nusos
     function windyRGB(kn) {
-        if (kn < 1)  return [70, 120, 180];    // blau fosc — calma
-        if (kn < 3)  return [80, 150, 210];    // blau
-        if (kn < 5)  return [75, 180, 220];    // blau clar
-        if (kn < 8)  return [65, 200, 175];    // turquesa
-        if (kn < 12) return [75, 210, 100];    // verd
-        if (kn < 16) return [170, 215, 55];    // verd-groc
-        if (kn < 20) return [240, 200, 45];    // groc
-        if (kn < 25) return [240, 145, 35];    // taronja
-        if (kn < 30) return [230, 75, 45];     // vermell-taronja
-        return [200, 40, 40];                   // vermell fosc — temporal
+        if (kn < 1)  return [70, 120, 180];
+        if (kn < 3)  return [80, 150, 210];
+        if (kn < 5)  return [75, 180, 220];
+        if (kn < 8)  return [65, 200, 175];
+        if (kn < 12) return [75, 210, 100];
+        if (kn < 16) return [170, 215, 55];
+        if (kn < 20) return [240, 200, 45];
+        if (kn < 25) return [240, 145, 35];
+        if (kn < 30) return [230, 75, 45];
+        return [200, 40, 40];
     }
 
     const windFlow = {
-        flowCanvas: null, flowCtx: null,   // partícules (fading trail)
-        colorCanvas: null, colorCtx: null, // gradient de color
+        flowCanvas: null, flowCtx: null,
+        colorCanvas: null, colorCtx: null,
         particles: [],
         windDir: 0, windSpeed: 0,
         NUM_PARTICLES: 160,
+        TRAIL_LEN: 25,
         w: 0, h: 0, sf: 1,
-        prevSpeed: -1,  // per repintar color només quan canvia
+        prevSpeed: -1,
 
         init() {
             this.flowCanvas = document.getElementById('wind-flow-canvas');
@@ -799,9 +800,6 @@
             if (!this.flowCanvas || !this.colorCanvas) return;
             this.flowCtx = this.flowCanvas.getContext('2d');
             this.colorCtx = this.colorCanvas.getContext('2d');
-            // Offscreen canvas per fading trails (no es veu directament)
-            this.offCanvas = document.createElement('canvas');
-            this.offCtx = this.offCanvas.getContext('2d');
             this.resize();
             if (!this.w) setTimeout(() => { this.resize(); this.seed(); }, 500);
             window.addEventListener('resize', () => this.resize());
@@ -817,50 +815,42 @@
             if (!r.width || !r.height) return;
             const cw = Math.round(r.width), ch = Math.round(r.height);
             [this.flowCanvas, this.colorCanvas].forEach(c => {
-                c.style.width = cw + 'px';
-                c.style.height = ch + 'px';
-                c.width = cw;
-                c.height = ch;
+                c.style.width = cw + 'px'; c.style.height = ch + 'px';
+                c.width = cw; c.height = ch;
             });
-            this.offCanvas.width = cw;
-            this.offCanvas.height = ch;
             this.w = cw; this.h = ch;
-            this.sf = cw < 400 ? 2.8 : cw < 600 ? 2.0 : cw < 800 ? 1.4 : 1.0;
+            this.sf = cw < 400 ? 2.5 : cw < 600 ? 1.8 : cw < 800 ? 1.3 : 1.0;
             this.prevSpeed = -1;
             if (this.particles.length) this.paintColor();
         },
 
-        // --- Capa de color semitransparent (Windy background gradient) ---
         paintColor() {
-            const ctx = this.colorCtx;
-            const w = this.w, h = this.h;
+            const ctx = this.colorCtx, w = this.w, h = this.h;
             if (!ctx || !w) return;
             ctx.clearRect(0, 0, w, h);
             const rgb = windyRGB(this.windSpeed);
-            // Gradient radial des del centre (més intens) cap als costats
-            const grd = ctx.createRadialGradient(w * 0.5, h * 0.5, 0, w * 0.5, h * 0.5, Math.max(w, h) * 0.7);
-            grd.addColorStop(0, 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.6)');
-            grd.addColorStop(0.6, 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.35)');
-            grd.addColorStop(1, 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.15)');
+            const grd = ctx.createRadialGradient(w*0.5, h*0.5, 0, w*0.5, h*0.5, Math.max(w,h)*0.7);
+            grd.addColorStop(0, 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.55)');
+            grd.addColorStop(0.6, 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.30)');
+            grd.addColorStop(1, 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.10)');
             ctx.fillStyle = grd;
             ctx.fillRect(0, 0, w, h);
             this.prevSpeed = this.windSpeed;
         },
 
-        // --- Partícules ---
         seed() {
             this.particles = [];
-            for (let i = 0; i < this.NUM_PARTICLES; i++) this.particles.push(this.mkParticle(true));
+            for (let i = 0; i < this.NUM_PARTICLES; i++) this.particles.push(this.mkP(true));
         },
 
-        mkParticle(rndAge) {
-            const x = Math.random() * (this.w || 300);
-            const y = Math.random() * (this.h || 200);
+        mkP(rndAge) {
+            const x = Math.random() * (this.w || 300), y = Math.random() * (this.h || 200);
             return {
-                x: x, y: y, ox: x, oy: y,
+                x: x, y: y,
+                trail: [{x:x, y:y}],
                 age: rndAge ? Math.random() * 120 : 0,
                 maxAge: 70 + Math.random() * 90,
-                size: (1.0 + Math.random() * 1.0) * this.sf,
+                size: (0.8 + Math.random() * 0.8) * this.sf,
                 sm: 0.6 + Math.random() * 0.8,
             };
         },
@@ -868,71 +858,70 @@
         update(d) {
             this.windDir = ((d.dir || 0) + 180) % 360;
             this.windSpeed = d.speed_kn ?? 0;
-            // Repintar color si la velocitat ha canviat prou
             if (Math.abs(this.windSpeed - this.prevSpeed) > 0.5) this.paintColor();
         },
 
         animate() {
-            const off = this.offCtx, vis = this.flowCtx;
-            if (!off || !vis || !this.w) { requestAnimationFrame(() => this.animate()); return; }
+            const ctx = this.flowCtx;
+            if (!ctx || !this.w) { requestAnimationFrame(() => this.animate()); return; }
 
             const w = this.w, h = this.h, spd = this.windSpeed;
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
             const baseSpd = 0.1 + spd * 0.3;
-
-            // 1) Fading al offscreen (esvair trails anteriors)
-            const fadeA = spd < 2 ? 0.10 : spd < 8 ? 0.05 : spd < 15 ? 0.03 : 0.018;
-            off.fillStyle = 'rgba(0,0,0,' + fadeA + ')';
-            off.fillRect(0, 0, w, h);
-
-            // 2) Dibuixar nous segments al offscreen
+            const TL = this.TRAIL_LEN;
             const rgb = windyRGB(spd);
-            const bright = this.sf > 1 ? 0.15 : 0;
+            const mix = 0.3;
+            const cr = Math.round(255*(1-mix) + rgb[0]*mix);
+            const cg = Math.round(255*(1-mix) + rgb[1]*mix);
+            const cb = Math.round(255*(1-mix) + rgb[2]*mix);
+            const boost = this.sf > 1 ? 0.15 : 0;
+
+            ctx.clearRect(0, 0, w, h);
 
             for (let i = 0; i < this.particles.length; i++) {
                 const p = this.particles[i];
                 const speed = baseSpd * p.sm;
                 const wobble = Math.sin(p.age * 0.05 + i * 0.3) * 0.3;
-
-                p.ox = p.x; p.oy = p.y;
                 p.x += vx * speed + wobble * vy;
                 p.y += vy * speed + wobble * vx;
                 p.age++;
 
-                const lf = p.age / p.maxAge;
-                const fade = lf < 0.08 ? lf / 0.08 : lf > 0.85 ? (1 - lf) / 0.15 : 1;
-                const a = fade * (0.6 + bright + Math.min(spd * 0.028, 0.35));
+                p.trail.push({x: p.x, y: p.y});
+                if (p.trail.length > TL) p.trail.shift();
 
-                if (a > 0.03) {
-                    off.beginPath();
-                    off.moveTo(p.ox, p.oy);
-                    off.lineTo(p.x, p.y);
-                    const mix = 0.3;
-                    const cr = Math.round(255 * (1 - mix) + rgb[0] * mix);
-                    const cg = Math.round(255 * (1 - mix) + rgb[1] * mix);
-                    const cb = Math.round(255 * (1 - mix) + rgb[2] * mix);
-                    off.strokeStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + a.toFixed(2) + ')';
-                    off.lineWidth = p.size;
-                    off.lineCap = 'round';
-                    off.stroke();
+                // Fade vida
+                const lf = p.age / p.maxAge;
+                const lifeFade = lf < 0.08 ? lf/0.08 : lf > 0.85 ? (1-lf)/0.15 : 1;
+
+                // Dibuixar trail com a path continu amb gradient d'opacitat
+                const t = p.trail;
+                if (t.length > 1) {
+                    for (let j = 1; j < t.length; j++) {
+                        const seg = j / t.length;  // 0→1
+                        const a = lifeFade * seg * (0.55 + boost + Math.min(spd * 0.03, 0.4));
+                        if (a < 0.02) continue;
+                        ctx.beginPath();
+                        ctx.moveTo(t[j-1].x, t[j-1].y);
+                        ctx.lineTo(t[j].x, t[j].y);
+                        ctx.strokeStyle = 'rgba('+cr+','+cg+','+cb+','+a.toFixed(2)+')';
+                        ctx.lineWidth = p.size * (0.3 + seg * 0.7);
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
                 }
 
                 // Reciclar
-                if (p.age > p.maxAge || p.x < -10 || p.x > w + 10 || p.y < -10 || p.y > h + 10) {
+                if (p.age > p.maxAge || p.x < -10 || p.x > w+10 || p.y < -10 || p.y > h+10) {
                     p.x = Math.random() * w;
                     p.y = Math.random() * h;
-                    p.ox = p.x; p.oy = p.y;
+                    p.trail = [{x:p.x, y:p.y}];
                     p.age = 0;
                     p.maxAge = 70 + Math.random() * 90;
                     p.sm = 0.6 + Math.random() * 0.8;
-                    p.size = (1.0 + Math.random() * 1.0) * this.sf;
+                    p.size = (0.8 + Math.random() * 0.8) * this.sf;
                 }
             }
-
-            // 3) Copiar offscreen al canvas visible (transparent, no tapa la imatge)
-            vis.clearRect(0, 0, w, h);
-            vis.drawImage(this.offCanvas, 0, 0);
 
             requestAnimationFrame(() => this.animate());
         }
