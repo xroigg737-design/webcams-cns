@@ -790,7 +790,7 @@
         particles: [],
         windDir: 0, windSpeed: 0,
         NUM_PARTICLES: 160,
-        TRAIL_LEN: 25,
+        TRAIL_LEN: 18,
         w: 0, h: 0, sf: 1,
         prevSpeed: -1,
 
@@ -819,7 +819,7 @@
                 c.width = cw; c.height = ch;
             });
             this.w = cw; this.h = ch;
-            this.sf = cw < 400 ? 1.8 : cw < 600 ? 1.4 : cw < 800 ? 1.2 : 1.0;
+            this.sf = cw < 400 ? 1.3 : cw < 600 ? 1.15 : 1.0;
             this.prevSpeed = -1;
             if (this.particles.length) this.paintColor();
         },
@@ -869,7 +869,7 @@
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
             // Windy-style: velocitat logarítmica (lenta amb poc vent, creix suaument)
-            const baseSpd = spd < 1 ? 0.08 : 0.08 + Math.log(1 + spd) * 0.35;
+            const baseSpd = spd < 1 ? 0.05 : 0.05 + Math.log(1 + spd) * 0.25;
             const TL = this.TRAIL_LEN;
             const rgb = windyRGB(spd);
             const mix = 0.3;
