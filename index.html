@@ -797,9 +797,9 @@
         const ctx = canvas.getContext('2d');
 
         // Paràmetres estil earth/Windy — TOT escala contínuament amb kn, sense caps
-        const BASE_SPD = 0.1;       // px/frame mínim (quasi aturat amb calma)
-        const SPD_K = 0.08;         // factor velocitat per kn (continu, sense cap)
-        const LINE_W = 0.8;         // gruix línia
+        const BASE_SPD = 0.05;      // px/frame mínim (quasi aturat amb calma)
+        const SPD_K = 0.04;         // factor velocitat per kn (continu, sense cap)
+        const LINE_W = 1.2;         // gruix línia
         const DENSITY_BASE = 0.00015; // partícules base per px² (poc vent)
 
         let wDir = 0, wSpd = 0;
@@ -807,20 +807,24 @@
         let W = 0, H = 0;
         let running = false;
 
-        // Paleta Windy per intensitat — gradient continu interpolat
+        // Paleta basada en Windy.com — mateixos tons però més brillants per fons fosc
+        // Els originals de Windy són desaturats (pensats per mapa clar),
+        // aquí els iluminem per contrastar sobre imatge satèl·lit fosca
         function col(kn) {
-            // Escala de colors amb interpolació entre nivells
             const stops = [
-                [0,  142, 239, 180],  // 0 kn  - calma verd clar
-                [3,    0, 229, 255],  // 3 kn  - fluix cian
-                [6,  118, 255,   3],  // 6 kn  - moderat verd llima
-                [10, 255, 234,   0],  // 10 kn - moderat groc
-                [15, 255, 145,   0],  // 15 kn - fresc taronja
-                [20, 255,  23,  68],  // 20 kn - fort vermell
-                [25, 213,   0,   0],  // 25 kn - molt fort vermell fosc
-                [35, 170,   0, 255],  // 35 kn - temporal violeta
+                [0,   130, 155, 220],  //  0 kn - blau clar
+                [2,    90, 150, 210],  //  2 kn - blau
+                [6,   100, 200, 220],  //  6 kn - teal-blau brillant
+                [10,  100, 200, 170],  // 10 kn - teal-verd
+                [14,  110, 220, 110],  // 14 kn - verd
+                [17,   70, 210,  70],  // 17 kn - verd brillant
+                [21,  220, 210, 100],  // 21 kn - groc oliva
+                [25,  215, 170,  75],  // 25 kn - ambre
+                [29,  215, 145, 120],  // 29 kn - taronja-marró
+                [33,  180,  75, 105],  // 33 kn - vermell fosc
+                [37,  230, 110, 180],  // 37 kn - magenta
+                [41,  160, 100, 200],  // 41 kn - violeta
             ];
-            // Trobar segment i interpolar
             if (kn <= stops[0][0]) return [stops[0][1], stops[0][2], stops[0][3]];
             for (let i = 1; i < stops.length; i++) {
                 if (kn <= stops[i][0]) {
