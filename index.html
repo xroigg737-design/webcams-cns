@@ -868,8 +868,8 @@
             const w = this.w, h = this.h, spd = this.windSpeed;
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
-            // Windy-style: velocitat logarítmica (lenta amb poc vent, creix suaument)
-            const baseSpd = spd < 1 ? 0.05 : 0.05 + Math.log(1 + spd) * 0.25;
+            // Windy-style: velocitat logarítmica molt suau
+            const baseSpd = spd < 1 ? 0.03 : 0.03 + Math.log(1 + spd) * 0.15;
             const TL = this.TRAIL_LEN;
             const rgb = windyRGB(spd);
             const mix = 0.3;
