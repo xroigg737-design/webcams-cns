@@ -768,9 +768,9 @@
         }
     }
 
-    // ── Windy-style wind flow (2 canvas: color overlay + trail particles) ──
+    // ── Windy-style wind flow (basat en cambecc/earth) ──────────
 
-    // Escala Windy: retorna [r,g,b] per velocitat en nusos
+    // Escala sinebow simplificada per overlay de color (kn → [r,g,b])
     function windyRGB(kn) {
         if (kn < 1)  return [70, 120, 180];
         if (kn < 3)  return [80, 150, 210];
@@ -784,14 +784,21 @@
         return [200, 40, 40];
     }
 
+    // Escala de grisos per partícules (com earth.nullschool): gris fosc→blanc
+    // maxWind = 17 m/s (~33 kn). Gris de 85→255.
+    function windGray(kn) {
+        const ms = kn * 0.5144;  // kn → m/s
+        const t = Math.min(ms / 17, 1);  // 0→1 (0→33kn)
+        return Math.round(85 + t * 170);  // 85→255
+    }
+
     const windFlow = {
         flowCanvas: null, flowCtx: null,
         colorCanvas: null, colorCtx: null,
         particles: [],
         windDir: 0, windSpeed: 0,
-        NUM_PARTICLES: 160,
-        TRAIL_LEN: 18,
-        w: 0, h: 0, sf: 1,
+        MAX_AGE: 100,         // frames de vida (earth: 100)
+        w: 0, h: 0,
         prevSpeed: -1,
 
         init() {
@@ -819,9 +826,10 @@
                 c.width = cw; c.height = ch;
             });
             this.w = cw; this.h = ch;
-            this.sf = 1.0;  // mateixa mida desktop i mòbil
+            // earth: particleCount = width * 7 (escalam per la nostra mida)
+            this.numParticles = Math.round(cw * 0.4);
             this.prevSpeed = -1;
-            if (this.particles.length) this.paintColor();
+            if (this.particles.length) { this.seed(); this.paintColor(); }
         },
 
         paintColor() {
@@ -829,29 +837,22 @@
             if (!ctx || !w) return;
             ctx.clearRect(0, 0, w, h);
             const rgb = windyRGB(this.windSpeed);
-            const grd = ctx.createRadialGradient(w*0.5, h*0.5, 0, w*0.5, h*0.5, Math.max(w,h)*0.7);
-            grd.addColorStop(0, 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.55)');
-            grd.addColorStop(0.6, 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.30)');
-            grd.addColorStop(1, 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.10)');
-            ctx.fillStyle = grd;
+            ctx.fillStyle = 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',1)';
             ctx.fillRect(0, 0, w, h);
             this.prevSpeed = this.windSpeed;
         },
 
         seed() {
             this.particles = [];
-            for (let i = 0; i < this.NUM_PARTICLES; i++) this.particles.push(this.mkP(true));
+            const n = this.numParticles || 120;
+            for (let i = 0; i < n; i++) this.particles.push(this.mkP(true));
         },
 
         mkP(rndAge) {
-            const x = Math.random() * (this.w || 300), y = Math.random() * (this.h || 200);
             return {
-                x: x, y: y,
-                trail: [{x:x, y:y}],
-                age: rndAge ? Math.random() * 120 : 0,
-                maxAge: 70 + Math.random() * 90,
-                size: (0.8 + Math.random() * 0.8) * this.sf,
-                sm: 0.6 + Math.random() * 0.8,
+                x: Math.random() * (this.w || 300),
+                y: Math.random() * (this.h || 200),
+                age: rndAge ? Math.floor(Math.random() * this.MAX_AGE) : 0,
             };
         },
 
@@ -868,59 +869,48 @@
             const w = this.w, h = this.h, spd = this.windSpeed;
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
-            // Windy-style: velocitat logarítmica molt suau
-            const baseSpd = spd < 1 ? 0.03 : 0.03 + Math.log(1 + spd) * 0.15;
-            const TL = this.TRAIL_LEN;
-            const rgb = windyRGB(spd);
-            const mix = 0.3;
-            const cr = Math.round(255*(1-mix) + rgb[0]*mix);
-            const cg = Math.round(255*(1-mix) + rgb[1]*mix);
-            const cb = Math.round(255*(1-mix) + rgb[2]*mix);
-            const boost = this.sf > 1 ? 0.15 : 0;
 
-            ctx.clearRect(0, 0, w, h);
+            // earth: velocityScale = height / 60000. Escalem per frame rate (earth 25fps, nosaltres 60fps)
+            const velScale = (h / 60000) * (25 / 60);
+            const ms = spd * 0.5144;  // kn → m/s
 
+            // 1) Fade trails: destination-in (com earth.js)
+            const prev = ctx.globalCompositeOperation;
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.fillStyle = 'rgba(0,0,0,0.96)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.globalCompositeOperation = prev;
+
+            // 2) Color de les partícules (escala de grisos earth-style)
+            const g = windGray(spd);
+            ctx.strokeStyle = 'rgba('+g+','+g+','+g+',1)';
+            ctx.lineWidth = 1.0;
+            ctx.lineCap = 'round';
+
+            // 3) Moure i dibuixar partícules
             for (let i = 0; i < this.particles.length; i++) {
                 const p = this.particles[i];
-                const speed = baseSpd * p.sm;
-                const wobble = Math.sin(p.age * 0.05 + i * 0.3) * 0.3;
-                p.x += vx * speed + wobble * vy;
-                p.y += vy * speed + wobble * vx;
+                const ox = p.x, oy = p.y;
+
+                // Velocitat = vector vent * escala * pertorbació suau
+                const wobble = Math.sin(p.age * 0.04 + i * 0.5) * 0.15;
+                p.x += (vx * ms + wobble * vy) * velScale;
+                p.y += (vy * ms + wobble * vx) * velScale;
                 p.age++;
 
-                p.trail.push({x: p.x, y: p.y});
-                if (p.trail.length > TL) p.trail.shift();
-
-                // Fade vida
-                const lf = p.age / p.maxAge;
-                const lifeFade = lf < 0.08 ? lf/0.08 : lf > 0.85 ? (1-lf)/0.15 : 1;
-
-                // Dibuixar trail com a path continu amb gradient d'opacitat
-                const t = p.trail;
-                if (t.length > 1) {
-                    for (let j = 1; j < t.length; j++) {
-                        const seg = j / t.length;  // 0→1
-                        const a = lifeFade * seg * (0.55 + boost + Math.min(spd * 0.03, 0.4));
-                        if (a < 0.02) continue;
-                        ctx.beginPath();
-                        ctx.moveTo(t[j-1].x, t[j-1].y);
-                        ctx.lineTo(t[j].x, t[j].y);
-                        ctx.strokeStyle = 'rgba('+cr+','+cg+','+cb+','+a.toFixed(2)+')';
-                        ctx.lineWidth = p.size * (0.3 + seg * 0.7);
-                        ctx.lineCap = 'round';
-                        ctx.stroke();
-                    }
+                // Dibuixar segment
+                if (p.age > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(ox, oy);
+                    ctx.lineTo(p.x, p.y);
+                    ctx.stroke();
                 }
 
-                // Reciclar
-                if (p.age > p.maxAge || p.x < -10 || p.x > w+10 || p.y < -10 || p.y > h+10) {
+                // Reciclar (earth: age > MAX_AGE o fora de límits)
+                if (p.age > this.MAX_AGE || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
                     p.x = Math.random() * w;
                     p.y = Math.random() * h;
-                    p.trail = [{x:p.x, y:p.y}];
                     p.age = 0;
-                    p.maxAge = 70 + Math.random() * 90;
-                    p.sm = 0.6 + Math.random() * 0.8;
-                    p.size = (0.8 + Math.random() * 0.8) * this.sf;
                 }
             }
 
