@@ -799,6 +799,9 @@
             if (!this.flowCanvas || !this.colorCanvas) return;
             this.flowCtx = this.flowCanvas.getContext('2d');
             this.colorCtx = this.colorCanvas.getContext('2d');
+            // Offscreen canvas per fading trails (no es veu directament)
+            this.offCanvas = document.createElement('canvas');
+            this.offCtx = this.offCanvas.getContext('2d');
             this.resize();
             if (!this.w) setTimeout(() => { this.resize(); this.seed(); }, 500);
             window.addEventListener('resize', () => this.resize());
@@ -819,9 +822,11 @@
                 c.width = cw;
                 c.height = ch;
             });
+            this.offCanvas.width = cw;
+            this.offCanvas.height = ch;
             this.w = cw; this.h = ch;
             this.sf = cw < 400 ? 2.8 : cw < 600 ? 2.0 : cw < 800 ? 1.4 : 1.0;
-            this.prevSpeed = -1; // forçar repintat del color
+            this.prevSpeed = -1;
             if (this.particles.length) this.paintColor();
         },
 
@@ -868,23 +873,22 @@
         },
 
         animate() {
-            const ctx = this.flowCtx;
-            if (!ctx || !this.w) { requestAnimationFrame(() => this.animate()); return; }
+            const off = this.offCtx, vis = this.flowCtx;
+            if (!off || !vis || !this.w) { requestAnimationFrame(() => this.animate()); return; }
 
             const w = this.w, h = this.h, spd = this.windSpeed;
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
             const baseSpd = 0.1 + spd * 0.3;
 
-            // Fading trail: pintar rect semi-negre per esvair frames anteriors
-            // Més opacitat = esteles més curtes (calma); menys = esteles més llargues (fort)
-            const fadeA = spd < 2 ? 0.12 : spd < 8 ? 0.06 : spd < 15 ? 0.035 : 0.02;
-            ctx.fillStyle = 'rgba(0,0,0,' + fadeA + ')';
-            ctx.fillRect(0, 0, w, h);
+            // 1) Fading al offscreen (esvair trails anteriors)
+            const fadeA = spd < 2 ? 0.10 : spd < 8 ? 0.05 : spd < 15 ? 0.03 : 0.018;
+            off.fillStyle = 'rgba(0,0,0,' + fadeA + ')';
+            off.fillRect(0, 0, w, h);
 
-            // Color de les partícules basat en velocitat
+            // 2) Dibuixar nous segments al offscreen
             const rgb = windyRGB(spd);
-            const bright = this.sf > 1 ? 0.15 : 0;  // boost mòbil
+            const bright = this.sf > 1 ? 0.15 : 0;
 
             for (let i = 0; i < this.particles.length; i++) {
                 const p = this.particles[i];
@@ -898,21 +902,20 @@
 
                 const lf = p.age / p.maxAge;
                 const fade = lf < 0.08 ? lf / 0.08 : lf > 0.85 ? (1 - lf) / 0.15 : 1;
-                const a = fade * (0.55 + bright + Math.min(spd * 0.028, 0.4));
+                const a = fade * (0.6 + bright + Math.min(spd * 0.028, 0.35));
 
                 if (a > 0.03) {
-                    ctx.beginPath();
-                    ctx.moveTo(p.ox, p.oy);
-                    ctx.lineTo(p.x, p.y);
-                    // Blanc amb tint del color del vent
-                    const mix = 0.35;  // 35% color, 65% blanc
+                    off.beginPath();
+                    off.moveTo(p.ox, p.oy);
+                    off.lineTo(p.x, p.y);
+                    const mix = 0.3;
                     const cr = Math.round(255 * (1 - mix) + rgb[0] * mix);
                     const cg = Math.round(255 * (1 - mix) + rgb[1] * mix);
                     const cb = Math.round(255 * (1 - mix) + rgb[2] * mix);
-                    ctx.strokeStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + a.toFixed(2) + ')';
-                    ctx.lineWidth = p.size;
-                    ctx.lineCap = 'round';
-                    ctx.stroke();
+                    off.strokeStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + a.toFixed(2) + ')';
+                    off.lineWidth = p.size;
+                    off.lineCap = 'round';
+                    off.stroke();
                 }
 
                 // Reciclar
@@ -926,6 +929,10 @@
                     p.size = (1.0 + Math.random() * 1.0) * this.sf;
                 }
             }
+
+            // 3) Copiar offscreen al canvas visible (transparent, no tapa la imatge)
+            vis.clearRect(0, 0, w, h);
+            vis.drawImage(this.offCanvas, 0, 0);
 
             requestAnimationFrame(() => this.animate());
         }
