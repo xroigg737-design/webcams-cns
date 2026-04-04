@@ -596,6 +596,101 @@
             </div>
         </section>
 
+        <!-- VENT ESTACIONS VEÏNES -->
+        <section class="category">
+            <div class="category-header">
+                <span class="category-icon">&#127758;</span>
+                <span class="category-title title-meteo">Vent clubs veïns</span>
+            </div>
+            <hr class="category-line line-meteo">
+            <div class="category-cards" style="padding:10px 12px 12px;display:flex;flex-wrap:wrap;gap:10px;">
+                <!-- Cubelles -->
+                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-size:0.9em;">&#9973;</span>
+                        <span style="font-size:0.72em;font-weight:800;color:#66bb6a;letter-spacing:1px;text-transform:uppercase;">Cubelles</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+                        <svg id="cb-arrow" viewBox="0 0 60 60" width="34" height="34">
+                            <line x1="30" y1="48" x2="30" y2="12" stroke="#8ab4d6" stroke-width="3.5" stroke-linecap="round"/>
+                            <polygon points="30,6 23,18 37,18" fill="#8ab4d6"/>
+                        </svg>
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:baseline;gap:4px;">
+                                <span id="cb-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
+                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
+                            </div>
+                            <div id="cb-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
+                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
+                        <span id="cb-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                        <span id="cb-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
+                        <a href="https://www.wunderground.com/dashboard/pws/ICUBEL17" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">WU &rarr;</a>
+                    </div>
+                </div>
+                <!-- CN Vilanova -->
+                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-size:0.9em;">&#9973;</span>
+                        <span style="font-size:0.72em;font-weight:800;color:#66bb6a;letter-spacing:1px;text-transform:uppercase;">CN Vilanova</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+                        <svg id="vn-arrow" viewBox="0 0 60 60" width="34" height="34">
+                            <line x1="30" y1="48" x2="30" y2="12" stroke="#8ab4d6" stroke-width="3.5" stroke-linecap="round"/>
+                            <polygon points="30,6 23,18 37,18" fill="#8ab4d6"/>
+                        </svg>
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:baseline;gap:4px;">
+                                <span id="vn-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
+                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
+                            </div>
+                            <div id="vn-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
+                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
+                        <span id="vn-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                        <span id="vn-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
+                        <a href="https://www.wunderground.com/dashboard/pws/IVILAN45" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">WU &rarr;</a>
+                    </div>
+                </div>
+                <!-- Castelldefels -->
+                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-size:0.9em;">&#9973;</span>
+                        <span style="font-size:0.72em;font-weight:800;color:#66bb6a;letter-spacing:1px;text-transform:uppercase;">Castelldefels</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+                        <svg id="cd-arrow" viewBox="0 0 60 60" width="34" height="34">
+                            <line x1="30" y1="48" x2="30" y2="12" stroke="#8ab4d6" stroke-width="3.5" stroke-linecap="round"/>
+                            <polygon points="30,6 23,18 37,18" fill="#8ab4d6"/>
+                        </svg>
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:baseline;gap:4px;">
+                                <span id="cd-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
+                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
+                            </div>
+                            <div id="cd-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
+                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
+                        <span id="cd-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                        <span id="cd-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
+                        <a href="https://www.17nudos.com/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">17nudos &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- WEBCAMS -->
         <section class="category">
             <div class="category-header">
@@ -816,6 +911,95 @@
     // Carrega inicial + refresh cada 60s
     fetchWind();
     setInterval(fetchWind, 60000);
+
+    /* ===== ESTACIONS VEÏNES ===== */
+    const WU_API = 'https://api.weather.com/v2/pws/observations/current?format=json&units=m&apiKey=6532d6454b8aa370768e63d6ba5a832e';
+
+    function updateNeighbour(prefix, obs) {
+        const m = obs.metric;
+        const dir = obs.winddir || 0;
+        const spd = m.windSpeed ?? 0;
+        const gust = m.windGust ?? 0;
+        const spdKn = Math.round(spd / 1.852 * 10) / 10;
+        const gustKn = Math.round(gust / 1.852 * 10) / 10;
+        const dirS = degToCompass(dir);
+        const ventNom = degToVentCatala(dir);
+        const c = arcColor(spdKn);
+
+        const arrowEl = document.getElementById(prefix + '-arrow');
+        const spdEl = document.getElementById(prefix + '-speed');
+        const dirEl = document.getElementById(prefix + '-dir');
+        const gustEl = document.getElementById(prefix + '-gust');
+        const timeEl = document.getElementById(prefix + '-time');
+
+        if (arrowEl) {
+            arrowEl.style.transform = 'rotate(' + dir + 'deg)';
+            arrowEl.querySelectorAll('line').forEach(function(el) { el.setAttribute('stroke', c); });
+            arrowEl.querySelectorAll('polygon').forEach(function(el) { el.setAttribute('fill', c); });
+        }
+        if (spdEl) { spdEl.textContent = spdKn; spdEl.style.color = c; }
+        if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '° ' + ventNom; dirEl.style.color = c; }
+        if (gustEl) { gustEl.textContent = gustKn + ' kn'; gustEl.style.color = arcColor(gustKn); }
+        if (timeEl) {
+            const ts = obs.obsTimeLocal;
+            if (ts) {
+                const parts = ts.split(' ');
+                timeEl.textContent = 'Actualitzat: ' + (parts[1] || '').substring(0, 5);
+            }
+        }
+    }
+
+    async function fetchStation(stationId, prefix) {
+        try {
+            const r = await fetch(WU_API + '&stationId=' + stationId);
+            if (!r.ok) throw new Error();
+            const d = await r.json();
+            if (d.observations && d.observations[0]) updateNeighbour(prefix, d.observations[0]);
+        } catch(e) { /* retry next interval */ }
+    }
+
+    // 17nudos Castelldefels — via proxy Cloudflare Worker, dades en kn
+    async function fetch17nudos() {
+        try {
+            const r = await fetch(API + '/17nudos');
+            if (!r.ok) throw new Error();
+            const d = await r.json();
+            const dir = d.dir || 0;
+            const spd = d.speed_kn ?? 0;
+            const gust = d.gust_kn ?? 0;
+            const dirS = degToCompass(dir);
+            const ventNom = degToVentCatala(dir);
+            const c = arcColor(spd);
+
+            const arrowEl = document.getElementById('cd-arrow');
+            const spdEl = document.getElementById('cd-speed');
+            const dirEl = document.getElementById('cd-dir');
+            const gustEl = document.getElementById('cd-gust');
+            const timeEl = document.getElementById('cd-time');
+
+            if (arrowEl) {
+                arrowEl.style.transform = 'rotate(' + dir + 'deg)';
+                arrowEl.querySelectorAll('line').forEach(function(el) { el.setAttribute('stroke', c); });
+                arrowEl.querySelectorAll('polygon').forEach(function(el) { el.setAttribute('fill', c); });
+            }
+            if (spdEl) { spdEl.textContent = spd; spdEl.style.color = c; }
+            if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '° ' + ventNom; dirEl.style.color = c; }
+            if (gustEl) { gustEl.textContent = gust + ' kn'; gustEl.style.color = arcColor(gust); }
+            if (timeEl) {
+                const t = new Date().toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
+                timeEl.textContent = 'Actualitzat: ' + t;
+            }
+        } catch(e) { /* retry next interval */ }
+    }
+
+    async function fetchNeighbours() {
+        fetchStation('IVILAN45', 'vn');
+        fetchStation('ICUBEL17', 'cb');
+        fetch17nudos();
+    }
+
+    fetchNeighbours();
+    setInterval(fetchNeighbours, 120000);  // cada 2 min
 
     /* ===== WIND FLOW — estil Windy/cambecc earth: trails que s'esvaeixen ===== */
     (function windFlow() {
