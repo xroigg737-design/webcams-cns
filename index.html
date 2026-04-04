@@ -790,33 +790,35 @@
     fetchWind();
     setInterval(fetchWind, 60000);
 
-    /* ===== WIND FLOW — fletxetes animades estil Windy ===== */
+    /* ===== WIND FLOW — estil Windy/cambecc earth: trails que s'esvaeixen ===== */
     (function windFlow() {
         const canvas = document.getElementById('wind-flow-canvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
-        const NUM = 150;
-        const MAX_AGE = 100;
-        const TAIL = 20;
-        const HEAD = 7;
-        const BASE_SPD = 0.6;
-        const SPD_K = 0.18;
+        // Paràmetres estil earth/Windy
+        const NUM = 250;            // partícules
+        const MAX_AGE = 80;         // frames de vida abans de respawn
+        const FADE = 0.94;          // factor fade per frame (0.96 = trails llargs, 0.90 = curts)
+        const BASE_SPD = 0.8;       // px/frame mínim
+        const SPD_K = 0.25;         // factor velocitat per kn
+        const LINE_W = 1.0;         // gruix línia
 
         let wDir = 0, wSpd = 0;
         let pts = [];
         let W = 0, H = 0;
         let running = false;
 
+        // Paleta Windy per intensitat
         function col(kn) {
-            if (kn < 1)  return '#8eefb4';
-            if (kn < 5)  return '#00e5ff';
-            if (kn < 8)  return '#76ff03';
-            if (kn < 12) return '#ffea00';
-            if (kn < 16) return '#ff9100';
-            if (kn < 20) return '#ff1744';
-            if (kn < 25) return '#d50000';
-            return '#aa00ff';
+            if (kn < 1)  return [142, 239, 180];   // calma
+            if (kn < 5)  return [0, 229, 255];      // fluix - cian
+            if (kn < 8)  return [118, 255, 3];      // moderat - verd llima
+            if (kn < 12) return [255, 234, 0];      // moderat+ - groc
+            if (kn < 16) return [255, 145, 0];      // fresc - taronja
+            if (kn < 20) return [255, 23, 68];      // fort - vermell
+            if (kn < 25) return [213, 0, 0];        // molt fort
+            return [170, 0, 255];                     // temporal - violeta
         }
 
         function resize() {
@@ -827,108 +829,92 @@
             canvas.width = Math.round(W * dpr);
             canvas.height = Math.round(H * dpr);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            // Netejar per evitar artefactes al resize
+            ctx.clearRect(0, 0, W, H);
         }
 
-        function mkPt(edge) {
-            const p = { age: 0, maxAge: MAX_AGE + (Math.random() * 40 - 20) | 0 };
-            if (!edge || W < 1) {
-                p.x = Math.random() * W;
-                p.y = Math.random() * H;
-                p.age = (Math.random() * MAX_AGE) | 0;
-            } else {
-                const rad = (wDir + 180) * Math.PI / 180;
-                const vx = Math.sin(rad), vy = -Math.cos(rad);
-                if (Math.abs(vx) > Math.abs(vy)) {
-                    p.x = vx > 0 ? -2 : W + 2;
-                    p.y = Math.random() * H;
-                } else {
-                    p.y = vy > 0 ? -2 : H + 2;
-                    p.x = Math.random() * W;
-                }
-            }
-            return p;
+        function spawn() {
+            return {
+                x: Math.random() * W,
+                y: Math.random() * H,
+                age: (Math.random() * MAX_AGE) | 0,
+                maxAge: MAX_AGE + ((Math.random() * 30 - 15) | 0),
+                px: NaN, py: NaN   // posició prèvia (per dibuixar segment)
+            };
         }
 
         function init() {
             resize();
             if (W < 1) { setTimeout(init, 200); return; }
             pts = [];
-            for (let i = 0; i < NUM; i++) pts.push(mkPt(false));
+            for (let i = 0; i < NUM; i++) pts.push(spawn());
             if (!running) { running = true; requestAnimationFrame(draw); }
         }
 
         function draw() {
             if (W < 1) { requestAnimationFrame(draw); return; }
-            ctx.clearRect(0, 0, W, H);
 
+            // Fade dels trails anteriors: pintar rect semitransparent sobre tot
+            // Això fa que les línies anteriors s'esvaeixin gradualment
+            const prev = ctx.globalCompositeOperation;
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.globalAlpha = FADE;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, W, H);
+            ctx.globalCompositeOperation = prev;
+            ctx.globalAlpha = 1;
+
+            // Vector vent: partícules es mouen cap a on bufa (dir+180)
             const rad = (wDir + 180) * Math.PI / 180;
             const spd = BASE_SPD + wSpd * SPD_K;
             const bvx = Math.sin(rad) * spd;
             const bvy = -Math.cos(rad) * spd;
             const t = Date.now() * 0.001;
-            const c = col(wSpd);
+            const [cr, cg, cb] = col(wSpd);
 
-            // Pass 1: ombres fosques (outline)
-            ctx.strokeStyle = 'rgba(0,0,0,0.55)';
-            ctx.fillStyle = 'rgba(0,0,0,0.55)';
-            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = `rgb(${cr},${cg},${cb})`;
+            ctx.lineWidth = LINE_W;
             ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
 
             for (let i = 0; i < pts.length; i++) {
                 const p = pts[i];
-                const turb = Math.sin(t + p.x * 0.015 + p.y * 0.015) * 0.35;
-                const vx = bvx + Math.cos(rad + 1.5708) * turb;
-                const vy = bvy + Math.sin(rad + 1.5708) * turb;
-                p.x += vx; p.y += vy; p.age++;
 
-                let a = 1;
-                if (p.age < 12) a = p.age / 12;
-                if (p.age > p.maxAge - 15) a = Math.max(0, (p.maxAge - p.age) / 15);
+                // Turbulència Perlin-like senzilla
+                const n1 = Math.sin(p.x * 0.012 + t * 0.7) * Math.cos(p.y * 0.015 + t * 0.5);
+                const n2 = Math.cos(p.x * 0.018 - t * 0.6) * Math.sin(p.y * 0.011 + t * 0.8);
+                const turb = 0.5 + wSpd * 0.04;
+                const vx = bvx + n1 * turb;
+                const vy = bvy + n2 * turb;
 
-                if (p.age >= p.maxAge || p.x < -20 || p.x > W + 20 || p.y < -20 || p.y > H + 20) {
-                    pts[i] = mkPt(true); continue;
+                // Guardar posició anterior
+                p.px = p.x;
+                p.py = p.y;
+                // Moure
+                p.x += vx;
+                p.y += vy;
+                p.age++;
+
+                // Respawn si mor o surt
+                if (p.age >= p.maxAge || p.x < -5 || p.x > W + 5 || p.y < -5 || p.y > H + 5) {
+                    // Respawn aleatori per tot el canvas (com earth)
+                    pts[i] = spawn();
+                    pts[i].age = 0;
+                    continue;
                 }
 
-                const ang = Math.atan2(vy, vx);
-                const tx = p.x - Math.cos(ang) * TAIL;
-                const ty = p.y - Math.sin(ang) * TAIL;
+                // No dibuixar el primer frame (no hi ha posició prèvia vàlida)
+                if (isNaN(p.px)) continue;
 
-                ctx.globalAlpha = a * 0.5;
-                ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(p.x, p.y); ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(p.x + Math.cos(ang) * 2, p.y + Math.sin(ang) * 2);
-                ctx.lineTo(p.x - Math.cos(ang - 0.55) * HEAD, p.y - Math.sin(ang - 0.55) * HEAD);
-                ctx.lineTo(p.x - Math.cos(ang + 0.55) * HEAD, p.y - Math.sin(ang + 0.55) * HEAD);
-                ctx.closePath(); ctx.fill();
-            }
-
-            // Pass 2: fletxetes de color
-            ctx.strokeStyle = c;
-            ctx.fillStyle = c;
-            ctx.lineWidth = 2;
-
-            for (let i = 0; i < pts.length; i++) {
-                const p = pts[i];
-                if (p.age < 1 || p.age >= p.maxAge) continue;
-                const turb = Math.sin(t + p.x * 0.015 + p.y * 0.015) * 0.35;
-                const vx = bvx + Math.cos(rad + 1.5708) * turb;
-                const vy = bvy + Math.sin(rad + 1.5708) * turb;
-                const ang = Math.atan2(vy, vx);
-                const tx = p.x - Math.cos(ang) * TAIL;
-                const ty = p.y - Math.sin(ang) * TAIL;
-
+                // Opacitat: fade in ràpid, fade out suau
                 let a = 1;
-                if (p.age < 12) a = p.age / 12;
-                if (p.age > p.maxAge - 15) a = Math.max(0, (p.maxAge - p.age) / 15);
+                if (p.age < 6) a = p.age / 6;
+                if (p.age > p.maxAge - 10) a = (p.maxAge - p.age) / 10;
 
-                ctx.globalAlpha = a;
-                ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(p.x, p.y); ctx.stroke();
+                ctx.globalAlpha = Math.max(0, a) * 0.9;
                 ctx.beginPath();
-                ctx.moveTo(p.x + Math.cos(ang) * 2, p.y + Math.sin(ang) * 2);
-                ctx.lineTo(p.x - Math.cos(ang - 0.55) * HEAD, p.y - Math.sin(ang - 0.55) * HEAD);
-                ctx.lineTo(p.x - Math.cos(ang + 0.55) * HEAD, p.y - Math.sin(ang + 0.55) * HEAD);
-                ctx.closePath(); ctx.fill();
+                ctx.moveTo(p.px, p.py);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
             }
 
             ctx.globalAlpha = 1;
@@ -944,7 +930,6 @@
         };
 
         window.addEventListener('resize', resize);
-        // Esperar que el layout estigui llest
         if (document.readyState === 'complete') init();
         else window.addEventListener('load', init);
     })();
