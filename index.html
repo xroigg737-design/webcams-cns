@@ -870,11 +870,10 @@
             const w = this.w, h = this.h, spd = this.windSpeed;
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
-            const TL = 20;
+            const TL = 25;
 
-            // Velocitat: 5kn→0.24, 12kn→0.35, 20kn→0.41, 30kn→0.47 px/frame
-            const ms = spd * 0.5144;
-            const pxSpeed = ms < 0.3 ? 0.02 : 0.05 + Math.log(1 + ms) * 0.15;
+            // Velocitat: 5kn→0.4, 12kn→0.96, 20kn→1.6 px/frame
+            const pxSpeed = spd < 0.5 ? 0.02 : spd * 0.08;
 
             // Grisos earth-style
             const g = windGray(spd);
@@ -907,7 +906,7 @@
                         ctx.moveTo(t[j-1].x, t[j-1].y);
                         ctx.lineTo(t[j].x, t[j].y);
                         ctx.strokeStyle = 'rgba('+g+','+g+','+g+','+a.toFixed(2)+')';
-                        ctx.lineWidth = 1.0 * (0.3 + seg * 0.7);
+                        ctx.lineWidth = 0.8 * (0.3 + seg * 0.7);
                         ctx.stroke();
                     }
                 }
