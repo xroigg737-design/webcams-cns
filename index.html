@@ -796,28 +796,28 @@
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
-        const PARTICLE_COUNT = 180;
+        const PARTICLE_COUNT = 200;
         const MAX_AGE = 120;        // frames de vida
-        const TAIL_LEN = 12;        // longitud de la cua en px
-        const ARROW_SIZE = 4;       // mida punta fletxa
-        const BASE_SPEED = 0.4;     // velocitat mínima px/frame
-        const SPEED_FACTOR = 0.12;  // factor multiplicador per kn
+        const TAIL_LEN = 18;        // longitud de la cua en px
+        const ARROW_SIZE = 6;       // mida punta fletxa
+        const BASE_SPEED = 0.5;     // velocitat mínima px/frame
+        const SPEED_FACTOR = 0.15;  // factor multiplicador per kn
 
         let windDir = 0;    // graus meteorològics (d'on ve el vent)
         let windSpd = 0;    // knots
         let particles = [];
         let W = 0, H = 0;
 
-        // Escala de colors Windy per intensitat (kn)
+        // Escala de colors Windy per intensitat (kn) — colors brillants sobre fons fosc
         function windColor(kn) {
-            if (kn < 1)  return 'rgba(102,187,106,0.6)';   // calma - verd suau
-            if (kn < 5)  return 'rgba(78,205,196,0.85)';    // fluix - turquesa
-            if (kn < 8)  return 'rgba(102,187,106,0.9)';    // moderat baix - verd
-            if (kn < 12) return 'rgba(255,213,79,0.9)';     // moderat - groc
-            if (kn < 16) return 'rgba(255,167,38,0.9)';     // fresc - taronja
-            if (kn < 20) return 'rgba(239,83,80,0.9)';      // fort - vermell
-            if (kn < 25) return 'rgba(213,0,0,0.95)';       // molt fort - vermell fosc
-            return 'rgba(170,0,255,0.95)';                    // temporal - violeta
+            if (kn < 1)  return '#8eefb4';   // calma - verd clar brillant
+            if (kn < 5)  return '#00e5ff';    // fluix - cian brillant
+            if (kn < 8)  return '#76ff03';    // moderat baix - verd llima
+            if (kn < 12) return '#ffea00';    // moderat - groc brillant
+            if (kn < 16) return '#ff9100';    // fresc - taronja
+            if (kn < 20) return '#ff1744';    // fort - vermell
+            if (kn < 25) return '#d50000';    // molt fort - vermell fosc
+            return '#aa00ff';                  // temporal - violeta
         }
 
         function resize() {
@@ -894,33 +894,39 @@
                     continue;
                 }
 
-                // Dibuixar fletxeta (línia + punta)
-                ctx.save();
-                ctx.globalAlpha = alpha * 0.85;
-                ctx.strokeStyle = color;
-                ctx.fillStyle = color;
-                ctx.lineWidth = 1.2;
-                ctx.lineCap = 'round';
-
-                // Línia de cua
+                // Dibuixar fletxeta (línia + punta) amb ombra per contrast
+                const angle = Math.atan2(tvy, tvx);
                 const tailX = p.x - (tvx / speed) * TAIL_LEN;
                 const tailY = p.y - (tvy / speed) * TAIL_LEN;
+
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Ombra fosca darrere per garantir visibilitat
+                ctx.shadowColor = 'rgba(0,0,0,0.7)';
+                ctx.shadowBlur = 3;
+
+                // Línia de cua
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.8;
                 ctx.beginPath();
                 ctx.moveTo(tailX, tailY);
                 ctx.lineTo(p.x, p.y);
                 ctx.stroke();
 
                 // Punta de fletxa
-                const angle = Math.atan2(tvy, tvx);
+                ctx.fillStyle = color;
                 ctx.beginPath();
                 ctx.moveTo(p.x, p.y);
                 ctx.lineTo(
-                    p.x - Math.cos(angle - 0.45) * ARROW_SIZE,
-                    p.y - Math.sin(angle - 0.45) * ARROW_SIZE
+                    p.x - Math.cos(angle - 0.5) * ARROW_SIZE,
+                    p.y - Math.sin(angle - 0.5) * ARROW_SIZE
                 );
                 ctx.lineTo(
-                    p.x - Math.cos(angle + 0.45) * ARROW_SIZE,
-                    p.y - Math.sin(angle + 0.45) * ARROW_SIZE
+                    p.x - Math.cos(angle + 0.5) * ARROW_SIZE,
+                    p.y - Math.sin(angle + 0.5) * ARROW_SIZE
                 );
                 ctx.closePath();
                 ctx.fill();
