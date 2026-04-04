@@ -797,12 +797,14 @@
         const ctx = canvas.getContext('2d');
 
         // Paràmetres estil earth/Windy
-        const NUM = 250;            // partícules
-        const MAX_AGE = 80;         // frames de vida abans de respawn
-        const FADE = 0.96;          // factor fade per frame (0.96 = trails llargs, 0.90 = curts)
+        const MAX_AGE_BASE = 50;    // frames vida base (poc vent)
+        const MAX_AGE_WIND = 120;   // frames vida amb vent fort
+        const FADE_CALM = 0.93;     // fade ràpid amb poc vent (trails curts)
+        const FADE_WIND = 0.97;     // fade lent amb vent fort (trails llargs)
         const BASE_SPD = 0.1;       // px/frame mínim (quasi aturat amb calma)
         const SPD_K = 0.08;         // factor velocitat per kn
-        const LINE_W = 1.0;         // gruix línia
+        const LINE_W = 0.8;         // gruix línia
+        const DENSITY = 0.0004;     // partícules per px² (desktop ~150, mòbil ~50)
 
         let wDir = 0, wSpd = 0;
         let pts = [];
@@ -833,32 +835,55 @@
             ctx.clearRect(0, 0, W, H);
         }
 
-        function spawn() {
+        function maxAge() {
+            // Vida més curta amb poc vent, més llarga amb molt vent
+            const f = Math.min(wSpd / 20, 1);
+            return MAX_AGE_BASE + f * (MAX_AGE_WIND - MAX_AGE_BASE);
+        }
+
+        function spawn(rndAge) {
+            const ma = maxAge();
             return {
                 x: Math.random() * W,
                 y: Math.random() * H,
-                age: (Math.random() * MAX_AGE) | 0,
-                maxAge: MAX_AGE + ((Math.random() * 30 - 15) | 0),
-                px: NaN, py: NaN   // posició prèvia (per dibuixar segment)
+                age: rndAge ? (Math.random() * ma) | 0 : 0,
+                maxAge: ma + ((Math.random() * 20 - 10) | 0),
+                px: NaN, py: NaN
             };
+        }
+
+        function numParticles() {
+            // Densitat adaptada a la mida del canvas
+            // + més partícules amb més vent (factor 0.5x a 1.5x)
+            const base = Math.round(W * H * DENSITY);
+            const windFactor = 0.5 + Math.min(wSpd / 15, 1) * 1.0;
+            return Math.max(20, Math.round(base * windFactor));
         }
 
         function init() {
             resize();
             if (W < 1) { setTimeout(init, 200); return; }
+            const n = numParticles();
             pts = [];
-            for (let i = 0; i < NUM; i++) pts.push(spawn());
+            for (let i = 0; i < n; i++) pts.push(spawn(true));
             if (!running) { running = true; requestAnimationFrame(draw); }
         }
 
         function draw() {
             if (W < 1) { requestAnimationFrame(draw); return; }
 
-            // Fade dels trails anteriors: pintar rect semitransparent sobre tot
-            // Això fa que les línies anteriors s'esvaeixin gradualment
+            // Ajustar nombre de partícules dinàmicament
+            const target = numParticles();
+            while (pts.length < target) pts.push(spawn(true));
+            while (pts.length > target) pts.pop();
+
+            // Fade dinàmic: trails curts amb poc vent, llargs amb molt vent
+            const wf = Math.min(wSpd / 20, 1);
+            const fade = FADE_CALM + wf * (FADE_WIND - FADE_CALM);
+
             const prev = ctx.globalCompositeOperation;
             ctx.globalCompositeOperation = 'destination-in';
-            ctx.globalAlpha = FADE;
+            ctx.globalAlpha = fade;
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, W, H);
             ctx.globalCompositeOperation = prev;
