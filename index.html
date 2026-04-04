@@ -870,21 +870,21 @@
             const rad = this.windDir * Math.PI / 180;
             const vx = Math.sin(rad), vy = -Math.cos(rad);
 
-            // earth: velocityScale = height / 60000. Escalem per frame rate (earth 25fps, nosaltres 60fps)
-            const velScale = (h / 60000) * (25 / 60);
+            // Velocitat logarítmica: 5kn→0.24, 12kn→0.35, 20kn→0.41, 30kn→0.47 px/frame
             const ms = spd * 0.5144;  // kn → m/s
+            const pxSpeed = ms < 0.3 ? 0.02 : 0.05 + Math.log(1 + ms) * 0.15;
 
-            // 1) Fade trails: destination-in (com earth.js)
+            // 1) Fade trails: destination-in (com earth.js — no acumula negre)
             const prev = ctx.globalCompositeOperation;
             ctx.globalCompositeOperation = 'destination-in';
             ctx.fillStyle = 'rgba(0,0,0,0.96)';
             ctx.fillRect(0, 0, w, h);
             ctx.globalCompositeOperation = prev;
 
-            // 2) Color de les partícules (escala de grisos earth-style)
+            // 2) Color partícules (escala grisos earth-style)
             const g = windGray(spd);
             ctx.strokeStyle = 'rgba('+g+','+g+','+g+',1)';
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 1.0;
             ctx.lineCap = 'round';
 
             // 3) Moure i dibuixar partícules
@@ -892,10 +892,9 @@
                 const p = this.particles[i];
                 const ox = p.x, oy = p.y;
 
-                // Velocitat = vector vent * escala * pertorbació suau
                 const wobble = Math.sin(p.age * 0.04 + i * 0.5) * 0.15;
-                p.x += (vx * ms + wobble * vy) * velScale;
-                p.y += (vy * ms + wobble * vx) * velScale;
+                p.x += (vx + wobble * vy) * pxSpeed;
+                p.y += (vy + wobble * vx) * pxSpeed;
                 p.age++;
 
                 // Dibuixar segment
