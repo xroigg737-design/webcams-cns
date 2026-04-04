@@ -14,6 +14,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Avui Regu?">
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            // Forçar actualització del SW cada cop que s'obre l'app
+            reg.update();
+        });
+    }
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
