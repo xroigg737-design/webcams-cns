@@ -731,11 +731,38 @@
         return closest[1];
     }
 
+    // Paleta Windy compartida (fletxa principal + partícules flux)
+    function windyColor(kn) {
+        const stops = [
+            [0,   130, 155, 220],
+            [2,    90, 150, 210],
+            [6,   100, 200, 220],
+            [10,  100, 200, 170],
+            [14,  110, 220, 110],
+            [17,   70, 210,  70],
+            [21,  220, 210, 100],
+            [25,  215, 170,  75],
+            [29,  215, 145, 120],
+            [33,  180,  75, 105],
+            [37,  230, 110, 180],
+            [41,  160, 100, 200],
+        ];
+        if (kn <= stops[0][0]) return stops[0].slice(1);
+        for (let i = 1; i < stops.length; i++) {
+            if (kn <= stops[i][0]) {
+                const t = (kn - stops[i-1][0]) / (stops[i][0] - stops[i-1][0]);
+                return [
+                    Math.round(stops[i-1][1] + t * (stops[i][1] - stops[i-1][1])),
+                    Math.round(stops[i-1][2] + t * (stops[i][2] - stops[i-1][2])),
+                    Math.round(stops[i-1][3] + t * (stops[i][3] - stops[i-1][3]))
+                ];
+            }
+        }
+        return stops[stops.length - 1].slice(1);
+    }
     function arcColor(kn) {
-        if (kn < 5)  return '#4ecdc4';
-        if (kn < 12) return '#66bb6a';
-        if (kn < 18) return '#ffb74d';
-        return '#ef5350';
+        const [r,g,b] = windyColor(kn);
+        return `rgb(${r},${g},${b})`;
     }
 
     function updateWindMap(d) {
@@ -807,38 +834,8 @@
         let W = 0, H = 0;
         let running = false;
 
-        // Paleta basada en Windy.com — mateixos tons però més brillants per fons fosc
-        // Els originals de Windy són desaturats (pensats per mapa clar),
-        // aquí els iluminem per contrastar sobre imatge satèl·lit fosca
-        function col(kn) {
-            const stops = [
-                [0,   130, 155, 220],  //  0 kn - blau clar
-                [2,    90, 150, 210],  //  2 kn - blau
-                [6,   100, 200, 220],  //  6 kn - teal-blau brillant
-                [10,  100, 200, 170],  // 10 kn - teal-verd
-                [14,  110, 220, 110],  // 14 kn - verd
-                [17,   70, 210,  70],  // 17 kn - verd brillant
-                [21,  220, 210, 100],  // 21 kn - groc oliva
-                [25,  215, 170,  75],  // 25 kn - ambre
-                [29,  215, 145, 120],  // 29 kn - taronja-marró
-                [33,  180,  75, 105],  // 33 kn - vermell fosc
-                [37,  230, 110, 180],  // 37 kn - magenta
-                [41,  160, 100, 200],  // 41 kn - violeta
-            ];
-            if (kn <= stops[0][0]) return [stops[0][1], stops[0][2], stops[0][3]];
-            for (let i = 1; i < stops.length; i++) {
-                if (kn <= stops[i][0]) {
-                    const t = (kn - stops[i-1][0]) / (stops[i][0] - stops[i-1][0]);
-                    return [
-                        Math.round(stops[i-1][1] + t * (stops[i][1] - stops[i-1][1])),
-                        Math.round(stops[i-1][2] + t * (stops[i][2] - stops[i-1][2])),
-                        Math.round(stops[i-1][3] + t * (stops[i][3] - stops[i-1][3]))
-                    ];
-                }
-            }
-            const last = stops[stops.length - 1];
-            return [last[1], last[2], last[3]];
-        }
+        // Usa la paleta Windy compartida
+        function col(kn) { return windyColor(kn); }
 
         // Factor de vent: escala logarítmica contínua (sense cap)
         // ln(1+kn)/ln(1+ref) — creixement suau que mai s'atura
