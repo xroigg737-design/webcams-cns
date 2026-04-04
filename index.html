@@ -513,6 +513,7 @@
             <div class="wind-frame" style="margin:0 10px;">
                 <div class="wind-map" id="wind-map">
                     <img src="img/cns-port-sat.jpg" alt="Port Club Nàutic de Sitges">
+                    <canvas id="wind-flow-canvas" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;pointer-events:none;"></canvas>
                     <div class="wind-map-overlay" id="wind-map-arrow">
                         <svg viewBox="0 0 160 160" style="width:150px;height:150px;">
                             <line x1="80" y1="130" x2="80" y2="20" stroke="#ef5350" stroke-width="6" stroke-linecap="round"/>
@@ -766,12 +767,177 @@
         }
     }
 
+    // ── Windy-style wind flow animation ──────────────────────
+    const windFlow = {
+        canvas: null, ctx: null,
+        particles: [],
+        windDir: 0,      // graus (d'on ve el vent)
+        windSpeed: 0,     // nusos
+        NUM_PARTICLES: 150,
+        animId: null,
+
+        init() {
+            this.canvas = document.getElementById('wind-flow-canvas');
+            if (!this.canvas) return;
+            this.ctx = this.canvas.getContext('2d');
+            // Intentar resize immediat, i reintentar amb delay per mòbil
+            this.resize();
+            if (!this.w) setTimeout(() => { this.resize(); this.seedParticles(); }, 500);
+            window.addEventListener('resize', () => this.resize());
+            new ResizeObserver(() => {
+                this.resize();
+                if (this.particles.length === 0) this.seedParticles();
+            }).observe(this.canvas.parentElement);
+            this.seedParticles();
+            this.animate();
+        },
+
+        resize() {
+            const map = document.getElementById('wind-map');
+            if (!map) return;
+            const rect = map.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+            const cw = Math.round(rect.width);
+            const ch = Math.round(rect.height);
+            // Mida explícita via CSS + buffer
+            this.canvas.style.width = cw + 'px';
+            this.canvas.style.height = ch + 'px';
+            this.canvas.width = cw;
+            this.canvas.height = ch;
+            this.w = cw;
+            this.h = ch;
+            this.scaleFactor = cw < 500 ? 2.5 : cw < 768 ? 1.8 : 1.0;
+        },
+
+
+
+
+        seedParticles() {
+            this.particles = [];
+            for (let i = 0; i < this.NUM_PARTICLES; i++) {
+                this.particles.push(this.newParticle(true));
+            }
+        },
+
+        TRAIL_LEN: 12,   // punts d'historial per estela
+
+        newParticle(randomAge) {
+            const x = Math.random() * (this.w || 300);
+            const y = Math.random() * (this.h || 200);
+            const sf = this.scaleFactor || 1;
+            return {
+                x: x, y: y,
+                trail: [{x: x, y: y}],
+                age: randomAge ? Math.random() * 100 : 0,
+                maxAge: 80 + Math.random() * 100,
+                size: (1.2 + Math.random() * 1.2) * sf,
+                speedMult: 0.7 + Math.random() * 0.6,
+            };
+        },
+
+        update(d) {
+            // El vent bufa DES de dir graus → les partícules van en dir + 180
+            this.windDir = ((d.dir || 0) + 180) % 360;
+            this.windSpeed = d.speed_kn ?? 0;
+        },
+
+        animate() {
+            const ctx = this.ctx;
+            if (!ctx || !this.w) { this.animId = requestAnimationFrame(() => this.animate()); return; }
+
+            const w = this.w, h = this.h;
+            const spd = this.windSpeed;
+            const rad = this.windDir * Math.PI / 180;
+            const vx = Math.sin(rad);
+            const vy = -Math.cos(rad);
+            const TL = this.TRAIL_LEN;
+
+            // Velocitat proporcional al vent real
+            const baseSpeed = 0.12 + spd * 0.28;
+
+            // --- Netejar canvas (transparent, es veu la imatge a sota) ---
+            ctx.clearRect(0, 0, w, h);
+
+            // --- Partícules amb estela fluida (trail de punts) ---
+            for (let i = 0; i < this.particles.length; i++) {
+                const p = this.particles[i];
+                const speed = baseSpeed * p.speedMult;
+
+                // Pertorbació sinusoidal suau
+                const wobble = Math.sin(p.age * 0.06 + p.y * 0.012) * 0.35;
+                p.x += vx * speed + wobble * vy;
+                p.y += vy * speed + wobble * vx;
+                p.age++;
+
+                // Guardar posició al trail
+                p.trail.push({x: p.x, y: p.y});
+                if (p.trail.length > TL) p.trail.shift();
+
+                // Fade in/out de vida
+                const lifeFrac = p.age / p.maxAge;
+                const lifeFade = lifeFrac < 0.1 ? lifeFrac / 0.1
+                               : lifeFrac > 0.85 ? (1 - lifeFrac) / 0.15
+                               : 1;
+
+                // Dibuixar estela: segments amb opacitat decreixent
+                const trail = p.trail;
+                if (trail.length > 1) {
+                    for (let j = 1; j < trail.length; j++) {
+                        const segFade = j / trail.length;  // 0→1 (cua→cap)
+                        const mobileBoost = (this.scaleFactor || 1) > 1 ? 0.2 : 0;
+                        const a = lifeFade * segFade * (0.5 + mobileBoost + Math.min(spd * 0.035, 0.45));
+                        if (a < 0.02) continue;
+                        ctx.beginPath();
+                        ctx.moveTo(trail[j - 1].x, trail[j - 1].y);
+                        ctx.lineTo(trail[j].x, trail[j].y);
+                        ctx.strokeStyle = windyColor(spd, a);
+                        ctx.lineWidth = p.size * segFade;  // prim a la cua, gruixut al cap
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
+                }
+
+                // Reciclar
+                if (p.age > p.maxAge || p.x < -10 || p.x > w + 10 || p.y < -10 || p.y > h + 10) {
+                    const sf = this.scaleFactor || 1;
+                    p.x = Math.random() * w;
+                    p.y = Math.random() * h;
+                    p.trail = [{x: p.x, y: p.y}];
+                    p.age = 0;
+                    p.maxAge = 80 + Math.random() * 100;
+                    p.speedMult = 0.7 + Math.random() * 0.6;
+                    p.size = (1.2 + Math.random() * 1.2) * sf;
+                }
+            }
+
+            this.animId = requestAnimationFrame(() => this.animate());
+        }
+    };
+
+    // Escala de color Windy per velocitat del vent (partícules)
+    function windyColor(kn, alpha) {
+        let r, g, b;
+        if (kn < 2)       { r=100; g=150; b=210; }   // blau suau - calma
+        else if (kn < 5)  { r=80;  g=180; b=220; }   // blau clar
+        else if (kn < 8)  { r=70;  g=200; b=170; }   // turquesa
+        else if (kn < 12) { r=80;  g=210; b=100; }   // verd
+        else if (kn < 16) { r=180; g=210; b=60;  }   // verd-groc
+        else if (kn < 20) { r=240; g=200; b=50;  }   // groc
+        else if (kn < 25) { r=240; g=150; b=40;  }   // taronja
+        else               { r=230; g=60;  b=50;  }   // vermell
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha.toFixed(2) + ')';
+    }
+
+    windFlow.init();
+    // ── Fi wind flow ──────────────────────────────────────────
+
     async function fetchWind() {
         try {
             const r = await fetch(API);
             if (!r.ok) throw new Error();
             const d = await r.json();
             updateWindMap(d);
+            windFlow.update(d);
         } catch(e) {
             // silently retry on next interval
         }
