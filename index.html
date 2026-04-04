@@ -796,31 +796,50 @@
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
-        // Paràmetres estil earth/Windy
-        const MAX_AGE_BASE = 50;    // frames vida base (poc vent)
-        const MAX_AGE_WIND = 120;   // frames vida amb vent fort
-        const FADE_CALM = 0.93;     // fade ràpid amb poc vent (trails curts)
-        const FADE_WIND = 0.97;     // fade lent amb vent fort (trails llargs)
+        // Paràmetres estil earth/Windy — TOT escala contínuament amb kn, sense caps
         const BASE_SPD = 0.1;       // px/frame mínim (quasi aturat amb calma)
-        const SPD_K = 0.08;         // factor velocitat per kn
+        const SPD_K = 0.08;         // factor velocitat per kn (continu, sense cap)
         const LINE_W = 0.8;         // gruix línia
-        const DENSITY = 0.0004;     // partícules per px² (desktop ~150, mòbil ~50)
+        const DENSITY_BASE = 0.00015; // partícules base per px² (poc vent)
 
         let wDir = 0, wSpd = 0;
         let pts = [];
         let W = 0, H = 0;
         let running = false;
 
-        // Paleta Windy per intensitat
+        // Paleta Windy per intensitat — gradient continu interpolat
         function col(kn) {
-            if (kn < 1)  return [142, 239, 180];   // calma
-            if (kn < 5)  return [0, 229, 255];      // fluix - cian
-            if (kn < 8)  return [118, 255, 3];      // moderat - verd llima
-            if (kn < 12) return [255, 234, 0];      // moderat+ - groc
-            if (kn < 16) return [255, 145, 0];      // fresc - taronja
-            if (kn < 20) return [255, 23, 68];      // fort - vermell
-            if (kn < 25) return [213, 0, 0];        // molt fort
-            return [170, 0, 255];                     // temporal - violeta
+            // Escala de colors amb interpolació entre nivells
+            const stops = [
+                [0,  142, 239, 180],  // 0 kn  - calma verd clar
+                [3,    0, 229, 255],  // 3 kn  - fluix cian
+                [6,  118, 255,   3],  // 6 kn  - moderat verd llima
+                [10, 255, 234,   0],  // 10 kn - moderat groc
+                [15, 255, 145,   0],  // 15 kn - fresc taronja
+                [20, 255,  23,  68],  // 20 kn - fort vermell
+                [25, 213,   0,   0],  // 25 kn - molt fort vermell fosc
+                [35, 170,   0, 255],  // 35 kn - temporal violeta
+            ];
+            // Trobar segment i interpolar
+            if (kn <= stops[0][0]) return [stops[0][1], stops[0][2], stops[0][3]];
+            for (let i = 1; i < stops.length; i++) {
+                if (kn <= stops[i][0]) {
+                    const t = (kn - stops[i-1][0]) / (stops[i][0] - stops[i-1][0]);
+                    return [
+                        Math.round(stops[i-1][1] + t * (stops[i][1] - stops[i-1][1])),
+                        Math.round(stops[i-1][2] + t * (stops[i][2] - stops[i-1][2])),
+                        Math.round(stops[i-1][3] + t * (stops[i][3] - stops[i-1][3]))
+                    ];
+                }
+            }
+            const last = stops[stops.length - 1];
+            return [last[1], last[2], last[3]];
+        }
+
+        // Factor de vent: escala logarítmica contínua (sense cap)
+        // ln(1+kn)/ln(1+ref) — creixement suau que mai s'atura
+        function windFactor(kn) {
+            return Math.log(1 + kn) / Math.log(1 + 25);
         }
 
         function resize() {
@@ -831,14 +850,17 @@
             canvas.width = Math.round(W * dpr);
             canvas.height = Math.round(H * dpr);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            // Netejar per evitar artefactes al resize
             ctx.clearRect(0, 0, W, H);
         }
 
         function maxAge() {
-            // Vida més curta amb poc vent, més llarga amb molt vent
-            const f = Math.min(wSpd / 20, 1);
-            return MAX_AGE_BASE + f * (MAX_AGE_WIND - MAX_AGE_BASE);
+            // Continu: 40 frames (calma) → 150+ frames (temporal)
+            return 40 + windFactor(wSpd) * 110;
+        }
+
+        function fadeValue() {
+            // Continu: 0.91 (calma, trails curts) → 0.975 (temporal, trails llargs)
+            return 0.91 + windFactor(wSpd) * 0.065;
         }
 
         function spawn(rndAge) {
@@ -853,11 +875,11 @@
         }
 
         function numParticles() {
-            // Densitat adaptada a la mida del canvas
-            // + més partícules amb més vent (factor 0.5x a 1.5x)
-            const base = Math.round(W * H * DENSITY);
-            const windFactor = 0.5 + Math.min(wSpd / 15, 1) * 1.0;
-            return Math.max(20, Math.round(base * windFactor));
+            // Base proporcional a àrea del canvas
+            // Multiplicador continu: 0.4x (calma) → 2.5x (temporal)
+            const area = W * H;
+            const mult = 0.4 + windFactor(wSpd) * 2.1;
+            return Math.max(15, Math.round(area * DENSITY_BASE * mult));
         }
 
         function init() {
@@ -872,18 +894,15 @@
         function draw() {
             if (W < 1) { requestAnimationFrame(draw); return; }
 
-            // Ajustar nombre de partícules dinàmicament
+            // Ajustar partícules dinàmicament (continu amb el vent)
             const target = numParticles();
             while (pts.length < target) pts.push(spawn(true));
             while (pts.length > target) pts.pop();
 
-            // Fade dinàmic: trails curts amb poc vent, llargs amb molt vent
-            const wf = Math.min(wSpd / 20, 1);
-            const fade = FADE_CALM + wf * (FADE_WIND - FADE_CALM);
-
+            // Fade continu proporcional a la intensitat
             const prev = ctx.globalCompositeOperation;
             ctx.globalCompositeOperation = 'destination-in';
-            ctx.globalAlpha = fade;
+            ctx.globalAlpha = fadeValue();
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, W, H);
             ctx.globalCompositeOperation = prev;
