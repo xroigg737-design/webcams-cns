@@ -513,8 +513,6 @@
             <div class="wind-frame" style="margin:0 10px;">
                 <div class="wind-map" id="wind-map">
                     <img src="img/cns-port-sat.jpg" alt="Port Club Nàutic de Sitges">
-                    <canvas id="wind-color-canvas" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;pointer-events:none;opacity:0.45;"></canvas>
-                    <canvas id="wind-flow-canvas" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;pointer-events:none;"></canvas>
                     <div class="wind-map-overlay" id="wind-map-arrow">
                         <svg viewBox="0 0 160 160" style="width:150px;height:150px;">
                             <line x1="80" y1="130" x2="80" y2="20" stroke="#ef5350" stroke-width="6" stroke-linecap="round"/>
@@ -768,170 +766,12 @@
         }
     }
 
-    // ── Windy-style wind flow (basat en cambecc/earth) ──────────
-
-    // Escala sinebow simplificada per overlay de color (kn → [r,g,b])
-    function windyRGB(kn) {
-        if (kn < 1)  return [70, 120, 180];
-        if (kn < 3)  return [80, 150, 210];
-        if (kn < 5)  return [75, 180, 220];
-        if (kn < 8)  return [65, 200, 175];
-        if (kn < 12) return [75, 210, 100];
-        if (kn < 16) return [170, 215, 55];
-        if (kn < 20) return [240, 200, 45];
-        if (kn < 25) return [240, 145, 35];
-        if (kn < 30) return [230, 75, 45];
-        return [200, 40, 40];
-    }
-
-    // Escala de grisos per partícules (com earth.nullschool): gris fosc→blanc
-    // maxWind = 17 m/s (~33 kn). Gris de 85→255.
-    function windGray(kn) {
-        const ms = kn * 0.5144;  // kn → m/s
-        const t = Math.min(ms / 17, 1);  // 0→1 (0→33kn)
-        return Math.round(85 + t * 170);  // 85→255
-    }
-
-    const windFlow = {
-        flowCanvas: null, flowCtx: null,
-        colorCanvas: null, colorCtx: null,
-        particles: [],
-        windDir: 0, windSpeed: 0,
-        MAX_AGE: 100,         // frames de vida (earth: 100)
-        w: 0, h: 0,
-        prevSpeed: -1,
-
-        init() {
-            this.flowCanvas = document.getElementById('wind-flow-canvas');
-            this.colorCanvas = document.getElementById('wind-color-canvas');
-            if (!this.flowCanvas || !this.colorCanvas) return;
-            this.flowCtx = this.flowCanvas.getContext('2d');
-            this.colorCtx = this.colorCanvas.getContext('2d');
-            this.resize();
-            if (!this.w) setTimeout(() => { this.resize(); this.seed(); }, 500);
-            window.addEventListener('resize', () => this.resize());
-            new ResizeObserver(() => { this.resize(); }).observe(this.flowCanvas.parentElement);
-            this.seed();
-            this.animate();
-        },
-
-        resize() {
-            const map = document.getElementById('wind-map');
-            if (!map) return;
-            const r = map.getBoundingClientRect();
-            if (!r.width || !r.height) return;
-            const cw = Math.round(r.width), ch = Math.round(r.height);
-            [this.flowCanvas, this.colorCanvas].forEach(c => {
-                c.style.width = cw + 'px'; c.style.height = ch + 'px';
-                c.width = cw; c.height = ch;
-            });
-            this.w = cw; this.h = ch;
-            // earth: particleCount = width * 7 (escalam per la nostra mida)
-            this.numParticles = Math.round(cw * 0.4);
-            this.prevSpeed = -1;
-            if (this.particles.length) { this.seed(); this.paintColor(); }
-        },
-
-        paintColor() {
-            const ctx = this.colorCtx, w = this.w, h = this.h;
-            if (!ctx || !w) return;
-            ctx.clearRect(0, 0, w, h);
-            const rgb = windyRGB(this.windSpeed);
-            ctx.fillStyle = 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',1)';
-            ctx.fillRect(0, 0, w, h);
-            this.prevSpeed = this.windSpeed;
-        },
-
-        seed() {
-            this.particles = [];
-            const n = this.numParticles || 120;
-            for (let i = 0; i < n; i++) this.particles.push(this.mkP(true));
-        },
-
-        mkP(rndAge) {
-            const x = Math.random() * (this.w || 300), y = Math.random() * (this.h || 200);
-            return {
-                x: x, y: y,
-                trail: [{x:x, y:y}],
-                age: rndAge ? Math.floor(Math.random() * this.MAX_AGE) : 0,
-            };
-        },
-
-        update(d) {
-            this.windDir = ((d.dir || 0) + 180) % 360;
-            this.windSpeed = d.speed_kn ?? 0;
-            if (Math.abs(this.windSpeed - this.prevSpeed) > 0.5) this.paintColor();
-        },
-
-        animate() {
-            const ctx = this.flowCtx;
-            if (!ctx || !this.w) { requestAnimationFrame(() => this.animate()); return; }
-
-            const w = this.w, h = this.h, spd = this.windSpeed;
-            const rad = this.windDir * Math.PI / 180;
-            const vx = Math.sin(rad), vy = -Math.cos(rad);
-            const TL = 40;
-
-            // Velocitat: 5kn→0.4, 12kn→0.96, 20kn→1.6 px/frame
-            const pxSpeed = spd < 0.5 ? 0.02 : spd * 0.08;
-
-            // Grisos earth-style
-            const g = windGray(spd);
-
-            ctx.clearRect(0, 0, w, h);
-            ctx.lineCap = 'round';
-
-            for (let i = 0; i < this.particles.length; i++) {
-                const p = this.particles[i];
-                const wobble = Math.sin(p.age * 0.04 + i * 0.5) * 0.15;
-                p.x += (vx + wobble * vy) * pxSpeed;
-                p.y += (vy + wobble * vx) * pxSpeed;
-                p.age++;
-
-                p.trail.push({x: p.x, y: p.y});
-                if (p.trail.length > TL) p.trail.shift();
-
-                // Fade vida
-                const lf = p.age / this.MAX_AGE;
-                const lifeFade = lf < 0.08 ? lf/0.08 : lf > 0.85 ? (1-lf)/0.15 : 1;
-
-                // Dibuixar trail com a línia contínua
-                const t = p.trail;
-                if (t.length > 2) {
-                    const a = lifeFade * 0.7;
-                    if (a > 0.03) {
-                        ctx.beginPath();
-                        ctx.moveTo(t[0].x, t[0].y);
-                        for (let j = 1; j < t.length; j++) ctx.lineTo(t[j].x, t[j].y);
-                        ctx.strokeStyle = 'rgba('+g+','+g+','+g+','+a.toFixed(2)+')';
-                        ctx.lineWidth = 0.8;
-                        ctx.stroke();
-                    }
-                }
-
-                // Reciclar
-                if (p.age > this.MAX_AGE || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
-                    p.x = Math.random() * w;
-                    p.y = Math.random() * h;
-                    p.trail = [{x:p.x, y:p.y}];
-                    p.age = 0;
-                }
-            }
-
-            requestAnimationFrame(() => this.animate());
-        }
-    };
-
-    windFlow.init();
-    // ── Fi wind flow ──────────────────────────────────────────
-
     async function fetchWind() {
         try {
             const r = await fetch(API);
             if (!r.ok) throw new Error();
             const d = await r.json();
             updateWindMap(d);
-            windFlow.update(d);
         } catch(e) {
             // silently retry on next interval
         }
