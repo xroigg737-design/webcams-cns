@@ -819,7 +819,7 @@
                 c.width = cw; c.height = ch;
             });
             this.w = cw; this.h = ch;
-            this.sf = cw < 400 ? 1.3 : cw < 600 ? 1.15 : 1.0;
+            this.sf = 1.0;  // mateixa mida desktop i mòbil
             this.prevSpeed = -1;
             if (this.particles.length) this.paintColor();
         },
