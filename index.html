@@ -785,7 +785,7 @@
         });
         arrow.querySelector('circle').setAttribute('fill', mapCol);
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
-        if (dirEl) dirEl.textContent = dirS + ' ' + dir + '\u00b0 \u00b7 ' + ventNom;
+        if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '\u00b0 ' + ventNom; dirEl.style.color = mapCol; }
         const dirAvg = d.dir_avg_10m;
         const avgCol = arcColor(d.avg_10m_kn ?? 0);
         const dirAvgTxt = dirAvg != null ? ' <span style="font-size:0.85em;color:' + avgCol + ';font-weight:900">&middot; ' + degToCompass(dirAvg) + ' ' + dirAvg + '°</span>' : '';
