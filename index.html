@@ -298,9 +298,9 @@
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 4px;
             z-index: 2;
         }
         .wind-compass-combined {
@@ -375,23 +375,13 @@
             opacity: 0.85;
             letter-spacing: 0.5px;
         }
-        .wind-map-info {
-            text-align: left;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
-        }
-        .wind-map-speed {
-            font-size: 2em;
-            font-weight: 900;
-            color: #fff;
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-        }
-        .wind-map-dir {
-            font-size: 1.1em;
+        .wind-compass-label {
+            font-size: 0.95em;
             font-weight: 700;
             color: #5ef0e6;
-            margin-top: 2px;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
+            white-space: nowrap;
         }
         .wind-map-sidebar {
             position: absolute;
@@ -632,9 +622,8 @@
             .wind-pill { width: 28px; height: 72px; top: -30px; border-radius: 13px 13px 3px 3px; }
             .wind-pill::after { border-left-width: 14px; border-right-width: 14px; border-top-width: 12px; bottom: -12px; }
             .wind-pill-text { font-size: 1.3em; }
-            .wind-map-overlay { top: 55%; left: 45%; gap: 6px; }
-            .wind-map-speed { font-size: 1.4em; }
-            .wind-map-dir { font-size: 0.8em; }
+            .wind-map-overlay { top: 55%; left: 45%; gap: 4px; }
+            .wind-compass-label { font-size: 0.8em; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
         }
@@ -719,10 +708,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="wind-map-info" id="wind-map-info">
-                            <div class="wind-map-speed" id="wind-map-speed">--</div>
-                            <div class="wind-map-dir" id="wind-map-dir">--</div>
-                        </div>
+                        <div class="wind-compass-label" id="wind-map-dir">--</div>
                     </div>
                     <div class="wind-map-sidebar" id="wind-map-sidebar">
                         <div class="wg-sec-card">
@@ -1072,7 +1058,6 @@
 
     function updateWindMap(d) {
         const arrow = document.getElementById('wind-map-arrow');
-        const spdEl = document.getElementById('wind-map-speed');
         const dirEl = document.getElementById('wind-map-dir');
         const avgEl = document.getElementById('wm-avg');
         const gustEl = document.getElementById('wm-gust');
@@ -1088,8 +1073,7 @@
         const pillVal = document.getElementById('wind-pill-val');
         if (orbit) orbit.style.transform = `rotate(${dir}deg)`;
         if (pill) pill.style.setProperty('--pill-color', mapCol);
-        if (pillVal) pillVal.textContent = 35.4; // TEST: forçat per comprovar mida
-        if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
+        if (pillVal) pillVal.textContent = spd;
         if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '\u00b0 ' + ventNom; dirEl.style.color = mapCol; }
         const dirAvg = d.dir_avg_10m;
         const avgCol = arcColor(d.avg_10m_kn ?? 0);
