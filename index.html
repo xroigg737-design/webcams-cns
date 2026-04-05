@@ -336,23 +336,23 @@
             top: -6px;
             left: 50%;
             transform: translateX(-50%);
-            width: 34px;
+            width: 40px;
             height: 90px;
             background: var(--pill-color, #4caf50);
-            border-radius: 16px 16px 4px 4px;
+            border-radius: 18px 18px 4px 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
         .wind-pill::after {
             content: '';
             position: absolute;
-            bottom: -16px;
+            bottom: -18px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 17px solid transparent;
-            border-right: 17px solid transparent;
-            border-top: 16px solid var(--pill-color, #4caf50);
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 18px solid var(--pill-color, #4caf50);
         }
         .wind-pill-text {
             position: absolute;
@@ -627,8 +627,8 @@
             .wind-map-sidebar .wg-sec-label { font-size: 0.45em; }
             .wind-map-sidebar .wg-sec-val { font-size: 0.85em; }
             .wind-compass-combined { width: 140px; height: 140px; }
-            .wind-pill { width: 28px; height: 65px; top: -5px; border-radius: 13px 13px 3px 3px; }
-            .wind-pill::after { border-left-width: 14px; border-right-width: 14px; border-top-width: 14px; bottom: -14px; }
+            .wind-pill { width: 32px; height: 65px; top: -5px; border-radius: 15px 15px 3px 3px; }
+            .wind-pill::after { border-left-width: 16px; border-right-width: 16px; border-top-width: 15px; bottom: -15px; }
             .wind-pill-text { font-size: 0.75em; }
             .wind-map-overlay { top: 55%; left: 45%; gap: 6px; }
             .wind-map-speed { font-size: 1.4em; }
@@ -709,15 +709,15 @@
                                 <!-- Cercle central pivot -->
                                 <circle cx="100" cy="100" r="5" fill="rgba(255,255,255,0.55)"/>
                                 <!-- Lletres cardinals -->
-                                <text x="100" y="18" text-anchor="middle" font-size="15" font-weight="800" fill="rgba(239,83,80,1)" font-family="system-ui,sans-serif">N</text>
-                                <text x="100" y="196" text-anchor="middle" font-size="12" font-weight="700" fill="rgba(255,255,255,0.7)" font-family="system-ui,sans-serif">S</text>
-                                <text x="193" y="104" text-anchor="end" font-size="12" font-weight="700" fill="rgba(255,255,255,0.7)" font-family="system-ui,sans-serif">E</text>
-                                <text x="7" y="104" text-anchor="start" font-size="12" font-weight="700" fill="rgba(255,255,255,0.7)" font-family="system-ui,sans-serif">W</text>
+                                <text x="100" y="22" text-anchor="middle" font-size="22" font-weight="800" fill="rgba(239,83,80,1)" font-family="system-ui,sans-serif">N</text>
+                                <text x="100" y="198" text-anchor="middle" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">S</text>
+                                <text x="195" y="106" text-anchor="end" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">E</text>
+                                <text x="5" y="106" text-anchor="start" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">W</text>
                             </svg>
                             <!-- Pill Windy-style que radia des del centre -->
                             <div class="wind-pill-orbit" id="wind-pill-orbit">
                                 <div class="wind-pill" id="wind-pill">
-                                    <div class="wind-pill-text" id="wind-pill-text"><span id="wind-pill-val">--</span><small>kn</small></div>
+                                    <div class="wind-pill-text" id="wind-pill-text"><span id="wind-pill-val">--</span><small>kts</small></div>
                                 </div>
                             </div>
                         </div>
