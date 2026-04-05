@@ -333,33 +333,39 @@
         }
         .wind-pill {
             position: absolute;
-            top: 4px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            width: 28px;
+            height: 60px;
+            margin-left: -14px;
+            margin-top: -68px;
             background: #4caf50;
             color: #fff;
-            font-size: 0.7em;
+            font-size: 0.85em;
             font-weight: 900;
-            padding: 3px 8px;
-            border-radius: 4px;
-            white-space: nowrap;
-            line-height: 1.2;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
         .wind-pill small {
-            font-size: 0.7em;
+            font-size: 0.6em;
             font-weight: 700;
             opacity: 0.8;
         }
-        .wind-pill-arrow {
+        .wind-pill-stem {
             position: absolute;
-            bottom: -4px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-top: 5px solid #4caf50;
+            width: 4px;
+            height: 18px;
+            margin-left: -2px;
+            margin-top: -10px;
+            background: #4caf50;
+            border-radius: 0 0 2px 2px;
         }
         .wind-map-info {
             text-align: left;
@@ -615,7 +621,8 @@
             .wind-map-sidebar .wg-sec-label { font-size: 0.45em; }
             .wind-map-sidebar .wg-sec-val { font-size: 0.85em; }
             .wind-compass-combined { width: 110px; height: 110px; }
-            .wind-pill { font-size: 0.55em; padding: 2px 6px; }
+            .wind-pill { font-size: 0.7em; width: 24px; height: 50px; margin-left: -12px; margin-top: -56px; }
+            .wind-pill-stem { height: 14px; margin-top: -8px; }
             .wind-map-overlay { top: 55%; left: 45%; gap: 6px; }
             .wind-map-speed { font-size: 1.4em; }
             .wind-map-dir { font-size: 0.8em; }
@@ -746,9 +753,10 @@
                                 <text x="198" y="104" text-anchor="end" font-size="11" font-weight="700" fill="rgba(255,255,255,0.55)" font-family="system-ui,sans-serif">E</text>
                                 <text x="3" y="104" text-anchor="start" font-size="11" font-weight="700" fill="rgba(255,255,255,0.55)" font-family="system-ui,sans-serif">W</text>
                             </svg>
-                            <!-- Pill Windy-style que orbita -->
+                            <!-- Pill Windy-style que radia des del centre -->
                             <div class="wind-pill-orbit" id="wind-pill-orbit">
-                                <div class="wind-pill" id="wind-pill">-- <small>kn</small><span class="wind-pill-arrow" id="wind-pill-arrow"></span></div>
+                                <div class="wind-pill-stem" id="wind-pill-stem"></div>
+                                <div class="wind-pill" id="wind-pill"><span id="wind-pill-val">--</span><small>kn</small></div>
                             </div>
                         </div>
                         <div class="wind-map-info" id="wind-map-info">
@@ -1117,14 +1125,15 @@
         const mapCol = arcColor(spd);
         const orbit = document.getElementById('wind-pill-orbit');
         const pill = document.getElementById('wind-pill');
+        const pillVal = document.getElementById('wind-pill-val');
+        const pillStem = document.getElementById('wind-pill-stem');
         if (orbit) orbit.style.transform = `rotate(${dir}deg)`;
         if (pill) {
-            pill.innerHTML = spd + ' <small>kn</small><span class="wind-pill-arrow" id="wind-pill-arrow"></span>';
             pill.style.background = mapCol;
-            pill.style.transform = `translateX(-50%) rotate(-${dir}deg)`;
-            const pillArrow = document.getElementById('wind-pill-arrow');
-            if (pillArrow) pillArrow.style.borderTopColor = mapCol;
+            pill.style.transform = `rotate(-${dir}deg)`;
         }
+        if (pillVal) pillVal.textContent = spd;
+        if (pillStem) pillStem.style.background = mapCol;
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '\u00b0 ' + ventNom; dirEl.style.color = mapCol; }
         const dirAvg = d.dir_avg_10m;
