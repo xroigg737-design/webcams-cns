@@ -333,13 +333,13 @@
         }
         .wind-pill {
             position: absolute;
-            top: 2px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 34px;
-            height: 68px;
+            width: 30px;
+            height: 88px;
             background: #4caf50;
-            border-radius: 12px;
+            border-radius: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
         .wind-pill-text {
@@ -615,8 +615,8 @@
             .wind-map-sidebar .wg-sec-label { font-size: 0.45em; }
             .wind-map-sidebar .wg-sec-val { font-size: 0.85em; }
             .wind-compass-combined { width: 110px; height: 110px; }
-            .wind-pill { width: 28px; height: 50px; top: 2px; border-radius: 10px; }
-            .wind-pill-text { font-size: 0.75em; }
+            .wind-pill { width: 24px; height: 65px; top: -8px; border-radius: 11px; }
+            .wind-pill-text { font-size: 0.7em; }
             .wind-map-overlay { top: 55%; left: 45%; gap: 6px; }
             .wind-map-speed { font-size: 1.4em; }
             .wind-map-dir { font-size: 0.8em; }
@@ -693,6 +693,8 @@
                                     <line x1="35" y1="35" x2="165" y2="165"/>
                                     <line x1="165" y1="35" x2="35" y2="165"/>
                                 </g>
+                                <!-- Cercle central pivot -->
+                                <circle cx="100" cy="100" r="6" fill="rgba(255,255,255,0.5)"/>
                                 <!-- Lletres cardinals -->
                                 <text x="100" y="18" text-anchor="middle" font-size="15" font-weight="800" fill="rgba(239,83,80,1)" font-family="system-ui,sans-serif">N</text>
                                 <text x="100" y="196" text-anchor="middle" font-size="12" font-weight="700" fill="rgba(255,255,255,0.7)" font-family="system-ui,sans-serif">S</text>
