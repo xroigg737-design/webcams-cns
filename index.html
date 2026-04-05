@@ -377,10 +377,10 @@
         }
         .wind-compass-label {
             position: absolute;
-            bottom: 42px;
+            bottom: 10px;
             left: 10px;
-            font-size: 1em;
-            font-weight: 700;
+            font-size: 1.8em;
+            font-weight: 900;
             color: #5ef0e6;
             text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
             white-space: nowrap;
@@ -421,18 +421,19 @@
         .wind-map-time {
             position: absolute;
             bottom: 22px;
-            left: 10px;
+            right: 10px;
             z-index: 3;
             font-size: 0.7em;
             font-weight: 700;
             color: #ffd740;
             text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6);
             white-space: nowrap;
+            text-align: right;
         }
         .wind-map-link {
             position: absolute;
             bottom: 6px;
-            left: 10px;
+            right: 10px;
             z-index: 3;
             font-size: 0.65em;
             font-weight: 600;
@@ -440,6 +441,7 @@
             text-decoration: none;
             text-shadow: 0 2px 6px rgba(0,0,0,0.9);
             transition: color 0.2s;
+            text-align: right;
         }
         .wind-map-link:hover { color: rgba(255,255,255,0.85); }
 
@@ -626,7 +628,7 @@
             .wind-pill::after { border-left-width: 14px; border-right-width: 14px; border-top-width: 12px; bottom: -12px; }
             .wind-pill-text { font-size: 1.3em; }
             .wind-map-overlay { top: 55%; left: 45%; }
-            .wind-compass-label { font-size: 0.8em; bottom: 36px; }
+            .wind-compass-label { font-size: 1.3em; bottom: 8px; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
         }
