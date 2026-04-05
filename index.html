@@ -425,7 +425,7 @@
             z-index: 3;
             font-size: 0.7em;
             font-weight: 700;
-            color: #ffd740;
+            color: rgba(255,255,255,0.55);
             text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6);
             white-space: nowrap;
             text-align: right;
@@ -1098,7 +1098,7 @@
         if (timeEl) {
             const ts = d.timestamp ? new Date(d.timestamp * 1000) : null;
             const t = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
-            timeEl.textContent = '\u00daltima update: ' + t;
+            timeEl.innerHTML = '\u00daltim update: <span style="color:#ffd740">' + t + '</span>';
         }
     }
 
