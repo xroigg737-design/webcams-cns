@@ -738,8 +738,7 @@
                             <div class="wg-sec-bar" id="wm-rolada-bar" style="background:#e0a0ff;"></div>
                             <div class="wg-sec-info">
                                 <div class="wg-sec-label">Role 30'</div>
-                                <div class="wg-sec-val" id="wm-rolada">-- <small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small></div>
-                                <div class="role-detall-btn" onclick="toggleRoleDetall()">Detall</div>
+                                <div class="wg-sec-val"><span id="wm-rolada">--</span><small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small> <span class="role-detall-btn" onclick="toggleRoleDetall()" style="font-size:0.45em;">(Det.)</span></div>
                             </div>
                         </div>
                         <!-- Mòbil: 1 tarja combinada Ratxa | Rolada -->
@@ -756,10 +755,7 @@
                                 <div class="wg-sec-bar" id="wm-rolada-bar-m" style="background:#e0a0ff;"></div>
                                 <div class="wg-sec-info">
                                     <div class="wg-sec-label">Role 30'</div>
-                                    <div style="display:flex;align-items:baseline;gap:4px;">
-                                        <div class="wg-sec-val" id="wm-rolada-m">-- <small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small></div>
-                                        <div class="role-detall-btn" onclick="toggleRoleDetall()">Detall</div>
-                                    </div>
+                                    <div class="wg-sec-val"><span id="wm-rolada-m">--</span><small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small> <span class="role-detall-btn" onclick="toggleRoleDetall()" style="font-size:0.45em;">(Det.)</span></div>
                                 </div>
                             </div>
                         </div>
@@ -1171,12 +1167,12 @@
             const els = [document.getElementById('wm-rolada'), document.getElementById('wm-rolada-m')];
             const bars = [document.getElementById('wm-rolada-bar'), document.getElementById('wm-rolada-bar-m')];
             if (rolada !== null) {
-                const html = '±' + Math.round(rolada / 2) + ' <small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small>';
+                const val = '±' + Math.round(rolada / 2);
                 const color = rolada < 15 ? '#66bb6a' : rolada < 30 ? '#ffd740' : rolada < 50 ? '#ff9a76' : '#ef5350';
-                els.forEach(el => { if (el) { el.innerHTML = html; el.style.color = color; } });
+                els.forEach(el => { if (el) { el.textContent = val; el.style.color = color; } });
                 bars.forEach(b => { if (b) b.style.background = color; });
             } else {
-                els.forEach(el => { if (el) el.innerHTML = '-- <small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small>'; });
+                els.forEach(el => { if (el) el.textContent = '--'; });
             }
             // Actualitzar panell si obert
             const panel = document.getElementById('role-detall-panel');
