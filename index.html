@@ -1091,7 +1091,10 @@
         const pillText = document.getElementById('wind-pill-text');
         if (orbit) orbit.style.transform = `rotate(${dir}deg)`;
         if (pill) pill.style.setProperty('--pill-color', mapCol);
-        if (pillText) pillText.style.transform = `translate(-50%, -50%)`;
+        if (pillText) {
+            const flip = (dir > 90 && dir < 270) ? 180 : 0;
+            pillText.style.transform = `translate(-50%, -50%) rotate(${flip}deg)`;
+        }
         if (pillVal) pillVal.textContent = spd;
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '\u00b0 ' + ventNom; dirEl.style.color = mapCol; }
