@@ -1140,6 +1140,11 @@
     fetchWind();
     setInterval(fetchWind, 60000);
 
+    // Refresh immediat quan l'app torna a primer pla
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') fetchWind();
+    });
+
     /* ===== ROLADA (oscil·lació angular del vent) ===== */
     function calcRolada(history) {
         if (!history || history.length < 2) return null;
