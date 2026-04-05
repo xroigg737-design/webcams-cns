@@ -664,7 +664,7 @@
                             <div class="wg-sec-bar" id="wm-rolada-bar" style="background:#e0a0ff;"></div>
                             <div class="wg-sec-info">
                                 <div class="wg-sec-label">Role 30'</div>
-                                <div class="wg-sec-val" id="wm-rolada">-- <small>graus</small></div>
+                                <div class="wg-sec-val" id="wm-rolada">-- <small>º</small></div>
                             </div>
                         </div>
                         <!-- Mòbil: 1 tarja combinada Ratxa | Rolada -->
@@ -681,7 +681,7 @@
                                 <div class="wg-sec-bar" id="wm-rolada-bar-m" style="background:#e0a0ff;"></div>
                                 <div class="wg-sec-info">
                                     <div class="wg-sec-label">Role 30'</div>
-                                    <div class="wg-sec-val" id="wm-rolada-m">-- <small>graus</small></div>
+                                    <div class="wg-sec-val" id="wm-rolada-m">-- <small>º</small></div>
                                 </div>
                             </div>
                         </div>
@@ -1078,12 +1078,12 @@
             const els = [document.getElementById('wm-rolada'), document.getElementById('wm-rolada-m')];
             const bars = [document.getElementById('wm-rolada-bar'), document.getElementById('wm-rolada-bar-m')];
             if (rolada !== null) {
-                const html = '±' + Math.round(rolada / 2) + ' <small>graus</small>';
+                const html = '±' + Math.round(rolada / 2) + ' <small>º</small>';
                 const color = rolada < 15 ? '#66bb6a' : rolada < 30 ? '#ffd740' : rolada < 50 ? '#ff9a76' : '#ef5350';
                 els.forEach(el => { if (el) { el.innerHTML = html; el.style.color = color; } });
                 bars.forEach(b => { if (b) b.style.background = color; });
             } else {
-                els.forEach(el => { if (el) el.innerHTML = '-- <small>graus</small>'; });
+                els.forEach(el => { if (el) el.innerHTML = '-- <small>º</small>'; });
             }
         } catch(e) { /* retry next interval */ }
     }
