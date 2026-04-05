@@ -1088,7 +1088,7 @@
         const pillVal = document.getElementById('wind-pill-val');
         if (orbit) orbit.style.transform = `rotate(${dir}deg)`;
         if (pill) pill.style.setProperty('--pill-color', mapCol);
-        if (pillVal) pillVal.textContent = spd;
+        if (pillVal) pillVal.textContent = 35.4; // TEST: forçat per comprovar mida
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '\u00b0 ' + ventNom; dirEl.style.color = mapCol; }
         const dirAvg = d.dir_avg_10m;
