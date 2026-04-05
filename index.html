@@ -1107,6 +1107,13 @@
             const r = await fetch(API);
             if (!r.ok) throw new Error();
             const d = await r.json();
+            // TEST: Simular Llevant 40 nusos
+            d.speed_kn = 40;
+            d.dir = 90;
+            d.dir_avg_10m = 85;
+            d.avg_10m_kn = 35;
+            d.gust_10m_kn = 48;
+            d.gust_2m_kn = 45;
             updateWindMap(d);
         } catch(e) {
             // silently retry on next interval
