@@ -1289,7 +1289,7 @@
             const ts = obs.obsTimeLocal;
             if (ts) {
                 const parts = ts.split(' ');
-                timeEl.textContent = 'Actualitzat: ' + (parts[1] || '').substring(0, 5);
+                timeEl.innerHTML = '<span style="color:rgba(255,255,255,0.55)">Actualitzat:</span> ' + (parts[1] || '').substring(0, 5);
             }
         }
     }
@@ -1332,7 +1332,7 @@
             if (gustEl) { gustEl.textContent = gust + ' kn'; gustEl.style.color = arcColor(gust); }
             if (timeEl) {
                 const t = new Date().toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
-                timeEl.textContent = 'Actualitzat: ' + t;
+                timeEl.innerHTML = '<span style="color:rgba(255,255,255,0.55)">Actualitzat:</span> ' + t;
             }
         } catch(e) { /* retry next interval */ }
     }
