@@ -1,5 +1,5 @@
 // Service Worker — network-first: sempre intenta descarregar la versió nova
-const CACHE_NAME = 'avui-regu-v9';
+const CACHE_NAME = 'avui-regu-v10';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => {
