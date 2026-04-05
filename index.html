@@ -1123,13 +1123,13 @@
             const r = await fetch(API);
             if (!r.ok) throw new Error();
             const d = await r.json();
-            // TEST: Simular Migjorn 60 nusos
-            d.speed_kn = 60;
-            d.dir = 180;
-            d.dir_avg_10m = 175;
-            d.avg_10m_kn = 55;
-            d.gust_10m_kn = 72;
-            d.gust_2m_kn = 68;
+            // TEST: Simular Mestral 22 nusos
+            d.speed_kn = 22;
+            d.dir = 315;
+            d.dir_avg_10m = 310;
+            d.avg_10m_kn = 19;
+            d.gust_10m_kn = 28;
+            d.gust_2m_kn = 25;
             updateWindMap(d);
         } catch(e) {
             // silently retry on next interval
