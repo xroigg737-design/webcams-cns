@@ -504,18 +504,13 @@
         .role-detall-btn:hover { color: #fff; }
         .role-detall-panel {
             display: none;
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            z-index: 10;
             background: rgba(11,31,51,0.95);
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 10px;
             padding: 8px 10px;
-            max-height: 80%;
+            margin-top: 8px;
+            max-height: 250px;
             overflow-y: auto;
-            min-width: 220px;
-            max-width: 280px;
             backdrop-filter: blur(8px);
         }
         .role-detall-panel.open { display: block; }
@@ -764,20 +759,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="role-detall-panel" id="role-detall-panel">
-                        <div class="role-detall-header">
-                            <span>Sèrie direcció vent (últims 30')</span>
-                            <span class="role-detall-close" onclick="toggleRoleDetall()">✕</span>
-                        </div>
-                        <div class="role-detall-table" id="role-detall-table">
-                            <div class="role-detall-row role-detall-row-header">
-                                <span>Hora</span><span>Dir</span><span>Rumb</span><span>Vel</span>
-                            </div>
-                            <div class="role-detall-empty">Carregant dades...</div>
-                        </div>
-                    </div>
                     <div class="wind-map-time" id="wm-time">--</div>
                     <a class="wind-map-link" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
+                </div>
+                <div class="role-detall-panel" id="role-detall-panel">
+                    <div class="role-detall-header">
+                        <span>Sèrie direcció vent (últims 30')</span>
+                        <span class="role-detall-close" onclick="toggleRoleDetall()">✕</span>
+                    </div>
+                    <div class="role-detall-table" id="role-detall-table">
+                        <div class="role-detall-row role-detall-row-header">
+                            <span>Hora</span><span>Dir</span><span>Rumb</span><span>Vel</span>
+                        </div>
+                        <div class="role-detall-empty">Carregant dades...</div>
+                    </div>
                 </div>
             </div>
         </section>
