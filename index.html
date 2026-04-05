@@ -566,9 +566,15 @@
         /* Botó i panell detall Role */
         .role-clickable {
             cursor: pointer;
-            border-bottom: 1px dashed rgba(255,255,255,0.35);
+            border-bottom: 1px dashed;
+            border-bottom-color: rgba(255,255,255,0.35);
             padding-bottom: 1px;
             white-space: nowrap;
+            animation: blink-underline 1.5s ease-in-out infinite;
+        }
+        @keyframes blink-underline {
+            0%, 100% { border-bottom-color: rgba(255,255,255,0.1); }
+            50% { border-bottom-color: rgba(255,255,255,0.6); }
         }
         .role-clickable::after {
             content: ' ▾';
