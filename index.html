@@ -376,12 +376,15 @@
             letter-spacing: 0.5px;
         }
         .wind-compass-label {
-            font-size: 0.95em;
+            position: absolute;
+            bottom: 42px;
+            left: 10px;
+            font-size: 1em;
             font-weight: 700;
             color: #5ef0e6;
-            text-align: center;
             text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
             white-space: nowrap;
+            z-index: 2;
         }
         .wind-map-sidebar {
             position: absolute;
@@ -622,8 +625,8 @@
             .wind-pill { width: 28px; height: 72px; top: -30px; border-radius: 13px 13px 3px 3px; }
             .wind-pill::after { border-left-width: 14px; border-right-width: 14px; border-top-width: 12px; bottom: -12px; }
             .wind-pill-text { font-size: 1.3em; }
-            .wind-map-overlay { top: 55%; left: 45%; gap: 4px; }
-            .wind-compass-label { font-size: 0.8em; }
+            .wind-map-overlay { top: 55%; left: 45%; }
+            .wind-compass-label { font-size: 0.8em; bottom: 36px; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
         }
@@ -708,7 +711,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="wind-compass-label" id="wind-map-dir">--</div>
                     </div>
                     <div class="wind-map-sidebar" id="wind-map-sidebar">
                         <div class="wg-sec-card">
@@ -752,6 +754,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="wind-compass-label" id="wind-map-dir">--</div>
                     <div class="wind-map-time" id="wm-time">--</div>
                     <a class="wind-map-link" href="https://app.weathercloud.net/d1807591580#wind">Detall dades estació &rarr;</a>
                 </div>
