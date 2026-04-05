@@ -1179,12 +1179,12 @@
         } catch(e) { /* retry next interval */ }
     }
 
-    function toggleRoleDetall() {
+    window.toggleRoleDetall = function() {
         const panel = document.getElementById('role-detall-panel');
         if (!panel) return;
         panel.classList.toggle('open');
         if (panel.classList.contains('open')) renderRoleDetall();
-    }
+    };
 
     function renderRoleDetall() {
         const table = document.getElementById('role-detall-table');
