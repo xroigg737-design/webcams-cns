@@ -333,11 +333,11 @@
         }
         .wind-pill {
             position: absolute;
-            top: -6px;
+            top: -8px;
             left: 50%;
             transform: translateX(-50%);
             width: 34px;
-            height: 90px;
+            height: 64px;
             background: var(--pill-color, #4caf50);
             border-radius: 16px 16px 4px 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
@@ -629,8 +629,8 @@
             .wind-map-sidebar .wg-sec-label { font-size: 0.45em; }
             .wind-map-sidebar .wg-sec-val { font-size: 0.85em; }
             .wind-compass-combined { width: 140px; height: 140px; }
-            .wind-pill { width: 28px; height: 65px; top: -5px; border-radius: 13px 13px 3px 3px; }
-            .wind-pill::after { border-left-width: 14px; border-right-width: 14px; border-top-width: 13px; bottom: -13px; }
+            .wind-pill { width: 28px; height: 44px; top: -5px; border-radius: 13px 13px 3px 3px; }
+            .wind-pill::after { border-left-width: 14px; border-right-width: 14px; border-top-width: 12px; bottom: -12px; }
             .wind-pill-text { font-size: 0.75em; }
             .wind-map-overlay { top: 55%; left: 45%; gap: 6px; }
             .wind-map-speed { font-size: 1.4em; }
@@ -695,21 +695,24 @@
                         <div class="wind-compass-combined">
                             <!-- Roseta de vents (estàtica) -->
                             <svg class="compass-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Cercles concèntrics estil Windy -->
+                                <!-- Cercle exterior -->
                                 <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
-                                <circle cx="100" cy="100" r="58" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/>
+                                <!-- Cercle central pivot (gran, visible) -->
+                                <circle cx="100" cy="100" r="28" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>
                                 <!-- Línies cardinals (N-S, E-W) -->
                                 <g stroke="rgba(255,255,255,0.35)" stroke-width="1.2">
-                                    <line x1="100" y1="8" x2="100" y2="192"/>
-                                    <line x1="8" y1="100" x2="192" y2="100"/>
+                                    <line x1="100" y1="8" x2="100" y2="72"/>
+                                    <line x1="100" y1="128" x2="100" y2="192"/>
+                                    <line x1="8" y1="100" x2="72" y2="100"/>
+                                    <line x1="128" y1="100" x2="192" y2="100"/>
                                 </g>
                                 <!-- Línies intercardinals (NE-SW, NW-SE) -->
                                 <g stroke="rgba(255,255,255,0.22)" stroke-width="1">
-                                    <line x1="35" y1="35" x2="165" y2="165"/>
-                                    <line x1="165" y1="35" x2="35" y2="165"/>
+                                    <line x1="35" y1="35" x2="80" y2="80"/>
+                                    <line x1="120" y1="120" x2="165" y2="165"/>
+                                    <line x1="165" y1="35" x2="120" y2="80"/>
+                                    <line x1="80" y1="120" x2="35" y2="165"/>
                                 </g>
-                                <!-- Cercle central pivot -->
-                                <circle cx="100" cy="100" r="5" fill="rgba(255,255,255,0.55)"/>
                                 <!-- Lletres cardinals -->
                                 <text x="100" y="22" text-anchor="middle" font-size="22" font-weight="800" fill="rgba(239,83,80,1)" font-family="system-ui,sans-serif">N</text>
                                 <text x="100" y="198" text-anchor="middle" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">S</text>
