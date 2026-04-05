@@ -671,34 +671,6 @@
                         <a href="https://www.wunderground.com/dashboard/pws/IVILAN45" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">WU &rarr;</a>
                     </div>
                 </div>
-                <!-- Castelldefels -->
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#9973;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#66bb6a;letter-spacing:1px;text-transform:uppercase;">Castelldefels</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-                        <svg id="cd-arrow" viewBox="0 0 60 60" width="34" height="34">
-                            <line x1="30" y1="48" x2="30" y2="12" stroke="#8ab4d6" stroke-width="3.5" stroke-linecap="round"/>
-                            <polygon points="30,6 23,18 37,18" fill="#8ab4d6"/>
-                        </svg>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="cd-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
-                            </div>
-                            <div id="cd-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
-                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
-                        <span id="cd-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="cd-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                        <a href="https://www.17nudos.com/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">17nudos &rarr;</a>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -759,14 +731,6 @@
                         <div class="card-name">Estació Meteo CNS</div>
                         <div class="card-desc">Vent, temp, pressió</div>
                         <span class="card-badge badge-meteo">WeatherCloud</span>
-                    </div>
-                </a>
-                <a class="card" href="https://www.17nudos.com/">
-                    <img class="card-img" src="img/davis-vantage-pro2.jpg" alt="Estació WeatherLink Castelldefels" loading="lazy">
-                    <div class="card-body">
-                        <div class="card-name">Vent Castelldefels</div>
-                        <div class="card-desc">Vent en temps real</div>
-                        <span class="card-badge badge-meteo">17nudos</span>
                     </div>
                 </a>
             </div>
@@ -969,44 +933,13 @@
         } catch(e) { /* retry next interval */ }
     }
 
-    // 17nudos Castelldefels — via proxy Cloudflare Worker, dades en kn
-    async function fetch17nudos() {
-        try {
-            const r = await fetch(API + '/17nudos');
-            if (!r.ok) throw new Error();
-            const d = await r.json();
-            const dir = d.dir || 0;
-            const spd = d.speed_kn ?? 0;
-            const gust = d.gust_kn ?? 0;
-            const dirS = degToCompass(dir);
-            const ventNom = degToVentCatala(dir);
-            const c = arcColor(spd);
-
-            const arrowEl = document.getElementById('cd-arrow');
-            const spdEl = document.getElementById('cd-speed');
-            const dirEl = document.getElementById('cd-dir');
-            const gustEl = document.getElementById('cd-gust');
-            const timeEl = document.getElementById('cd-time');
-
-            if (arrowEl) {
-                arrowEl.style.transform = 'rotate(' + dir + 'deg)';
-                arrowEl.querySelectorAll('line').forEach(function(el) { el.setAttribute('stroke', c); });
-                arrowEl.querySelectorAll('polygon').forEach(function(el) { el.setAttribute('fill', c); });
+    async function fetchNeighbours() {
             }
             if (spdEl) { spdEl.textContent = spd; spdEl.style.color = c; }
             if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '° ' + ventNom; dirEl.style.color = c; }
-            if (gustEl) { gustEl.textContent = gust + ' kn'; gustEl.style.color = arcColor(gust); }
-            if (timeEl) {
-                const t = new Date().toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
-                timeEl.textContent = 'Actualitzat: ' + t;
-            }
-        } catch(e) { /* retry next interval */ }
-    }
-
     async function fetchNeighbours() {
         fetchStation('IVILAN45', 'vn');
         fetchStation('ICUBEL17', 'cb');
-        fetch17nudos();
     }
 
     fetchNeighbours();
