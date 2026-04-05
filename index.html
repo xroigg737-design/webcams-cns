@@ -497,6 +497,14 @@
         /* Botó i panell detall Role */
         .role-clickable {
             cursor: pointer;
+            border-bottom: 1px dashed rgba(255,255,255,0.35);
+            padding-bottom: 1px;
+        }
+        .role-clickable::after {
+            content: ' ▾';
+            font-size: 0.5em;
+            opacity: 0.5;
+            vertical-align: middle;
         }
         .role-clickable:hover { opacity: 0.7; }
         .role-detall-panel {
