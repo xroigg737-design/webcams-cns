@@ -1012,19 +1012,25 @@
     const DIRS = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
     function degToCompass(d) { return DIRS[Math.round(d / 22.5) % 16]; }
 
-    function degToVentCatala(d) {
+    function degToVentCatala(d, kn) {
         const vents = [
-            [0,'Tramuntana'],[45,'Gregal'],[90,'Llevantet'],[135,'Xaloc'],
-            [180,'Migjorn'],[225,'Garbinet'],[270,'Ponent'],[315,'Mestral']
+            [0,'Tramuntana','Tramuntana'],
+            [45,'Gregal','Gregal'],
+            [90,'Llevantet','Llevant'],
+            [135,'Xaloc','Xaloc'],
+            [180,'Migjorn','Migjorn'],
+            [225,'Garbinet','Garbí'],
+            [270,'Ponent','Ponent'],
+            [315,'Mestral','Mestral']
         ];
         const norm = ((d % 360) + 360) % 360;
         let closest = vents[0];
         let minDiff = 360;
-        for (const [ang, nom] of vents) {
-            const diff = Math.abs(((norm - ang + 180) % 360) - 180);
-            if (diff < minDiff) { minDiff = diff; closest = [ang, nom]; }
+        for (const v of vents) {
+            const diff = Math.abs(((norm - v[0] + 180) % 360) - 180);
+            if (diff < minDiff) { minDiff = diff; closest = v; }
         }
-        return closest[1];
+        return (kn != null && kn >= 10) ? closest[2] : closest[1];
     }
 
     // Paleta Windy compartida (fletxa principal + partícules flux)
@@ -1071,7 +1077,7 @@
         const dir = d.dir || 0;
         const spd = d.speed_kn ?? 0;
         const dirS = degToCompass(dir);
-        const ventNom = degToVentCatala(dir);
+        const ventNom = degToVentCatala(dir, spd);
         const mapCol = arcColor(spd);
         const orbit = document.getElementById('wind-pill-orbit');
         const pill = document.getElementById('wind-pill');
@@ -1236,7 +1242,7 @@
         const spdKn = Math.round(spd / 1.852 * 10) / 10;
         const gustKn = Math.round(gust / 1.852 * 10) / 10;
         const dirS = degToCompass(dir);
-        const ventNom = degToVentCatala(dir);
+        const ventNom = degToVentCatala(dir, spdKn);
         const c = arcColor(spdKn);
 
         const arrowEl = document.getElementById(prefix + '-arrow');
@@ -1280,7 +1286,7 @@
             const spd = d.speed_kn ?? 0;
             const gust = d.gust_kn ?? 0;
             const dirS = degToCompass(dir);
-            const ventNom = degToVentCatala(dir);
+            const ventNom = degToVentCatala(dir, spd);
             const c = arcColor(spd);
 
             const arrowEl = document.getElementById('cd-arrow');
