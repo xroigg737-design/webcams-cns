@@ -640,6 +640,13 @@
                                 <div class="wg-sec-val" id="wm-gust">-- <small>kn</small></div>
                             </div>
                         </div>
+                        <div class="wg-sec-card">
+                            <div class="wg-sec-bar" id="wm-rolada-bar" style="background:#e0a0ff;"></div>
+                            <div class="wg-sec-info">
+                                <div class="wg-sec-label">Rolada 30m</div>
+                                <div class="wg-sec-val" id="wm-rolada">-- <small>°</small></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="wind-map-time" id="wm-time">--</div>
                     <a class="wind-map-link" href="https://app.weathercloud.net/d1807591580#wind">Totes les dades &rarr;</a>
@@ -981,6 +988,67 @@
     // Carrega inicial + refresh cada 60s
     fetchWind();
     setInterval(fetchWind, 60000);
+
+    /* ===== ROLADA (oscil·lació angular del vent) ===== */
+    function calcRolada(history) {
+        if (!history || history.length < 2) return null;
+        const dirs = history.map(h => h.dir);
+        // Calcular oscil·lació angular tenint en compte el wraparound 0/360
+        // Usar components vectorials per trobar la direcció mitjana
+        let sumSin = 0, sumCos = 0;
+        dirs.forEach(d => {
+            const rad = d * Math.PI / 180;
+            sumSin += Math.sin(rad);
+            sumCos += Math.cos(rad);
+        });
+        const meanDir = (Math.atan2(sumSin, sumCos) * 180 / Math.PI + 360) % 360;
+        // Calcular desviació angular respecte la mitjana
+        let maxDev = 0;
+        dirs.forEach(d => {
+            let diff = Math.abs(d - meanDir);
+            if (diff > 180) diff = 360 - diff;
+            if (diff > maxDev) maxDev = diff;
+        });
+        // Rolada = rang total (2x desviació màxima com a estimació, o bé max-min angular)
+        let minDir = Infinity, maxDir = -Infinity;
+        // Normalitzar totes les direccions respecte la mitjana per evitar wraparound
+        const normalized = dirs.map(d => {
+            let diff = d - meanDir;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+            return diff;
+        });
+        normalized.forEach(n => {
+            if (n < minDir) minDir = n;
+            if (n > maxDir) maxDir = n;
+        });
+        return Math.round(maxDir - minDir);
+    }
+
+    async function fetchRolada() {
+        try {
+            const r = await fetch(API + '/history');
+            if (!r.ok) throw new Error();
+            const history = await r.json();
+            const rolada = calcRolada(history);
+            const el = document.getElementById('wm-rolada');
+            const bar = document.getElementById('wm-rolada-bar');
+            if (el) {
+                if (rolada !== null) {
+                    el.innerHTML = '±' + Math.round(rolada / 2) + ' <small>°</small>';
+                    // Color: verd si estable (<15°), groc si moderat, vermell si molt variable
+                    const color = rolada < 15 ? '#66bb6a' : rolada < 30 ? '#ffd740' : rolada < 50 ? '#ff9a76' : '#ef5350';
+                    el.style.color = color;
+                    if (bar) bar.style.background = color;
+                } else {
+                    el.innerHTML = '-- <small>°</small>';
+                }
+            }
+        } catch(e) { /* retry next interval */ }
+    }
+
+    fetchRolada();
+    setInterval(fetchRolada, 60000);
 
     /* ===== ESTACIONS VEÏNES ===== */
     const WU_API = 'https://api.weather.com/v2/pws/observations/current?format=json&units=m&apiKey=6532d6454b8aa370768e63d6ba5a832e';
