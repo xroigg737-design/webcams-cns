@@ -356,22 +356,25 @@
         }
         .wind-pill-text {
             position: absolute;
-            top: 42%;
-            left: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
+            gap: 0;
             color: #fff;
             font-size: 1.3em;
             font-weight: 900;
-            line-height: 1;
-            white-space: nowrap;
+            line-height: 1.1;
         }
         .wind-pill-text small {
-            font-size: 0.6em;
+            font-size: 0.45em;
             font-weight: 700;
             opacity: 0.85;
+            letter-spacing: 0.5px;
         }
         .wind-map-info {
             text-align: left;
@@ -1088,13 +1091,8 @@
         const orbit = document.getElementById('wind-pill-orbit');
         const pill = document.getElementById('wind-pill');
         const pillVal = document.getElementById('wind-pill-val');
-        const pillText = document.getElementById('wind-pill-text');
         if (orbit) orbit.style.transform = `rotate(${dir}deg)`;
         if (pill) pill.style.setProperty('--pill-color', mapCol);
-        if (pillText) {
-            const flip = (dir > 90 && dir < 270) ? 180 : 0;
-            pillText.style.transform = `translate(-50%, -50%) rotate(${flip}deg)`;
-        }
         if (pillVal) pillVal.textContent = spd;
         if (spdEl) { spdEl.textContent = spd + ' kn'; spdEl.style.color = mapCol; }
         if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '\u00b0 ' + ventNom; dirEl.style.color = mapCol; }
