@@ -354,6 +354,23 @@
         .wind-map-sidebar .wg-sec-card {
             background: rgba(11,31,51,0.85);
         }
+        .wg-mobile-only { display: none; }
+        .wg-combined-card {
+            display: none;
+            padding: 4px 7px;
+        }
+        .wg-combined-half {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+        }
+        .wg-combined-divider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255,255,255,0.15);
+            flex-shrink: 0;
+        }
         .wind-map-time {
             position: absolute;
             bottom: 22px;
@@ -487,6 +504,8 @@
             .wind-map-overlay { top: 55%; left: 45%; gap: 6px; }
             .wind-map-speed { font-size: 1.4em; }
             .wind-map-dir { font-size: 0.8em; }
+            .wg-desktop-only { display: none; }
+            .wg-mobile-only { display: flex !important; }
         }
         @media (max-width: 480px) {
             header { padding: 22px 12px 30px; }
@@ -633,18 +652,37 @@
                                 <div class="wg-sec-val" id="wm-avg">-- <small>kn</small></div>
                             </div>
                         </div>
-                        <div class="wg-sec-card">
+                        <!-- Desktop: 2 targes separades -->
+                        <div class="wg-sec-card wg-desktop-only">
                             <div class="wg-sec-bar wg-sec-bar-gust" id="wm-gust-bar"></div>
                             <div class="wg-sec-info">
                                 <div class="wg-sec-label">Ratxa</div>
                                 <div class="wg-sec-val" id="wm-gust">-- <small>kn</small></div>
                             </div>
                         </div>
-                        <div class="wg-sec-card">
+                        <div class="wg-sec-card wg-desktop-only">
                             <div class="wg-sec-bar" id="wm-rolada-bar" style="background:#e0a0ff;"></div>
                             <div class="wg-sec-info">
                                 <div class="wg-sec-label">Rolada 30m</div>
                                 <div class="wg-sec-val" id="wm-rolada">-- <small>°</small></div>
+                            </div>
+                        </div>
+                        <!-- Mòbil: 1 tarja combinada Ratxa | Rolada -->
+                        <div class="wg-sec-card wg-mobile-only wg-combined-card">
+                            <div class="wg-combined-half">
+                                <div class="wg-sec-bar wg-sec-bar-gust" id="wm-gust-bar-m"></div>
+                                <div class="wg-sec-info">
+                                    <div class="wg-sec-label">Ratxa</div>
+                                    <div class="wg-sec-val" id="wm-gust-m">-- <small>kn</small></div>
+                                </div>
+                            </div>
+                            <div class="wg-combined-divider"></div>
+                            <div class="wg-combined-half">
+                                <div class="wg-sec-bar" id="wm-rolada-bar-m" style="background:#e0a0ff;"></div>
+                                <div class="wg-sec-info">
+                                    <div class="wg-sec-label">Rolada 30m</div>
+                                    <div class="wg-sec-val" id="wm-rolada-m">-- <small>°</small></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -962,11 +1000,17 @@
         const avgCol = arcColor(d.avg_10m_kn ?? 0);
         const dirAvgTxt = dirAvg != null ? ' <span style="font-size:0.85em;color:' + avgCol + ';font-weight:900">&middot; ' + degToCompass(dirAvg) + ' ' + dirAvg + '°</span>' : '';
         if (avgEl) avgEl.innerHTML = (d.avg_10m_kn != null ? d.avg_10m_kn : '--') + ' <small>kn</small>' + dirAvgTxt;
-        if (gustEl) gustEl.innerHTML = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
+        const gustHtml = (d.gust_10m_kn != null ? d.gust_10m_kn : '--') + ' <small>kn</small>';
+        const gustCol = arcColor(d.gust_10m_kn ?? 0);
+        if (gustEl) gustEl.innerHTML = gustHtml;
+        const gustElM = document.getElementById('wm-gust-m');
+        if (gustElM) gustElM.innerHTML = gustHtml;
         const avgBar = document.getElementById('wm-avg-bar');
         const gustBar = document.getElementById('wm-gust-bar');
+        const gustBarM = document.getElementById('wm-gust-bar-m');
         if (avgBar) avgBar.style.background = arcColor(d.avg_10m_kn ?? 0);
-        if (gustBar) gustBar.style.background = arcColor(d.gust_10m_kn ?? 0);
+        if (gustBar) gustBar.style.background = gustCol;
+        if (gustBarM) gustBarM.style.background = gustCol;
         if (timeEl) {
             const ts = d.timestamp ? new Date(d.timestamp * 1000) : null;
             const t = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
@@ -1031,18 +1075,15 @@
             if (!r.ok) throw new Error();
             const history = await r.json();
             const rolada = calcRolada(history);
-            const el = document.getElementById('wm-rolada');
-            const bar = document.getElementById('wm-rolada-bar');
-            if (el) {
-                if (rolada !== null) {
-                    el.innerHTML = '±' + Math.round(rolada / 2) + ' <small>°</small>';
-                    // Color: verd si estable (<15°), groc si moderat, vermell si molt variable
-                    const color = rolada < 15 ? '#66bb6a' : rolada < 30 ? '#ffd740' : rolada < 50 ? '#ff9a76' : '#ef5350';
-                    el.style.color = color;
-                    if (bar) bar.style.background = color;
-                } else {
-                    el.innerHTML = '-- <small>°</small>';
-                }
+            const els = [document.getElementById('wm-rolada'), document.getElementById('wm-rolada-m')];
+            const bars = [document.getElementById('wm-rolada-bar'), document.getElementById('wm-rolada-bar-m')];
+            if (rolada !== null) {
+                const html = '±' + Math.round(rolada / 2) + ' <small>°</small>';
+                const color = rolada < 15 ? '#66bb6a' : rolada < 30 ? '#ffd740' : rolada < 50 ? '#ff9a76' : '#ef5350';
+                els.forEach(el => { if (el) { el.innerHTML = html; el.style.color = color; } });
+                bars.forEach(b => { if (b) b.style.background = color; });
+            } else {
+                els.forEach(el => { if (el) el.innerHTML = '-- <small>°</small>'; });
             }
         } catch(e) { /* retry next interval */ }
     }
