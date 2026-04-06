@@ -1037,7 +1037,18 @@
                         <span class="card-badge badge-regata">PDF</span>
                     </div>
                 </a>
+                <div class="card" onclick="document.getElementById('videoRegles').style.display=document.getElementById('videoRegles').style.display==='none'?'block':'none'" style="cursor:pointer">
+                    <img class="card-img" src="img/sailboat-instructor.png" alt="SailboatInstructor.com" loading="lazy" style="object-fit:contain;background:#fff">
+                    <div class="card-body">
+                        <div class="card-name">10 Regles Basiques</div>
+                        <div class="card-desc">Video amb subtitols en catala</div>
+                        <span class="card-badge badge-regata">Video</span>
+                    </div>
+                </div>
             </div>
+            <video id="videoRegles" style="display:none;width:100%;border-radius:12px;margin-top:10px" controls preload="none">
+                <source src="video/regles-regates-ca.mp4" type="video/mp4">
+            </video>
         </section>
 
 
