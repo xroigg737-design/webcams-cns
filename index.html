@@ -1715,9 +1715,9 @@
                 var arg = [
                     's=48885','m=' + mod.m,'uid=' + uid,
                     'wj=knots','tj=c','waj=m','tij=cm',
-                    'odh=0','doh=24','fhours=72','hrsm=3',
+                    'odh=0','doh=24','fhours=72','hrsm=1',
                     'vt=forecasts','lng=es',
-                    'p=RATING,WINDSPD,GUST,SMER,TMPE,RH,CDC,SLP,APCP,HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWDIR1,SWELL2,SWPER2,SWDIR2,WVHGT,WVPER,WVDIR'
+                    'p=WINDSPD,GUST,SMER,TMPE,CDC,APCP1,RATING'
                 ];
                 var script = document.createElement('script');
                 script.src = 'https://www.windguru.cz/js/widget.php?' + arg.join('&');
