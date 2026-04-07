@@ -752,14 +752,16 @@
             display: none;
             position: fixed;
             inset: 0;
-            z-index: 9999;
-            background: rgba(0,0,0,0.92);
+            z-index: 99999;
+            background: rgba(0,0,0,0.95);
             align-items: center;
             justify-content: center;
             cursor: pointer;
             animation: lbFadeIn 0.25s ease;
         }
         .regles-lightbox.active { display: flex; }
+        .regles-lightbox.active ~ *, .regles-lightbox.active + * { z-index: auto; }
+        body.lightbox-open iframe { visibility: hidden !important; }
         .regles-lightbox img {
             max-width: 95vw;
             max-height: 92vh;
@@ -831,7 +833,7 @@
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
         </div>
-        <span class="app-version">v2.0</span>
+        <span class="app-version">v2.1</span>
     </div>
 </header>
 
@@ -1145,7 +1147,7 @@
                         <span class="card-badge badge-meteo">Port de Sitges</span>
                     </div>
                 </a>
-                <div class="card" onclick="document.getElementById('reglesLightbox').classList.add('active')" style="cursor:pointer">
+                <div class="card" onclick="document.getElementById('reglesLightbox').classList.add('active');document.body.classList.add('lightbox-open')" style="cursor:pointer">
                     <img class="card-img" src="img/strategy.png" alt="Regles Pràctiques models" loading="lazy" style="object-fit:contain;background:#fff">
                     <div class="card-body">
                         <div class="card-name">Regles Pràctiques models</div>
@@ -1156,7 +1158,7 @@
             </div>
 
             <!-- Lightbox Regles Prediccions -->
-            <div class="regles-lightbox" id="reglesLightbox" onclick="this.classList.remove('active')">
+            <div class="regles-lightbox" id="reglesLightbox" onclick="this.classList.remove('active');document.body.classList.remove('lightbox-open')">
                 <span class="regles-lightbox-close">&times;</span>
                 <img src="img/regles-prediccions.png" alt="Regles Prediccions">
             </div>
