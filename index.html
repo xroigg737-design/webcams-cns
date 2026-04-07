@@ -1741,15 +1741,16 @@
             container.style.background = '#0b1f33';
             var url = 'https://embed.windy.com/embed2.html'
                 + '?type=map&location=coordinates'
-                + '&lat=45&lon=0&zoom=4'
-                + '&overlay=pressure'
-                + '&metricWind=kt&metricTemp=%C2%B0C'
-                + '&product=ecmwf&pressure=true&calendar=now'
-                + '&marker=&menu=&message=true&detail=';
+                + '&lat=48&lon=-5&detailLat=48&detailLon=-5&zoom=4'
+                + '&level=surface&overlay=pressure&product=ecmwf'
+                + '&pressure=true&calendar=now'
+                + '&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1'
+                + '&message=true';
             var iframe = document.createElement('iframe');
             iframe.src = url;
             iframe.title = 'Mapa de pressió atmosfèrica — Europa / Atlàntic';
             iframe.loading = 'lazy';
+            iframe.allow = 'geolocation';
             iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
             container.appendChild(iframe);
             if (subtitle) subtitle.textContent = 'Isòbares Europa / Atlàntic';
