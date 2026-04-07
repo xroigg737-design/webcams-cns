@@ -648,8 +648,98 @@
             text-align: center;
         }
 
+        /* ===== WINDY MAP WIDGET ===== */
+        .windy-map-widget {
+            margin: 12px 12px 4px;
+            background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(102,187,106,0.15);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .windy-map-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px 10px;
+        }
+        .windy-map-titles {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .windy-map-title {
+            font-size: 0.82em;
+            font-weight: 800;
+            color: #e8e8e8;
+            letter-spacing: 0.5px;
+        }
+        .windy-map-subtitle {
+            font-size: 0.62em;
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+        }
+        .windy-map-tabs {
+            display: flex;
+            gap: 4px;
+        }
+        .windy-map-tab {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.6em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .windy-map-tab.active {
+            background: rgba(102,187,106,0.2);
+            color: #66bb6a;
+            border-color: rgba(102,187,106,0.3);
+        }
+        .windy-map-tab.disabled {
+            color: rgba(255,255,255,0.2);
+            cursor: default;
+        }
+        .windy-map-body {
+            position: relative;
+            width: 100%;
+            height: 520px;
+            background: #0b1f33;
+        }
+        .windy-map-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        .windy-map-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px 10px;
+            gap: 8px;
+        }
+        .windy-map-caption {
+            font-size: 0.6em;
+            color: rgba(255,255,255,0.35);
+            line-height: 1.4;
+        }
+        .windy-map-source {
+            font-size: 0.55em;
+            color: rgba(102,187,106,0.6);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
+            .windy-map-body { height: 400px; }
+            .windy-map-head { padding: 10px 12px 8px; }
+            .windy-map-foot { padding: 6px 12px 8px; }
             .layout { flex-direction: column; }
             .content { padding: 10px 10px 20px; }
             .wind-map-sidebar { gap: 4px; }
@@ -667,6 +757,7 @@
             .wg-mobile-only { display: flex !important; }
         }
         @media (max-width: 480px) {
+            .windy-map-body { height: 350px; }
             header { padding: 22px 12px 30px; }
             header h1 { font-size: 1.4em; letter-spacing: 2px; }
             .header-photo { width: 55px; height: 55px; }
@@ -680,9 +771,11 @@
             .cards { grid-template-columns: 1fr; }
         }
         @media (min-width: 769px) {
+            .windy-map-body { height: 480px; }
             .cards { grid-template-columns: 1fr 1fr; }
         }
         @media (min-width: 1000px) {
+            .windy-map-body { height: 560px; }
             .cards { grid-template-columns: 1fr 1fr 1fr; }
         }
     </style>
@@ -976,6 +1069,28 @@
                 <span class="category-title title-meteo">Previ i Estacions Meteo</span>
             </div>
             <hr class="category-line line-meteo">
+
+            <!-- Widget Mapa Windy -->
+            <div class="windy-map-widget" id="windyMapWidget">
+                <div class="windy-map-head">
+                    <div class="windy-map-titles">
+                        <div class="windy-map-title">Mapa de previsió</div>
+                        <div class="windy-map-subtitle">Vista general del vent sobre la costa</div>
+                    </div>
+                    <div class="windy-map-tabs">
+                        <span class="windy-map-tab active">Mapa</span>
+                        <span class="windy-map-tab disabled" title="Properament">Forecast</span>
+                    </div>
+                </div>
+                <div class="windy-map-body" id="windyMapBody">
+                    <!-- Iframe carregat per JS amb configuració centralitzada -->
+                </div>
+                <div class="windy-map-foot">
+                    <span class="windy-map-caption">Mapa visual per interpretar ràpidament la situació de vent a la costa.</span>
+                    <span class="windy-map-source">Font: Windy</span>
+                </div>
+            </div>
+
             <div class="cards category-cards">
                 <a class="card" href="https://www.windguru.cz/48885">
                     <img class="card-img" src="img/windguru-sitges.png" alt="Mapa isòbares Mediterrani" loading="lazy">
@@ -1532,6 +1647,41 @@
         if (document.readyState === 'complete') init();
         else window.addEventListener('load', init);
     })();
+
+    /* ===== WINDY MAP EMBED ===== */
+    (function() {
+        const WINDY_CONFIG = {
+            lat: 41.22,
+            lon: 1.82,
+            zoom: 10,
+            overlay: 'wind',
+            metricWind: 'kt',
+            marker: true,
+            detail: true
+        };
+
+        const url = 'https://embed.windy.com/embed.html'
+            + '?type=map&location=coordinates'
+            + '&lat=' + WINDY_CONFIG.lat
+            + '&lon=' + WINDY_CONFIG.lon
+            + '&zoom=' + WINDY_CONFIG.zoom
+            + '&overlay=' + WINDY_CONFIG.overlay
+            + '&metricWind=' + WINDY_CONFIG.metricWind
+            + (WINDY_CONFIG.marker ? '&marker=true' : '')
+            + (WINDY_CONFIG.detail ? '&detail=true' : '');
+
+        const container = document.getElementById('windyMapBody');
+        if (container) {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.title = 'Mapa de vent Windy — Costa del Garraf';
+            iframe.loading = 'lazy';
+            iframe.allow = 'geolocation';
+            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+            container.appendChild(iframe);
+        }
+    })();
+
 })();
 </script>
 
