@@ -1688,8 +1688,6 @@
             wrapper.style.cssText = 'width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 0;';
             container.appendChild(wrapper);
 
-            var defaultParams = 'WINDSPD,GUST,SMER,TMPE,CDC,APCP1,RATING';
-            var waveParams = 'HTSGW,PERPW,DIRPW,SWELL1,SWPER1,SWEN1,SWDIR1,WVHGT,WVPER,WVDIR';
             var models = [
                 {m: '52',  hrsm: '1'},
                 {m: '100', hrsm: '2'},
@@ -1703,7 +1701,7 @@
                 {m: '45',  hrsm: '2'},
                 {m: '21',  hrsm: '2'},
                 {m: '59',  hrsm: '2'},
-                {m: '46',  hrsm: '2', p: waveParams}
+                {m: '46',  hrsm: '2'}
             ];
 
             models.forEach(function(mod, i) {
@@ -1719,8 +1717,7 @@
                     's=48885','m=' + mod.m,'uid=' + uid,
                     'wj=knots','tj=c','waj=m','tij=cm',
                     'odh=0','doh=24','fhours=72','hrsm=' + mod.hrsm,
-                    'vt=forecasts','lng=es',
-                    'p=' + (mod.p || defaultParams)
+                    'vt=forecasts','lng=es'
                 ];
                 var script = document.createElement('script');
                 script.src = 'https://www.windguru.cz/js/widget.php?' + arg.join('&');
