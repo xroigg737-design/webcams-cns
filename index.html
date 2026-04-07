@@ -800,7 +800,7 @@
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
         </div>
-        <span class="app-version">v1.5</span>
+        <span class="app-version">v1.6</span>
     </div>
 </header>
 
@@ -1093,6 +1093,7 @@
                     <div class="windy-map-tabs">
                         <span class="windy-map-tab active" id="tabWindy">Windy</span>
                         <span class="windy-map-tab" id="tabWindguru">Windguru</span>
+                        <span class="windy-map-tab" id="tabPressio">Pressió</span>
                     </div>
                 </div>
                 <div class="windy-map-body" id="windyMapBody">
@@ -1659,9 +1660,16 @@
         const container = document.getElementById('windyMapBody');
         const tabWindy = document.getElementById('tabWindy');
         const tabWindguru = document.getElementById('tabWindguru');
+        const tabPressio = document.getElementById('tabPressio');
         const subtitle = document.querySelector('#windyMapWidget .windy-map-subtitle');
         const caption = document.getElementById('forecastCaption');
         const source = document.getElementById('forecastSource');
+        const allTabs = [tabWindy, tabWindguru, tabPressio];
+
+        function setActiveTab(tab) {
+            allTabs.forEach(function(t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+        }
 
         function loadWindy() {
             container.innerHTML = '';
@@ -1726,10 +1734,32 @@
             if (source) source.textContent = 'Font: Windguru';
         }
 
+        function loadPressio() {
+            container.innerHTML = '';
+            container.style.height = '520px';
+            container.style.minHeight = '';
+            container.style.background = '#0b1f33';
+            var url = 'https://embed.windy.com/embed2.html'
+                + '?type=map&location=coordinates'
+                + '&lat=45&lon=0&zoom=4'
+                + '&overlay=pressure'
+                + '&metricWind=kt&metricTemp=%C2%B0C'
+                + '&product=ecmwf&pressure=true&calendar=now'
+                + '&marker=&menu=&message=true&detail=';
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.title = 'Mapa de pressió atmosfèrica — Europa / Atlàntic';
+            iframe.loading = 'lazy';
+            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+            container.appendChild(iframe);
+            if (subtitle) subtitle.textContent = 'Isòbares Europa / Atlàntic';
+            if (caption) caption.textContent = 'Mapa de pressió atmosfèrica amb isòbares (model ECMWF).';
+            if (source) source.textContent = 'Font: Windy';
+        }
+
         tabWindy.addEventListener('click', function() {
             if (tabWindy.classList.contains('active')) return;
-            tabWindy.classList.add('active');
-            tabWindguru.classList.remove('active');
+            setActiveTab(tabWindy);
             container.style.height = '520px';
             container.style.minHeight = '';
             container.style.background = '#0b1f33';
@@ -1738,9 +1768,14 @@
 
         tabWindguru.addEventListener('click', function() {
             if (tabWindguru.classList.contains('active')) return;
-            tabWindguru.classList.add('active');
-            tabWindy.classList.remove('active');
+            setActiveTab(tabWindguru);
             loadWindguru();
+        });
+
+        tabPressio.addEventListener('click', function() {
+            if (tabPressio.classList.contains('active')) return;
+            setActiveTab(tabPressio);
+            loadPressio();
         });
 
         loadWindy();
