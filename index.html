@@ -654,7 +654,7 @@
             background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
             border: 1px solid rgba(102,187,106,0.15);
             border-radius: 14px;
-            overflow: hidden;
+            overflow: visible;
         }
         .windy-map-head {
             display: flex;
@@ -697,9 +697,12 @@
             color: #66bb6a;
             border-color: rgba(102,187,106,0.3);
         }
-        .windy-map-tab.disabled {
-            color: rgba(255,255,255,0.2);
-            cursor: default;
+        .windy-map-tab:not(.active) {
+            color: rgba(255,255,255,0.45);
+        }
+        .windy-map-tab:not(.active):hover {
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.05);
         }
         .windy-map-body {
             position: relative;
@@ -1078,16 +1081,16 @@
                         <div class="windy-map-subtitle">Vista general del vent sobre la costa</div>
                     </div>
                     <div class="windy-map-tabs">
-                        <span class="windy-map-tab active">Mapa</span>
-                        <span class="windy-map-tab disabled" title="Properament">Forecast</span>
+                        <span class="windy-map-tab active" id="tabWindy">Windy</span>
+                        <span class="windy-map-tab" id="tabWindguru">Windguru</span>
                     </div>
                 </div>
                 <div class="windy-map-body" id="windyMapBody">
-                    <!-- Iframe carregat per JS amb configuració centralitzada -->
+                    <!-- Contingut carregat per JS -->
                 </div>
                 <div class="windy-map-foot">
-                    <span class="windy-map-caption">Mapa visual per interpretar ràpidament la situació de vent a la costa.</span>
-                    <span class="windy-map-source">Font: Windy</span>
+                    <span class="windy-map-caption" id="forecastCaption">Mapa interactiu amb previsió de vent, pluja, ratxes i més.</span>
+                    <span class="windy-map-source" id="forecastSource">Font: Windy</span>
                 </div>
             </div>
 
@@ -1640,7 +1643,7 @@
         else window.addEventListener('load', init);
     })();
 
-    /* ===== WINDY MAP EMBED ===== */
+    /* ===== FORECAST WIDGET (Windy + Windguru) ===== */
     (function() {
         const WINDY_CONFIG = {
             lat: 41.22,
@@ -1648,30 +1651,105 @@
             zoom: 10,
             overlay: 'wind',
             metricWind: 'kt',
-            marker: true,
-            detail: false
+            marker: true
         };
 
-        const url = 'https://embed.windy.com/embed.html'
-            + '?type=map&location=coordinates'
-            + '&lat=' + WINDY_CONFIG.lat
-            + '&lon=' + WINDY_CONFIG.lon
-            + '&zoom=' + WINDY_CONFIG.zoom
-            + '&overlay=' + WINDY_CONFIG.overlay
-            + '&metricWind=' + WINDY_CONFIG.metricWind
-            + (WINDY_CONFIG.marker ? '&marker=true' : '')
-            + (WINDY_CONFIG.detail ? '&detail=true' : '');
-
         const container = document.getElementById('windyMapBody');
-        if (container) {
-            const iframe = document.createElement('iframe');
+        const tabWindy = document.getElementById('tabWindy');
+        const tabWindguru = document.getElementById('tabWindguru');
+        const subtitle = document.querySelector('#windyMapWidget .windy-map-subtitle');
+        const caption = document.getElementById('forecastCaption');
+        const source = document.getElementById('forecastSource');
+
+        function loadWindy() {
+            container.innerHTML = '';
+            var url = 'https://embed.windy.com/embed2.html'
+                + '?type=map&location=coordinates'
+                + '&lat=' + WINDY_CONFIG.lat
+                + '&lon=' + WINDY_CONFIG.lon
+                + '&zoom=' + WINDY_CONFIG.zoom
+                + '&overlay=' + WINDY_CONFIG.overlay
+                + '&metricWind=' + WINDY_CONFIG.metricWind
+                + '&marker=true&detail=true'
+                + '&detailLat=' + WINDY_CONFIG.lat
+                + '&detailLon=' + WINDY_CONFIG.lon
+                + '&product=ecmwf&pressure=true&calendar=now';
+            var iframe = document.createElement('iframe');
             iframe.src = url;
-            iframe.title = 'Mapa de vent Windy — Costa del Garraf';
+            iframe.title = 'Forecast Windy — Costa del Garraf';
             iframe.loading = 'lazy';
             iframe.allow = 'geolocation';
             iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
             container.appendChild(iframe);
+            if (subtitle) subtitle.textContent = 'Mapa interactiu amb previsió detallada';
+            if (caption) caption.textContent = 'Mapa interactiu amb previsió de vent, pluja, ratxes i més.';
+            if (source) source.textContent = 'Font: Windy';
         }
+
+        var wgCounter = 0;
+        function loadWindguru() {
+            container.innerHTML = '';
+            container.style.background = '#fff';
+            var wrapper = document.createElement('div');
+            wrapper.style.cssText = 'width:100%;height:100%;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px;';
+            container.appendChild(wrapper);
+
+            var models = [
+                {m: '100', label: 'WG Mix'},
+                {m: '52',  label: 'AROME-FR 1.3km'},
+                {m: '3',   label: 'GFS 13km'},
+                {m: '117', label: 'IFS-HRES 9km (ECMWF)'},
+                {m: '109', label: 'HARM-DK 2km'},
+                {m: '107', label: 'ALADIN 2.3km'},
+                {m: '64',  label: 'Zephr-HD 2.6km'},
+                {m: '57',  label: 'HARMONIE 5km'},
+                {m: '43',  label: 'ICON 7km'},
+                {m: '45',  label: 'ICON 13km'},
+                {m: '21',  label: 'WRF 9km'},
+                {m: '59',  label: 'GDPS 15km'}
+            ];
+
+            models.forEach(function(mod) {
+                wgCounter++;
+                var uid = 'wg_fwdg_48885_' + mod.m + '_' + wgCounter;
+                var anchor = document.createElement('script');
+                anchor.id = uid;
+                wrapper.appendChild(anchor);
+                var arg = [
+                    's=48885','m=' + mod.m,'uid=' + uid,
+                    'wj=knots','tj=c','waj=m','tij=cm',
+                    'odh=0','doh=24','fhours=72','hrsm=3',
+                    'vt=forecasts','lng=ca',
+                    'p=WINDSPD,GUST,SMER,TMPE,TCDC,APCP,PRESS'
+                ];
+                var script = document.createElement('script');
+                script.src = 'https://www.windguru.cz/js/widget.php?' + arg.join('&');
+                wrapper.appendChild(script);
+            });
+
+            if (subtitle) subtitle.textContent = 'Tots els models — Sitges';
+            if (caption) caption.textContent = 'Pronòstic multi-model detallat per Sitges.';
+            if (source) source.textContent = 'Font: Windguru';
+        }
+
+        tabWindy.addEventListener('click', function() {
+            if (tabWindy.classList.contains('active')) return;
+            tabWindy.classList.add('active');
+            tabWindguru.classList.remove('active');
+            container.style.height = '520px';
+            container.style.background = '#0b1f33';
+            loadWindy();
+        });
+
+        tabWindguru.addEventListener('click', function() {
+            if (tabWindguru.classList.contains('active')) return;
+            tabWindguru.classList.add('active');
+            tabWindy.classList.remove('active');
+            container.style.height = '2400px';
+            loadWindguru();
+        });
+
+        loadWindy();
     })();
 
 })();
