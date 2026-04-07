@@ -747,114 +747,35 @@
             flex-shrink: 0;
         }
 
-        /* Regles Pràctiques widget */
-        .regles-widget {
-            margin: 12px 12px 4px;
-            background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
-            border: 1px solid rgba(102,187,106,0.15);
-            border-radius: 14px;
-            overflow: hidden;
-        }
-        .regles-widget-head {
-            display: flex;
+        /* Lightbox regles prediccions */
+        .regles-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.92);
             align-items: center;
-            gap: 10px;
-            padding: 12px 14px 10px;
+            justify-content: center;
+            cursor: pointer;
+            animation: lbFadeIn 0.25s ease;
         }
-        .regles-widget-img {
-            width: 54px;
-            height: 54px;
+        .regles-lightbox.active { display: flex; }
+        .regles-lightbox img {
+            max-width: 95vw;
+            max-height: 92vh;
             border-radius: 10px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
             object-fit: contain;
-            background: #fff;
-            flex-shrink: 0;
         }
-        .regles-widget-titles {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .regles-widget-title {
-            font-size: 0.82em;
-            font-weight: 800;
-            color: #e8e8e8;
-            letter-spacing: 0.5px;
-        }
-        .regles-widget-subtitle {
-            font-size: 0.62em;
-            color: rgba(255,255,255,0.4);
-            font-weight: 600;
-        }
-        .regles-widget-body {
-            padding: 0 14px 14px;
-        }
-        .regles-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.65em;
-            margin-bottom: 12px;
-        }
-        .regles-table th {
-            background: rgba(102,187,106,0.2);
-            color: #66bb6a;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 6px 8px;
-            text-align: left;
-            font-size: 0.9em;
-        }
-        .regles-table td {
-            padding: 5px 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            color: rgba(255,255,255,0.8);
-            line-height: 1.3;
-        }
-        .regles-table tr:last-child td { border-bottom: none; }
-        .regles-table .model-name {
-            font-weight: 700;
-            color: #5ef0e6;
-        }
-        .regles-section {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 10px;
-        }
-        .regles-section:last-child { margin-bottom: 0; }
-        .regles-section-title {
-            font-size: 0.7em;
-            font-weight: 800;
-            color: #66bb6a;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-        }
-        .regles-section ol, .regles-section ul {
-            padding-left: 18px;
-            margin: 0;
-        }
-        .regles-section li {
-            font-size: 0.65em;
-            color: rgba(255,255,255,0.75);
-            line-height: 1.5;
-            margin-bottom: 3px;
-        }
-        .regles-section li strong { color: #5ef0e6; }
-        .regles-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .regles-rangs {
-            font-size: 0.63em;
+        .regles-lightbox-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
             color: rgba(255,255,255,0.7);
-            line-height: 1.5;
-        }
-        .regles-rangs strong { color: #f4a261; }
-        @media (max-width: 480px) {
-            .regles-grid { grid-template-columns: 1fr; }
+            font-size: 2em;
+            font-weight: 300;
+            cursor: pointer;
+            line-height: 1;
         }
 
         /* Responsive */
@@ -1224,104 +1145,20 @@
                         <span class="card-badge badge-meteo">Port de Sitges</span>
                     </div>
                 </a>
+                <div class="card" onclick="document.getElementById('reglesLightbox').classList.add('active')" style="cursor:pointer">
+                    <img class="card-img" src="img/strategy.png" alt="Regles Pràctiques models" loading="lazy" style="object-fit:contain;background:#fff">
+                    <div class="card-body">
+                        <div class="card-name">Regles Pràctiques models</div>
+                        <div class="card-desc">Com interpretar els models de predicció</div>
+                        <span class="card-badge badge-meteo">Infografia</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Widget Regles Pràctiques -->
-            <div class="regles-widget">
-                <div class="regles-widget-head">
-                    <img class="regles-widget-img" src="img/strategy.png" alt="Rosa de vents Sitges" loading="lazy">
-                    <div class="regles-widget-titles">
-                        <div class="regles-widget-title">Regles Pràctiques</div>
-                        <div class="regles-widget-subtitle">Com interpretar els models de predicció de vent</div>
-                    </div>
-                </div>
-                <div class="regles-widget-body">
-                    <!-- Taula comparativa models -->
-                    <table class="regles-table">
-                        <thead>
-                            <tr>
-                                <th>Model</th>
-                                <th>Resolució</th>
-                                <th>Horitzó</th>
-                                <th>Què representa</th>
-                                <th>Quan fiar-te'n?</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="model-name">GFS 13 km</td>
-                                <td>Global · 13 km</td>
-                                <td>Fins a 10 dies</td>
-                                <td>Tendència general</td>
-                                <td>Planificació</td>
-                            </tr>
-                            <tr>
-                                <td class="model-name">WRF 9 km</td>
-                                <td>Regional 9 km</td>
-                                <td>2–4 dies</td>
-                                <td>Vent a prop de costa</td>
-                                <td>Decidir si hi haura vent</td>
-                            </tr>
-                            <tr>
-                                <td class="model-name">WRF 3 km</td>
-                                <td>Alta Res. 3 km</td>
-                                <td>1–3 dies</td>
-                                <td>Brises i tèrmiques</td>
-                                <td>Hora exacta</td>
-                            </tr>
-                            <tr>
-                                <td class="model-name">WRF 1 km</td>
-                                <td>Molt Alta 1 km</td>
-                                <td>24–48 h</td>
-                                <td>Badia i cabos</td>
-                                <td>Afinar el spot</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="regles-grid">
-                        <!-- Regles Pràctiques -->
-                        <div class="regles-section">
-                            <div class="regles-section-title">📋 Regles Pràctiques</div>
-                            <ul>
-                                <li><strong>Coincideixen GFS + WRF</strong> → Alta probabilitat!</li>
-                                <li><strong>WRF més vent que GFS</strong> → Tèrmica. Clar!</li>
-                                <li><strong>Només GFS</strong> → Risc Llevant sense arribar</li>
-                            </ul>
-                        </div>
-
-                        <!-- Mètode Ràpid de Lectura -->
-                        <div class="regles-section">
-                            <div class="regles-section-title">🔍 Mètode Ràpid de Lectura</div>
-                            <ol>
-                                <li>Mira <strong>GFS</strong> → Hi ha vent?</li>
-                                <li>Mira <strong>WRF 9 km</strong> → Entra?</li>
-                                <li>Mira <strong>WRF 3 km</strong> → A quina hora i direcció?</li>
-                            </ol>
-                        </div>
-
-                        <!-- Rangs Útils per Wingfoil -->
-                        <div class="regles-section">
-                            <div class="regles-section-title">🏄 Rangs Útils per Wingfoil</div>
-                            <div class="regles-rangs">
-                                <strong>8–12 kt</strong> → Wing gran<br>
-                                <strong>12 kt</strong> → Ideal polivalent<br>
-                                <strong>18–25 kt</strong> → Wing petit
-                            </div>
-                        </div>
-
-                        <!-- Errors Freqüents -->
-                        <div class="regles-section">
-                            <div class="regles-section-title">⚠️ Errors Freqüents</div>
-                            <ul>
-                                <li>Mirar només un model</li>
-                                <li>Veure només el pic de ratxa</li>
-                                <li>No mirar l'orientació del spot</li>
-                                <li>Oblidar l'evolució horària</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <!-- Lightbox Regles Prediccions -->
+            <div class="regles-lightbox" id="reglesLightbox" onclick="this.classList.remove('active')">
+                <span class="regles-lightbox-close">&times;</span>
+                <img src="img/regles-prediccions.png" alt="Regles Prediccions">
             </div>
         </section>
 
