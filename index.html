@@ -1689,18 +1689,18 @@
             container.appendChild(wrapper);
 
             var models = [
-                {m: '100', label: 'WG Mix'},
-                {m: '52',  label: 'AROME-FR 1.3km'},
-                {m: '3',   label: 'GFS 13km'},
-                {m: '117', label: 'IFS-HRES 9km (ECMWF)'},
-                {m: '109', label: 'HARM-DK 2km'},
-                {m: '107', label: 'ALADIN 2.3km'},
-                {m: '64',  label: 'Zephr-HD 2.6km'},
-                {m: '57',  label: 'HARMONIE 5km'},
-                {m: '43',  label: 'ICON 7km'},
-                {m: '45',  label: 'ICON 13km'},
-                {m: '21',  label: 'WRF 9km'},
-                {m: '59',  label: 'GDPS 15km'}
+                {m: '52',  hrsm: '1'},
+                {m: '100', hrsm: '2'},
+                {m: '3',   hrsm: '2'},
+                {m: '117', hrsm: '2'},
+                {m: '109', hrsm: '1'},
+                {m: '107', hrsm: '1'},
+                {m: '64',  hrsm: '2'},
+                {m: '57',  hrsm: '2'},
+                {m: '43',  hrsm: '2'},
+                {m: '45',  hrsm: '2'},
+                {m: '21',  hrsm: '2'},
+                {m: '59',  hrsm: '2'}
             ];
 
             models.forEach(function(mod, i) {
@@ -1715,7 +1715,7 @@
                 var arg = [
                     's=48885','m=' + mod.m,'uid=' + uid,
                     'wj=knots','tj=c','waj=m','tij=cm',
-                    'odh=0','doh=24','fhours=72','hrsm=1',
+                    'odh=0','doh=24','fhours=72','hrsm=' + mod.hrsm,
                     'vt=forecasts','lng=es',
                     'p=WINDSPD,GUST,SMER,TMPE,CDC,APCP1,RATING'
                 ];
