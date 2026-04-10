@@ -689,29 +689,33 @@
         }
         .windy-map-tabs {
             display: flex;
-            gap: 4px;
+            gap: 6px;
         }
         .windy-map-tab {
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.6em;
+            padding: 6px 16px;
+            border-radius: 10px;
+            font-size: 0.75em;
             font-weight: 700;
             letter-spacing: 0.5px;
             cursor: pointer;
             transition: all 0.2s;
-            border: 1px solid transparent;
+            border: 1px solid rgba(255,255,255,0.18);
+            text-transform: uppercase;
         }
         .windy-map-tab.active {
-            background: rgba(102,187,106,0.2);
+            background: rgba(102,187,106,0.25);
             color: #66bb6a;
-            border-color: rgba(102,187,106,0.3);
+            border-color: rgba(102,187,106,0.45);
+            box-shadow: 0 0 8px rgba(102,187,106,0.25);
         }
         .windy-map-tab:not(.active) {
-            color: rgba(255,255,255,0.45);
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.06);
         }
         .windy-map-tab:not(.active):hover {
-            color: rgba(255,255,255,0.7);
-            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.3);
         }
         .windy-map-body {
             position: relative;
@@ -833,7 +837,7 @@
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
         </div>
-        <span class="app-version">v2.1</span>
+        <span class="app-version">v2.2</span>
     </div>
 </header>
 
