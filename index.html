@@ -648,8 +648,104 @@
             text-align: center;
         }
 
+        .windy-map-widget {
+            margin: 12px 12px 4px;
+            background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(102,187,106,0.15);
+            border-radius: 14px;
+            overflow: visible;
+        }
+        .windy-map-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px 10px;
+        }
+        .windy-map-titles {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .windy-map-title {
+            font-size: 0.82em;
+            font-weight: 800;
+            color: #e8e8e8;
+            letter-spacing: 0.5px;
+        }
+        .windy-map-subtitle {
+            font-size: 0.62em;
+            color: rgba(255,255,255,0.4);
+            font-weight: 600;
+        }
+        .windy-map-tabs {
+            display: flex;
+            gap: 6px;
+        }
+        .windy-map-tab {
+            padding: 6px 16px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.18);
+            text-transform: uppercase;
+        }
+        .windy-map-tab.active {
+            background: rgba(102,187,106,0.25);
+            color: #66bb6a;
+            border-color: rgba(102,187,106,0.45);
+            box-shadow: 0 0 8px rgba(102,187,106,0.25);
+        }
+        .windy-map-tab:not(.active) {
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.06);
+        }
+        .windy-map-tab:not(.active):hover {
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .windy-map-body {
+            position: relative;
+            width: 100%;
+            height: 520px;
+            background: #0b1f33;
+        }
+        .windy-map-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        .windy-map-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px 10px;
+            gap: 8px;
+        }
+        .windy-map-caption {
+            font-size: 0.6em;
+            color: rgba(255,255,255,0.35);
+            line-height: 1.4;
+        }
+        .windy-map-source {
+            font-size: 0.55em;
+            color: rgba(102,187,106,0.6);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
+            .windy-map-body { height: 400px; }
+            .windy-map-head { padding: 10px 12px 8px; }
+            .windy-map-foot { padding: 6px 12px 8px; }
             .layout { flex-direction: column; }
             .content { padding: 10px 10px 20px; }
             .wind-map-sidebar { gap: 4px; }
@@ -667,6 +763,7 @@
             .wg-mobile-only { display: flex !important; }
         }
         @media (max-width: 480px) {
+            .windy-map-body { height: 350px; }
             header { padding: 22px 12px 30px; }
             header h1 { font-size: 1.4em; letter-spacing: 2px; }
             .header-photo { width: 55px; height: 55px; }
@@ -680,9 +777,11 @@
             .cards { grid-template-columns: 1fr; }
         }
         @media (min-width: 769px) {
+            .windy-map-body { height: 480px; }
             .cards { grid-template-columns: 1fr 1fr; }
         }
         @media (min-width: 1000px) {
+            .windy-map-body { height: 560px; }
             .cards { grid-template-columns: 1fr 1fr 1fr; }
         }
     </style>
@@ -694,7 +793,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v2.4</div>
+            <div class="subtitle">v2.5</div>
         </div>
     </div>
 </header>
@@ -1015,6 +1114,29 @@
                 <span class="category-title title-meteo">Previ i Estacions Meteo</span>
             </div>
             <hr class="category-line line-meteo">
+
+            <!-- Widget Mapa Windy -->
+            <div class="windy-map-widget" id="windyMapWidget">
+                <div class="windy-map-head">
+                    <div class="windy-map-titles">
+                        <div class="windy-map-title">Mapa de previsió</div>
+                        <div class="windy-map-subtitle">Vista general del vent sobre la costa</div>
+                    </div>
+                    <div class="windy-map-tabs">
+                        <span class="windy-map-tab active" id="tabWindy">Windy</span>
+                        <span class="windy-map-tab" id="tabWindguru">Windguru</span>
+                        <span class="windy-map-tab" id="tabPressio">Pressió</span>
+                    </div>
+                </div>
+                <div class="windy-map-body" id="windyMapBody">
+                    <!-- Contingut carregat per JS -->
+                </div>
+                <div class="windy-map-foot">
+                    <span class="windy-map-caption" id="forecastCaption">Mapa interactiu amb previsió de vent, pluja, ratxes i més.</span>
+                    <span class="windy-map-source" id="forecastSource">Font: Windy</span>
+                </div>
+            </div>
+
             <div class="cards category-cards">
                 <a class="card" href="https://www.windguru.cz/48885">
                     <img class="card-img" src="img/windguru-sitges.png" alt="Mapa isòbares Mediterrani" loading="lazy">
@@ -1627,6 +1749,143 @@
         if (document.readyState === 'complete') init();
         else window.addEventListener('load', init);
     })();
+
+    /* ===== FORECAST WIDGET (Windy + Windguru + Pressió) ===== */
+    (function() {
+        const WINDY_CONFIG = {
+            lat: 41.22,
+            lon: 1.82,
+            zoom: 10,
+            overlay: 'wind',
+            metricWind: 'kt',
+            marker: true
+        };
+
+        const container = document.getElementById('windyMapBody');
+        const tabWindy = document.getElementById('tabWindy');
+        const tabWindguru = document.getElementById('tabWindguru');
+        const tabPressio = document.getElementById('tabPressio');
+        const subtitle = document.querySelector('#windyMapWidget .windy-map-subtitle');
+        const caption = document.getElementById('forecastCaption');
+        const source = document.getElementById('forecastSource');
+        const allTabs = [tabWindy, tabWindguru, tabPressio];
+
+        function setActiveTab(tab) {
+            allTabs.forEach(function(t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+        }
+
+        function loadWindy() {
+            container.innerHTML = '';
+            var url = 'https://embed.windy.com/embed2.html'
+                + '?type=map&location=coordinates'
+                + '&lat=' + WINDY_CONFIG.lat
+                + '&lon=' + WINDY_CONFIG.lon
+                + '&zoom=' + WINDY_CONFIG.zoom
+                + '&overlay=' + WINDY_CONFIG.overlay
+                + '&metricWind=' + WINDY_CONFIG.metricWind
+                + '&marker=true&detail=true'
+                + '&detailLat=' + WINDY_CONFIG.lat
+                + '&detailLon=' + WINDY_CONFIG.lon
+                + '&product=ecmwf&pressure=true&calendar=now';
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.title = 'Forecast Windy — Costa del Garraf';
+            iframe.loading = 'lazy';
+            iframe.allow = 'geolocation';
+            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+            container.appendChild(iframe);
+            if (subtitle) subtitle.textContent = 'Mapa interactiu amb previsió detallada';
+            if (caption) caption.textContent = 'Mapa interactiu amb previsió de vent, pluja, ratxes i més.';
+            if (source) source.textContent = 'Font: Windy';
+        }
+
+        var wgCounter = 0;
+        function loadWindguru() {
+            container.innerHTML = '';
+            container.style.background = '#f5f5f5';
+            container.style.height = 'auto';
+            container.style.minHeight = '400px';
+            var wrapper = document.createElement('div');
+            wrapper.style.cssText = 'width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 0;';
+            container.appendChild(wrapper);
+
+            var models = [
+                '52','46','109','107','64','57',
+                '43','100','117','21','45','3','59'
+            ];
+
+            models.forEach(function(m, i) {
+                wgCounter++;
+                var uid = 'wg_fwdg_48885_' + m + '_' + wgCounter;
+                var block = document.createElement('div');
+                block.style.cssText = 'margin:0 8px' + (i < models.length - 1 ? ';margin-bottom:12px;padding-bottom:12px;border-bottom:2px solid #ddd' : '') + ';';
+                wrapper.appendChild(block);
+                var anchor = document.createElement('script');
+                anchor.id = uid;
+                block.appendChild(anchor);
+                var arg = [
+                    's=48885','m=' + m,'uid=' + uid,
+                    'vt=forecasts','lng=es'
+                ];
+                var script = document.createElement('script');
+                script.src = 'https://www.windguru.cz/js/widget.php?' + arg.join('&');
+                block.appendChild(script);
+            });
+
+            if (subtitle) subtitle.textContent = 'Tots els models — Sitges';
+            if (caption) caption.textContent = 'Pronòstic multi-model detallat per Sitges.';
+            if (source) source.textContent = 'Font: Windguru';
+        }
+
+        function loadPressio() {
+            container.innerHTML = '';
+            container.style.height = '520px';
+            container.style.minHeight = '';
+            container.style.background = '#0b1f33';
+            var url = 'https://embed.windy.com/embed2.html'
+                + '?type=map&location=coordinates'
+                + '&lat=48&lon=-5&detailLat=48&detailLon=-5&zoom=4'
+                + '&level=surface&overlay=pressure&product=ecmwf'
+                + '&pressure=true&calendar=now'
+                + '&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1'
+                + '&message=true';
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.title = 'Mapa de pressió atmosfèrica — Europa / Atlàntic';
+            iframe.loading = 'lazy';
+            iframe.allow = 'geolocation';
+            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+            container.appendChild(iframe);
+            if (subtitle) subtitle.textContent = 'Isòbares Europa / Atlàntic';
+            if (caption) caption.textContent = 'Mapa de pressió atmosfèrica amb isòbares (model ECMWF).';
+            if (source) source.textContent = 'Font: Windy';
+        }
+
+        tabWindy.addEventListener('click', function() {
+            if (tabWindy.classList.contains('active')) return;
+            setActiveTab(tabWindy);
+            container.style.height = '520px';
+            container.style.minHeight = '';
+            container.style.background = '#0b1f33';
+            loadWindy();
+        });
+
+        tabWindguru.addEventListener('click', function() {
+            if (tabWindguru.classList.contains('active')) return;
+            setActiveTab(tabWindguru);
+            loadWindguru();
+        });
+
+        tabPressio.addEventListener('click', function() {
+            if (tabPressio.classList.contains('active')) return;
+            setActiveTab(tabPressio);
+            loadPressio();
+        });
+
+        loadWindy();
+    })();
+
 })();
 </script>
 
