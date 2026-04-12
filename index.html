@@ -880,7 +880,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v2.8</div>
+            <div class="subtitle">v2.9</div>
         </div>
     </div>
 </header>
@@ -2036,21 +2036,22 @@
         center: [41.69, 1.82],
         zoom: 7,
         minZoom: 7,
-        maxZoom: 10,
+        maxZoom: 14,
         zoomControl: false,
         attributionControl: false,
         maxBounds: [[38.86, -1.44], [44.58, 6.16]]
     });
 
-    // Mapa de fons Meteocat
-    var FonsLayer = createMeteoLayer(
-        TILE_BASE + '/fons/GoogleMapsCompatible/{z2}/000/000/{x3}/000/000/{y3}.png'
-    );
-    new FonsLayer(null, { maxNativeZoom: 8, maxZoom: 10, tileSize: 256 }).addTo(radarMap);
+    // Mapa de fons ICGC (Institut Cartogràfic i Geològic de Catalunya) — topogràfic gris
+    L.tileLayer('https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/topografic-gris/MON3857NW/{z}/{x}/{y}.png', {
+        maxZoom: 14,
+        tileSize: 256,
+        attribution: ''
+    }).addTo(radarMap);
 
     // Atribució
     L.control.attribution({ position: 'bottomleft', prefix: false })
-        .addAttribution('<span style="color:rgba(255,255,255,0.35);font-size:10px">Meteocat — XRAD</span>')
+        .addAttribution('<span style="color:rgba(255,255,255,0.35);font-size:10px">ICGC · Meteocat — XRAD</span>')
         .addTo(radarMap);
 
     var slider = document.getElementById('radar-slider');
@@ -2065,7 +2066,7 @@
             var LayerClass = createMeteoLayer(frame.url);
             radarLayers[key] = new LayerClass(null, {
                 tileSize: 256, opacity: 0.0, zIndex: 10,
-                maxNativeZoom: 7, maxZoom: 10
+                maxNativeZoom: 7, maxZoom: 14
             });
         }
         return radarLayers[key];
