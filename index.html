@@ -784,7 +784,91 @@
             .windy-map-body { height: 560px; }
             .cards { grid-template-columns: 1fr 1fr 1fr; }
         }
+        /* ===== RADAR PLAYER ===== */
+        #radar-map {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 8px;
+            z-index: 0;
+        }
+        .radar-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 0 2px;
+        }
+        .radar-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.08);
+            color: #e8e8e8;
+            font-size: 1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .radar-btn:hover { background: rgba(255,255,255,0.15); }
+        .radar-btn.active { background: rgba(102,187,106,0.25); border-color: rgba(102,187,106,0.4); }
+        .radar-timeline {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.12);
+            outline: none;
+            cursor: pointer;
+        }
+        .radar-timeline::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #66bb6a;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+        .radar-timeline::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #66bb6a;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+        .radar-time-label {
+            font-size: 0.65em;
+            color: rgba(255,255,255,0.6);
+            min-width: 42px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+        }
+        .radar-time-label .radar-pred {
+            color: #ffb74d;
+            font-weight: 700;
+        }
+        .radar-legend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 0 0;
+            font-size: 0.55em;
+            color: rgba(255,255,255,0.4);
+        }
+        .radar-legend-bar {
+            height: 6px;
+            flex: 1;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #0000ff00, #00b0ff, #00e676, #ffeb3b, #ff9800, #f44336, #9c27b0);
+        }
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
@@ -793,7 +877,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v2.5</div>
+            <div class="subtitle">v2.7</div>
         </div>
     </div>
 </header>
@@ -1154,19 +1238,25 @@
                     </div>
                 </a>
             </div>
-            <!-- Radar de pluges Meteocat -->
+            <!-- Radar de pluges animat — RainViewer API + Leaflet -->
             <div style="padding:4px 12px 12px;">
                 <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:6px;padding:10px;">
                     <div style="display:flex;align-items:center;gap:6px;">
                         <span style="font-size:0.9em;">&#127783;&#65039;</span>
                         <span style="font-size:0.72em;font-weight:800;color:#66bb6a;letter-spacing:1px;text-transform:uppercase;">Radar de pluges — Catalunya</span>
                     </div>
-                    <div style="position:relative;width:100%;padding-top:104%;overflow:hidden;border-radius:8px;">
-                        <iframe src="https://static-m.meteo.cat/ginys/mapaRadar?language=ca&color=1a1a2e&target=_blank"
-                                title="Radar meteorològic de Catalunya"
-                                frameborder="0" scrolling="no"
-                                style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:8px;">
-                        </iframe>
+                    <div id="radar-map"></div>
+                    <div class="radar-controls">
+                        <button class="radar-btn" id="radar-prev" title="Anterior">&#9664;</button>
+                        <button class="radar-btn" id="radar-play" title="Reproduir">&#9654;</button>
+                        <button class="radar-btn" id="radar-next" title="Següent">&#9654;</button>
+                        <input type="range" class="radar-timeline" id="radar-slider" min="0" max="0" value="0">
+                        <span class="radar-time-label" id="radar-time">--:--</span>
+                    </div>
+                    <div class="radar-legend">
+                        <span>Feble</span>
+                        <div class="radar-legend-bar"></div>
+                        <span>Forta</span>
                     </div>
                 </div>
             </div>
@@ -1877,6 +1967,216 @@
         loadWindy();
     })();
 
+})();
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+    // --- Radar Player amb dades Meteocat ---
+    var TIMESTAMP_URL = 'https://static-m.meteo.cat/ginys/referencia/tiles/dates-tiles-CAPPI_0m.json';
+    var TILE_BASE = 'https://static-m.meteo.cat/tiles';
+    var ANIM_DELAY = 1000;          // 1s per frame (com Meteocat)
+    var STEP_MS = 6 * 60 * 1000;    // 6 minuts
+    var FRAMES_BACK = 10;            // 1h enrere (10 x 6min)
+    var FRAMES_FWD = 10;             // 1h endavant (predicció)
+
+    var radarMap, radarFrames = [], radarLayers = {}, radarPos = 0;
+    var radarPlaying = false, radarTimer = null, pastCount = 0;
+
+    // Helpers zero-pad
+    function p2(n) { return ('0' + n).slice(-2); }
+    function p3(n) { return ('00' + n).slice(-3); }
+
+    // Arrodonir timestamp al múltiple de 6 min més proper cap avall
+    function roundTo6min(d) {
+        var ms = d.getTime();
+        return new Date(ms - (ms % STEP_MS));
+    }
+
+    // Construir URL tile radar observació
+    function radarTileUrl(dt) {
+        return TILE_BASE + '/radar/'
+            + dt.getUTCFullYear() + '/' + p2(dt.getUTCMonth() + 1) + '/' + p2(dt.getUTCDate()) + '/'
+            + p2(dt.getUTCHours()) + '/' + p2(dt.getUTCMinutes()) + '/'
+            + '{z2}/000/000/{x3}/000/000/{y3}.png';
+    }
+
+    // Construir URL tile advecció (predicció)
+    function adveccioTileUrl(baseDt, targetDt) {
+        return TILE_BASE + '/adveccio/'
+            + baseDt.getUTCFullYear() + '/' + p2(baseDt.getUTCMonth() + 1) + '/' + p2(baseDt.getUTCDate()) + '/'
+            + targetDt.getUTCFullYear() + '/' + p2(targetDt.getUTCMonth() + 1) + '/' + p2(targetDt.getUTCDate()) + '/'
+            + p2(baseDt.getUTCHours()) + '/' + p2(baseDt.getUTCMinutes()) + '/'
+            + p2(targetDt.getUTCHours()) + '/' + p2(targetDt.getUTCMinutes()) + '/'
+            + '{z2}/000/000/{x3}/000/000/{y3}.png';
+    }
+
+    // Crear capa Leaflet amb URLs Meteocat (format TMS amb zero-padding)
+    function createMeteoLayer(urlTemplate) {
+        return L.TileLayer.extend({
+            getTileUrl: function(coords) {
+                var z = this._getZoomForUrl();
+                var x = coords.x;
+                // TMS y-flip
+                var y = Math.pow(2, z) - 1 - coords.y;
+                return urlTemplate
+                    .replace('{z2}', p2(z))
+                    .replace('{x3}', p3(x))
+                    .replace('{y3}', p3(y));
+            }
+        });
+    }
+
+    // Inicialitza mapa Leaflet (config igual que Meteocat)
+    radarMap = L.map('radar-map', {
+        center: [41.69, 1.82],
+        zoom: 8,
+        minZoom: 7,
+        maxZoom: 12,
+        zoomControl: false,
+        attributionControl: false,
+        maxBounds: [[38.86, -1.44], [44.58, 6.16]]
+    });
+
+    // Mapa de fons Meteocat
+    var FonsLayer = createMeteoLayer(
+        TILE_BASE + '/fons/GoogleMapsCompatible/{z2}/000/000/{x3}/000/000/{y3}.png'
+    );
+    new FonsLayer(null, { maxNativeZoom: 7, maxZoom: 12, tileSize: 256 }).addTo(radarMap);
+
+    // Atribució
+    L.control.attribution({ position: 'bottomleft', prefix: false })
+        .addAttribution('<span style="color:rgba(255,255,255,0.35);font-size:10px">Meteocat — XRAD</span>')
+        .addTo(radarMap);
+
+    var slider = document.getElementById('radar-slider');
+    var timeLabel = document.getElementById('radar-time');
+    var btnPlay = document.getElementById('radar-play');
+    var btnPrev = document.getElementById('radar-prev');
+    var btnNext = document.getElementById('radar-next');
+
+    function createFrameLayer(frame) {
+        var key = frame.url;
+        if (!radarLayers[key]) {
+            var LayerClass = createMeteoLayer(frame.url);
+            radarLayers[key] = new LayerClass(null, {
+                tileSize: 256, opacity: 0.0, zIndex: 10,
+                maxNativeZoom: 7, maxZoom: 12
+            });
+        }
+        return radarLayers[key];
+    }
+
+    function formatTimeLocal(dt) {
+        return p2(dt.getHours()) + ':' + p2(dt.getMinutes());
+    }
+
+    function showFrame(idx) {
+        radarPos = idx;
+        for (var i = 0; i < radarFrames.length; i++) {
+            var layer = createFrameLayer(radarFrames[i]);
+            if (i === idx) {
+                if (!radarMap.hasLayer(layer)) layer.addTo(radarMap);
+                layer.setOpacity(0.8);
+            } else {
+                if (radarMap.hasLayer(layer)) layer.setOpacity(0.0);
+            }
+        }
+        slider.value = idx;
+        var f = radarFrames[idx];
+        var timeStr = formatTimeLocal(f.localDt);
+        timeLabel.innerHTML = f.type === 'adveccio'
+            ? '<span class="radar-pred">' + timeStr + ' &#9656;</span>'
+            : timeStr;
+    }
+
+    function play() {
+        radarPos = (radarPos + 1) % radarFrames.length;
+        showFrame(radarPos);
+        var delay = (radarPos === pastCount - 1 || radarPos === radarFrames.length - 1)
+            ? ANIM_DELAY * 3 : ANIM_DELAY;
+        radarTimer = setTimeout(play, delay);
+    }
+
+    function togglePlay() {
+        if (radarPlaying) {
+            clearTimeout(radarTimer);
+            radarPlaying = false;
+            btnPlay.innerHTML = '&#9654;';
+            btnPlay.classList.remove('active');
+        } else {
+            radarPlaying = true;
+            btnPlay.innerHTML = '&#9646;&#9646;';
+            btnPlay.classList.add('active');
+            play();
+        }
+    }
+
+    function loadRadarData() {
+        fetch(TIMESTAMP_URL).then(function(r) { return r.json(); }).then(function(data) {
+            // Netejar capes anteriors
+            for (var k in radarLayers) {
+                if (radarMap.hasLayer(radarLayers[k])) radarMap.removeLayer(radarLayers[k]);
+            }
+            radarLayers = {};
+            radarFrames = [];
+
+            // Parsejar timestamp: format "MM/DD/YYYY HH:mmZ"
+            var parts = data.dataUltimaImatge.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)Z/);
+            var lastRadar = new Date(Date.UTC(
+                parseInt(parts[3]), parseInt(parts[1]) - 1, parseInt(parts[2]),
+                parseInt(parts[4]), parseInt(parts[5])
+            ));
+            lastRadar = roundTo6min(lastRadar);
+
+            // Frames radar (observació): 1h enrere fins a lastRadar
+            for (var i = FRAMES_BACK; i >= 0; i--) {
+                var dt = new Date(lastRadar.getTime() - i * STEP_MS);
+                radarFrames.push({
+                    url: radarTileUrl(dt),
+                    localDt: new Date(dt.getTime()),  // UTC → local via getHours()
+                    type: 'radar'
+                });
+            }
+            pastCount = radarFrames.length;
+
+            // Frames advecció (predicció): des de lastRadar+6min fins a +1h
+            for (var j = 1; j <= FRAMES_FWD; j++) {
+                var targetDt = new Date(lastRadar.getTime() + j * STEP_MS);
+                radarFrames.push({
+                    url: adveccioTileUrl(lastRadar, targetDt),
+                    localDt: new Date(targetDt.getTime()),
+                    type: 'adveccio'
+                });
+            }
+
+            if (radarFrames.length === 0) return;
+
+            slider.max = radarFrames.length - 1;
+            showFrame(pastCount - 1);
+        }).catch(function(e) {
+            console.warn('Radar Meteocat error:', e);
+        });
+    }
+
+    btnPlay.addEventListener('click', togglePlay);
+    btnPrev.addEventListener('click', function() {
+        if (radarPlaying) togglePlay();
+        showFrame((radarPos - 1 + radarFrames.length) % radarFrames.length);
+    });
+    btnNext.addEventListener('click', function() {
+        if (radarPlaying) togglePlay();
+        showFrame((radarPos + 1) % radarFrames.length);
+    });
+    slider.addEventListener('input', function() {
+        if (radarPlaying) togglePlay();
+        showFrame(parseInt(slider.value));
+    });
+
+    loadRadarData();
+    // Recarregar cada 3 minuts (radar s'actualitza cada 6)
+    setInterval(loadRadarData, 3 * 60 * 1000);
 })();
 </script>
 
