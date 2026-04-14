@@ -884,7 +884,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v4.4</div>
+            <div class="subtitle">v4.5</div>
         </div>
     </div>
 </header>
@@ -1171,14 +1171,22 @@
                 <span class="badge-proves">EN PROVES...</span>
             </div>
             <hr class="category-line line-current">
-            <div style="padding:10px 12px 4px;">
-                <div style="position:relative;width:100%;height:480px;border-radius:10px;border:1px solid rgba(0,191,165,0.2);overflow:hidden;">
-                    <iframe src="https://www.icatmar.cat/HFRadar/#LANG=ca&VIEW=1.825,41.208,12.22" style="position:absolute;top:-10px;left:0;width:100%;height:calc(100% + 60px);border:none;" loading="lazy" allow="geolocation"></iframe>
-                </div>
-            </div>
-            <div style="padding:2px 12px 10px;display:flex;justify-content:space-between;align-items:center;">
-                <div style="font-size:0.45em;color:rgba(0,191,165,0.4);">Interactiu — arrossega, zoom, clica per detall</div>
-                <div style="font-size:0.45em;color:rgba(0,191,165,0.4);text-align:right;">Font: <a href="https://icatmar.cat/HFRadar/#LANG=ca&VIEW=1.825,41.208,12.22" target="_blank" style="color:rgba(0,191,165,0.6);text-decoration:none;">ICATMAR HF Radar</a> &middot; Resolució 3x3 km &middot; Temps real</div>
+            <div style="padding:10px 12px 10px;">
+                <a href="https://www.icatmar.cat/HFRadar/#LANG=ca&VIEW=1.825,41.208,12.22" target="_blank" style="text-decoration:none;display:block;">
+                    <div style="position:relative;border-radius:12px;border:1px solid rgba(0,191,165,0.25);overflow:hidden;background:linear-gradient(135deg,#0a1628 0%,#0d2137 50%,#0a1628 100%);padding:24px 20px;display:flex;align-items:center;gap:18px;transition:border-color 0.3s;" onmouseover="this.style.borderColor='rgba(0,191,165,0.6)'" onmouseout="this.style.borderColor='rgba(0,191,165,0.25)'">
+                        <div style="flex-shrink:0;width:64px;height:64px;border-radius:50%;background:rgba(0,191,165,0.12);display:flex;align-items:center;justify-content:center;">
+                            <span style="font-size:2.2em;">&#127754;</span>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:1.05em;font-weight:600;color:#00bfa5;margin-bottom:4px;">ICATMAR HF Radar — Corrents en temps real</div>
+                            <div style="font-size:0.7em;color:rgba(255,255,255,0.55);line-height:1.4;">Mapa interactiu amb animació de partícules dels corrents superficials a la costa del Garraf. Resolució 3×3 km, actualització horària.</div>
+                        </div>
+                        <div style="flex-shrink:0;display:flex;align-items:center;gap:6px;background:rgba(0,191,165,0.15);padding:8px 16px;border-radius:8px;color:#00bfa5;font-size:0.75em;font-weight:600;">
+                            Obrir &#8599;
+                        </div>
+                    </div>
+                </a>
+                <div style="padding:6px 4px 0;font-size:0.45em;color:rgba(0,191,165,0.4);text-align:right;">Font: ICATMAR &middot; 7 antenes HF Radar &middot; Costa catalana</div>
             </div>
         </section>
 
