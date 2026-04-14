@@ -375,6 +375,71 @@
             opacity: 0.85;
             letter-spacing: 0.5px;
         }
+        /* Current pill — blau, més petit que el vent */
+        .current-pill-orbit {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 1.2s ease;
+            z-index: 1;
+        }
+        .current-pill {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 58px;
+            background: var(--cpill-color, #29b6f6);
+            border-radius: 10px 10px 3px 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            opacity: 0.9;
+        }
+        .current-pill::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-top: 10px solid var(--cpill-color, #29b6f6);
+        }
+        .current-pill-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            color: #fff;
+            font-size: 1.15em;
+            font-weight: 900;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .current-pill-text small {
+            font-size: 0.45em;
+            font-weight: 700;
+            opacity: 0.85;
+        }
+        .current-pill-label {
+            position: absolute;
+            top: -105px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #29b6f6;
+            font-size: 0.85em;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
+            white-space: nowrap;
+            writing-mode: vertical-rl;
+        }
         /* Mini pill per widgets veïns */
         .mini-pill {
             position: absolute;
@@ -399,15 +464,11 @@
             border-top: 5px solid var(--pill-color, #8ab4d6);
         }
         .wind-compass-label {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            font-size: 1.8em;
+            font-size: 1.5em;
             font-weight: 900;
             color: #5ef0e6;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5);
             white-space: nowrap;
-            z-index: 2;
+            line-height: 1.1;
         }
         .wind-map-sidebar {
             position: absolute;
@@ -441,32 +502,39 @@
         .wg-combined-card {
             align-items: center;
         }
-        .wind-map-time {
-            position: absolute;
-            bottom: 22px;
-            right: 10px;
-            z-index: 3;
-            font-size: 0.7em;
-            font-weight: 700;
-            color: rgba(255,255,255,0.55);
-            text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.6);
-            white-space: nowrap;
-            text-align: right;
-        }
-        .wind-map-link {
+        .wind-map-info-left, .wind-map-info-right {
             position: absolute;
             bottom: 6px;
-            right: 10px;
             z-index: 3;
-            font-size: 0.65em;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        .wind-map-info-left { left: 10px; }
+        .wind-map-info-right { right: 10px; text-align: right; align-items: flex-end; }
+        .wind-map-info-title {
+            font-size: 0.85em;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+        }
+        .wind-map-info-sub {
+            font-size: 0.6em;
+            font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+            white-space: nowrap;
+        }
+        .wind-map-info-link {
+            font-size: 0.55em;
             font-weight: 600;
-            color: rgba(255,255,255,0.55);
+            color: rgba(255,255,255,0.5);
             text-decoration: none;
             text-shadow: 0 2px 6px rgba(0,0,0,0.9);
             transition: color 0.2s;
-            text-align: right;
         }
-        .wind-map-link:hover { color: rgba(255,255,255,0.85); }
+        .wind-map-info-link:hover { color: rgba(255,255,255,0.85); }
 
         /* Rosa de vents */
         .wind-flow-canvas {
@@ -507,8 +575,7 @@
         .category-title.title-regata { color: #ffb74d; }
         .category-title.title-nautica { color: #4fc3f7; }
         .category-title.title-current { color: #00bfa5; }
-        .badge-proves { color: #ff1744; font-size: 1em; font-weight: 600; margin-left: auto; animation: blink-proves 1s ease-in-out infinite; }
-        @keyframes blink-proves { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
         .category-line { height: 1px; margin: 8px 14px 0; border: none; }
         .line-webcam { background: linear-gradient(90deg, rgba(239,83,80,0.4), transparent); }
         .line-meteo { background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent); }
@@ -761,8 +828,15 @@
             .wind-pill { width: 22px; height: 72px; top: -30px; border-radius: 10px 10px 3px 3px; }
             .wind-pill::after { border-left-width: 11px; border-right-width: 11px; border-top-width: 11px; bottom: -11px; }
             .wind-pill-text { font-size: 1.3em; }
+            .current-pill { width: 18px; height: 42px; top: -6px; border-radius: 8px 8px 3px 3px; }
+            .current-pill::after { border-left-width: 9px; border-right-width: 9px; border-top-width: 8px; bottom: -8px; }
+            .current-pill-text { font-size: 0.85em; }
+            .current-pill-label { font-size: 0.65em; top: -76px; }
             .wind-map-overlay { top: 55%; left: 45%; }
-            .wind-compass-label { font-size: 1.3em; bottom: 8px; }
+            .wind-compass-label { font-size: 1.1em; }
+            .wind-map-info-title { font-size: 0.65em; }
+            .wind-map-info-sub { font-size: 0.5em; }
+            .wind-map-info-link { font-size: 0.45em; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
         }
@@ -884,7 +958,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v4.6</div>
+            <div class="subtitle">v4.9</div>
         </div>
     </div>
 </header>
@@ -931,11 +1005,18 @@
                                 <text x="195" y="106" text-anchor="end" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">E</text>
                                 <text x="5" y="106" text-anchor="start" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">W</text>
                             </svg>
-                            <!-- Pill Windy-style que radia des del centre -->
+                            <!-- Pill Windy-style que radia des del centre — VENT (verd) -->
                             <div class="wind-pill-orbit" id="wind-pill-orbit">
                                 <div class="wind-pill" id="wind-pill">
                                     <div class="wind-pill-text" id="wind-pill-text"><span id="wind-pill-val">--</span><small>kts</small></div>
                                 </div>
+                            </div>
+                            <!-- Pill CORRENT (blau) — dades ICATMAR -->
+                            <div class="current-pill-orbit" id="current-pill-orbit" style="display:none;">
+                                <div class="current-pill" id="current-pill">
+                                    <div class="current-pill-text" id="current-pill-text"><span id="current-pill-val">--</span><small>kn</small></div>
+                                </div>
+                                <div class="current-pill-label" id="current-pill-label">CORRENT</div>
                             </div>
                         </div>
                     </div>
@@ -981,9 +1062,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wind-compass-label" id="wind-map-dir">--</div>
-                    <div class="wind-map-time" id="wm-time">--</div>
-                    <a class="wind-map-link" href="https://app.weathercloud.net/d1807591580#wind">Detall dades estació &rarr;</a>
+                    <!-- Esquerra: Vent Real -->
+                    <div class="wind-map-info-left">
+                        <div class="wind-map-info-title" style="color:#66bb6a;">Vent Real</div>
+                        <div class="wind-compass-label" id="wind-map-dir" style="position:static;text-shadow:0 2px 8px rgba(0,0,0,0.8);">--</div>
+                        <div class="wind-map-info-sub" id="wm-time">--</div>
+                        <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall dades estació &rarr;</a>
+                    </div>
+                    <!-- Dreta: Corrent superfície -->
+                    <div class="wind-map-info-right">
+                        <div class="wind-map-info-title" style="color:#29b6f6;">Corrent superfície</div>
+                        <div class="wind-compass-label" id="current-map-dir" style="position:static;color:#29b6f6;text-shadow:0 2px 8px rgba(0,0,0,0.8);">--</div>
+                        <div class="wind-map-info-sub" id="current-map-time">--</div>
+                    </div>
                 </div>
                 <div class="role-detall-panel" id="role-detall-panel">
                     <div class="role-detall-header">
@@ -1163,132 +1254,7 @@
             </div>
         </section>
 
-        <!-- CORRENT SUPERFICIAL — ICATMAR HF Radar -->
-        <section class="category">
-            <div class="category-header">
-                <span class="category-icon" style="font-size:1.3em;">&#127754;</span>
-                <span class="category-title title-current">Corrent superficial — Costa Garraf</span>
-                <span class="badge-proves">EN PROVES...</span>
-            </div>
-            <hr class="category-line line-current">
-            <div class="category-cards" style="padding:10px 12px 12px;display:flex;flex-wrap:wrap;gap:10px;">
-                <!-- Vilanova -->
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;border-color:rgba(0,191,165,0.18);">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#127754;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#00bfa5;letter-spacing:1px;text-transform:uppercase;">Vilanova</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-                        <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
-                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(0,191,165,0.4)" stroke-width="1.5"/>
-                                <circle cx="50" cy="50" r="14" fill="rgba(0,191,165,0.05)" stroke="rgba(0,191,165,0.3)" stroke-width="1"/>
-                                <g stroke="rgba(0,191,165,0.3)" stroke-width="0.8">
-                                    <line x1="50" y1="3" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="97"/>
-                                    <line x1="3" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="97" y2="50"/>
-                                </g>
-                                <text x="50" y="11" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
-                            </svg>
-                            <div id="cur-vn-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;">
-                                <div class="mini-pill" id="cur-vn-pill" style="--pill-color:#00bfa5;"></div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="cur-vn-speed" style="font-size:1.3em;font-weight:900;color:#00bfa5;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(0,191,165,0.5);font-weight:700;">kn</span>
-                            </div>
-                            <div id="cur-vn-dir" style="font-size:0.9em;font-weight:700;color:#00bfa5;margin-top:1px;opacity:0.7;">--</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
-                        <span style="font-size:0.48em;color:rgba(0,191,165,0.6);text-transform:uppercase;letter-spacing:1px;font-weight:700;">cm/s</span>
-                        <span id="cur-vn-cms" style="font-size:0.8em;font-weight:900;color:rgba(0,191,165,0.8);font-variant-numeric:tabular-nums;">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="cur-vn-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                    </div>
-                </div>
-                <!-- Sitges -->
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;border-color:rgba(0,191,165,0.18);">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#127754;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#00bfa5;letter-spacing:1px;text-transform:uppercase;">Sitges</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-                        <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
-                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(0,191,165,0.4)" stroke-width="1.5"/>
-                                <circle cx="50" cy="50" r="14" fill="rgba(0,191,165,0.05)" stroke="rgba(0,191,165,0.3)" stroke-width="1"/>
-                                <g stroke="rgba(0,191,165,0.3)" stroke-width="0.8">
-                                    <line x1="50" y1="3" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="97"/>
-                                    <line x1="3" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="97" y2="50"/>
-                                </g>
-                                <text x="50" y="11" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
-                            </svg>
-                            <div id="cur-st-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;">
-                                <div class="mini-pill" id="cur-st-pill" style="--pill-color:#00bfa5;"></div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="cur-st-speed" style="font-size:1.3em;font-weight:900;color:#00bfa5;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(0,191,165,0.5);font-weight:700;">kn</span>
-                            </div>
-                            <div id="cur-st-dir" style="font-size:0.9em;font-weight:700;color:#00bfa5;margin-top:1px;opacity:0.7;">--</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
-                        <span style="font-size:0.48em;color:rgba(0,191,165,0.6);text-transform:uppercase;letter-spacing:1px;font-weight:700;">cm/s</span>
-                        <span id="cur-st-cms" style="font-size:0.8em;font-weight:900;color:rgba(0,191,165,0.8);font-variant-numeric:tabular-nums;">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="cur-st-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                    </div>
-                </div>
-                <!-- Castelldefels -->
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;border-color:rgba(0,191,165,0.18);">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#127754;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#00bfa5;letter-spacing:1px;text-transform:uppercase;">Castelldefels</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-                        <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
-                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(0,191,165,0.4)" stroke-width="1.5"/>
-                                <circle cx="50" cy="50" r="14" fill="rgba(0,191,165,0.05)" stroke="rgba(0,191,165,0.3)" stroke-width="1"/>
-                                <g stroke="rgba(0,191,165,0.3)" stroke-width="0.8">
-                                    <line x1="50" y1="3" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="97"/>
-                                    <line x1="3" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="97" y2="50"/>
-                                </g>
-                                <text x="50" y="11" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
-                            </svg>
-                            <div id="cur-cd-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;">
-                                <div class="mini-pill" id="cur-cd-pill" style="--pill-color:#00bfa5;"></div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="cur-cd-speed" style="font-size:1.3em;font-weight:900;color:#00bfa5;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(0,191,165,0.5);font-weight:700;">kn</span>
-                            </div>
-                            <div id="cur-cd-dir" style="font-size:0.9em;font-weight:700;color:#00bfa5;margin-top:1px;opacity:0.7;">--</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
-                        <span style="font-size:0.48em;color:rgba(0,191,165,0.6);text-transform:uppercase;letter-spacing:1px;font-weight:700;">cm/s</span>
-                        <span id="cur-cd-cms" style="font-size:0.8em;font-weight:900;color:rgba(0,191,165,0.8);font-variant-numeric:tabular-nums;">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="cur-cd-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                    </div>
-                </div>
-            </div>
-            <div style="padding:0 12px 8px;display:flex;justify-content:space-between;align-items:center;">
-                <div style="font-size:0.45em;color:rgba(0,191,165,0.4);">Dades cada hora &middot; Resolució 3x3 km</div>
-                <a href="https://www.icatmar.cat/HFRadar/#LANG=ca&VIEW=1.825,41.208,12.22" target="_blank" style="font-size:0.45em;color:rgba(0,191,165,0.5);text-decoration:none;font-weight:600;">ICATMAR mapa &#8599;</a>
-            </div>
-        </section>
+        <!-- WEBCAMS: secció anterior eliminada (Corrent superficial) -->
 
         <!-- WEBCAMS -->
         <section class="category">
@@ -1554,7 +1520,7 @@
         if (timeEl) {
             const ts = d.timestamp ? new Date(d.timestamp * 1000) : null;
             const t = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
-            timeEl.innerHTML = '\u00daltim update: <span style="color:#ffd740">' + t + '</span>';
+            timeEl.innerHTML = '\u00daltima act.: <span style="color:#ffd740">' + t + '</span>';
         }
     }
 
@@ -1804,19 +1770,6 @@
     setInterval(fetchNeighbours, 120000);  // cada 2 min
 
     /* ===== CORRENT SUPERFICIAL — ICATMAR HF Radar ===== */
-    const CUR_ZONES = [
-        { id: 'vn', lon: 1.730, lat: 41.210, name: 'Vilanova' },
-        { id: 'st', lon: 1.831, lat: 41.232, name: 'Sitges' },
-        { id: 'cd', lon: 1.970, lat: 41.260, name: 'Castelldefels' },
-    ];
-
-    function curColor(kn) {
-        if (kn < 0.1) return 'rgba(0,191,165,0.4)';
-        if (kn < 0.3) return '#00bfa5';
-        if (kn < 0.5) return '#26c6da';
-        return '#ff9a76';
-    }
-
     async function fetchCurrents() {
         try {
             const r = await fetch(API + '/icatmar-currents');
@@ -1824,42 +1777,53 @@
             const geo = await r.json();
             const dataTime = geo.metadata && geo.metadata.var_time ? geo.metadata.var_time : null;
 
-            CUR_ZONES.forEach(function(zone) {
-                var best = null, bestDist = Infinity;
-                geo.features.forEach(function(f) {
-                    var c = f.geometry.coordinates;
-                    var d = Math.sqrt(Math.pow(c[0] - zone.lon, 2) + Math.pow(c[1] - zone.lat, 2));
-                    if (d < bestDist) { bestDist = d; best = f; }
-                });
-                if (!best) return;
-
-                var vd = best.properties.var_data;
-                var u = vd[0], v = vd[1]; // eastward, northward (m/s)
-                var spdMs = Math.sqrt(u * u + v * v);
-                var spdKn = Math.round(spdMs * 1.9438 * 100) / 100;
-                var spdCms = Math.round(spdMs * 100);
-                // Direcció cap on va el corrent (convenció oceanogràfica)
-                var dirDeg = Math.round((Math.atan2(u, v) * 180 / Math.PI + 360) % 360);
-                var dirTxt = degToCompass(dirDeg);
-                var col = curColor(spdKn);
-
-                var arrowEl = document.getElementById('cur-' + zone.id + '-arrow');
-                var pillEl = document.getElementById('cur-' + zone.id + '-pill');
-                var spdEl = document.getElementById('cur-' + zone.id + '-speed');
-                var dirEl = document.getElementById('cur-' + zone.id + '-dir');
-                var cmsEl = document.getElementById('cur-' + zone.id + '-cms');
-                var timeEl = document.getElementById('cur-' + zone.id + '-time');
-
-                if (arrowEl) arrowEl.style.transform = 'rotate(' + dirDeg + 'deg)';
-                if (pillEl) pillEl.style.setProperty('--pill-color', col);
-                if (spdEl) { spdEl.textContent = spdKn.toFixed(2); spdEl.style.color = col; }
-                if (dirEl) { dirEl.textContent = dirTxt + ' ' + dirDeg + '°'; dirEl.style.color = col; }
-                if (cmsEl) { cmsEl.textContent = spdCms; cmsEl.style.color = col; }
-                if (timeEl && dataTime) {
-                    var hm = dataTime.substring(11, 16);
-                    timeEl.innerHTML = '<span style="color:rgba(255,255,255,0.55)">Dades:</span> ' + hm + ' UTC';
-                }
+            // Trobar punt més proper a Sitges
+            var best = null, bestDist = Infinity;
+            geo.features.forEach(function(f) {
+                var c = f.geometry.coordinates;
+                var d = Math.sqrt(Math.pow(c[0] - 1.831, 2) + Math.pow(c[1] - 41.232, 2));
+                if (d < bestDist) { bestDist = d; best = f; }
             });
+            if (!best) return;
+            var vd = best.properties.var_data;
+            var u = vd[0], v = vd[1];
+            var spdMs = Math.sqrt(u * u + v * v);
+            var sitges = {
+                spdKn: Math.round(spdMs * 1.9438 * 100) / 100,
+                dirDeg: Math.round((Math.atan2(u, v) * 180 / Math.PI + 360) % 360)
+            };
+            if (sitges) {
+                var cpOrbit = document.getElementById('current-pill-orbit');
+                var cpPill = document.getElementById('current-pill');
+                var cpVal = document.getElementById('current-pill-val');
+                var cpText = document.getElementById('current-pill-text');
+                var cpLabel = document.getElementById('current-pill-label');
+                if (cpOrbit) {
+                    cpOrbit.style.display = '';
+                    cpOrbit.style.transform = 'rotate(' + sitges.dirDeg + 'deg)';
+                }
+                if (cpPill) cpPill.style.setProperty('--cpill-color', '#29b6f6');
+                if (cpVal) cpVal.textContent = sitges.spdKn.toFixed(1);
+                if (cpText) {
+                    var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
+                    cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
+                }
+                // Rotar label "CORRENT" perquè es llegeixi igual que el text del pill
+                if (cpLabel) {
+                    var labelRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? 180 : 0;
+                    cpLabel.style.transform = 'translateX(-50%) rotate(' + labelRot + 'deg)';
+                }
+                // Actualitzar info dreta del widget principal
+                var curDirEl = document.getElementById('current-map-dir');
+                var curTimeEl = document.getElementById('current-map-time');
+                if (curDirEl) {
+                    curDirEl.textContent = degToCompass(sitges.dirDeg) + ' ' + sitges.dirDeg + '\u00b0';
+                }
+                if (curTimeEl && dataTime) {
+                    var hm = dataTime.substring(11, 16);
+                    curTimeEl.innerHTML = '\u00daltima act.: <span style="color:#ffd740;">' + hm + ' UTC</span>';
+                }
+            }
         } catch(e) { /* retry next interval */ }
     }
 
@@ -2227,8 +2191,8 @@
 
     // Inicialitza mapa Leaflet (config igual que Meteocat)
     radarMap = L.map('radar-map', {
-        center: [41.69, 1.82],
-        zoom: 7,
+        center: [41.55, 1.65],
+        zoom: 8,
         minZoom: 7,
         maxZoom: 14,
         zoomControl: false,
