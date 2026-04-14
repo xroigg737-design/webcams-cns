@@ -506,11 +506,13 @@
         .category-title.title-meteo { color: #66bb6a; }
         .category-title.title-regata { color: #ffb74d; }
         .category-title.title-nautica { color: #4fc3f7; }
+        .category-title.title-current { color: #00bfa5; }
         .category-line { height: 1px; margin: 8px 14px 0; border: none; }
         .line-webcam { background: linear-gradient(90deg, rgba(239,83,80,0.4), transparent); }
         .line-meteo { background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent); }
         .line-regata { background: linear-gradient(90deg, rgba(255,183,77,0.4), transparent); }
         .line-nautica { background: linear-gradient(90deg, rgba(79,195,247,0.4), transparent); }
+        .line-current { background: linear-gradient(90deg, rgba(0,191,165,0.4), transparent); }
         .category-cards { padding: 10px 12px 12px; }
 
         /* Grid de cards */
@@ -880,7 +882,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v2.9</div>
+            <div class="subtitle">v4.1</div>
         </div>
     </div>
 </header>
@@ -1156,6 +1158,24 @@
                         <a href="https://opendatapre.portdebarcelona.cat/es/dataset/120b4825-96cd-4d64-8578-2a7d321aa596" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">PortBCN &rarr;</a>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- CORRENT SUPERFICIAL — ICATMAR HF Radar -->
+        <section class="category">
+            <div class="category-header">
+                <span class="category-icon" style="font-size:1.3em;">&#127754;</span>
+                <span class="category-title title-current">Corrent superficial — Costa Garraf</span>
+            </div>
+            <hr class="category-line line-current">
+            <div style="padding:10px 12px 4px;">
+                <div style="position:relative;width:100%;height:480px;border-radius:10px;border:1px solid rgba(0,191,165,0.2);overflow:hidden;">
+                    <iframe src="https://www.icatmar.cat/HFRadar/#LANG=ca&VIEW=1.825,41.208,12.22" style="position:absolute;top:-10px;left:0;width:100%;height:calc(100% + 60px);border:none;" loading="lazy" allow="geolocation"></iframe>
+                </div>
+            </div>
+            <div style="padding:2px 12px 10px;display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-size:0.45em;color:rgba(0,191,165,0.4);">Interactiu — arrossega, zoom, clica per detall</div>
+                <div style="font-size:0.45em;color:rgba(0,191,165,0.4);text-align:right;">Font: <a href="https://icatmar.cat/HFRadar/#LANG=ca&VIEW=1.825,41.208,12.22" target="_blank" style="color:rgba(0,191,165,0.6);text-decoration:none;">ICATMAR HF Radar</a> &middot; Resolució 3x3 km &middot; Temps real</div>
             </div>
         </section>
 
@@ -2182,6 +2202,8 @@
     // Recarregar cada 3 minuts (radar s'actualitza cada 6)
     setInterval(loadRadarData, 3 * 60 * 1000);
 })();
+
+/* (corrent superficial via iframe ICATMAR) */
 </script>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
