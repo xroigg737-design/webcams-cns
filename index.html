@@ -523,19 +523,14 @@
         }
         .wind-map-info-left, .wind-map-info-right {
             position: absolute;
-            bottom: 6px;
+            bottom: 4px;
             z-index: 20;
             display: flex;
             flex-direction: column;
             gap: 1px;
-            background: rgba(11,31,51,0.72);
-            padding: 4px 8px;
-            border-radius: 8px;
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
         }
-        .wind-map-info-left { left: 10px; }
-        .wind-map-info-right { right: 10px; text-align: right; align-items: flex-end; }
+        .wind-map-info-left { left: 4px; }
+        .wind-map-info-right { right: 4px; text-align: right; align-items: flex-end; }
         .wind-map-info-title {
             font-size: 0.85em;
             font-weight: 800;
@@ -861,9 +856,8 @@
             .wind-map-info-title { font-size: 0.65em; }
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
-            .wind-map-info-left, .wind-map-info-right { padding: 3px 6px; }
-            .wind-map-info-right { right: 6px; max-width: 46%; }
-            .wind-map-info-left { left: 6px; max-width: 48%; }
+            .wind-map-info-right { right: 2px; max-width: 46%; bottom: 2px; }
+            .wind-map-info-left { left: 2px; max-width: 48%; bottom: 2px; }
             #current-map-dir { font-size: 0.95em !important; }
             .proves-badge { font-size: 0.5em; padding: 1px 4px; margin-bottom: 2px; }
             .wg-desktop-only { display: none; }
@@ -987,7 +981,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.2</div>
+            <div class="subtitle">v5.3</div>
         </div>
     </div>
 </header>
