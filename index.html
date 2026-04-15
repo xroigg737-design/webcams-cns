@@ -470,6 +470,25 @@
             white-space: nowrap;
             line-height: 1.1;
         }
+        .proves-badge {
+            display: inline-block;
+            background: #d32f2f;
+            color: #fff;
+            font-size: 0.55em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 3px;
+            animation: blink-proves 1s ease-in-out infinite;
+            white-space: nowrap;
+            box-shadow: 0 0 6px rgba(211,47,47,0.6);
+        }
+        @keyframes blink-proves {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
         .wind-map-sidebar {
             position: absolute;
             top: 4px;
@@ -837,6 +856,10 @@
             .wind-map-info-title { font-size: 0.65em; }
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
+            .wind-map-info-right { right: 6px; max-width: 42%; }
+            .wind-map-info-left { max-width: 48%; }
+            #current-map-dir { font-size: 0.9em !important; }
+            .proves-badge { font-size: 0.5em; padding: 1px 4px; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
         }
@@ -958,7 +981,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.0</div>
+            <div class="subtitle">v5.1</div>
         </div>
     </div>
 </header>
@@ -1071,6 +1094,7 @@
                     </div>
                     <!-- Dreta: Corrent superfície -->
                     <div class="wind-map-info-right">
+                        <div class="proves-badge">En proves...</div>
                         <div class="wind-map-info-title" style="color:#29b6f6;">Corrent superfície</div>
                         <div class="wind-compass-label" id="current-map-dir" style="position:static;color:#29b6f6;text-shadow:0 2px 8px rgba(0,0,0,0.8);font-size:1.1em;">--</div>
                         <div class="wind-map-info-sub" id="current-map-time">--</div>
