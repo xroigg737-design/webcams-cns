@@ -427,15 +427,18 @@
             font-weight: 700;
             opacity: 0.85;
         }
-        .current-pill-icon {
+        .current-pill-label {
             position: absolute;
-            top: 2px;
+            top: -24px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.7em;
-            line-height: 1;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            color: #29b6f6;
+            font-size: 0.6em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.7);
+            white-space: nowrap;
+            writing-mode: vertical-rl;
         }
         /* Mini pill per widgets veïns */
         .mini-pill {
@@ -849,7 +852,7 @@
             .current-pill { width: 18px; height: 42px; top: -6px; border-radius: 8px 8px 3px 3px; }
             .current-pill::after { border-left-width: 9px; border-right-width: 9px; border-top-width: 8px; bottom: -8px; }
             .current-pill-text { font-size: 0.85em; }
-            .current-pill-icon { font-size: 0.55em; top: 1px; }
+            .current-pill-label { font-size: 0.5em; top: -18px; }
             .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 1.1em; }
             .wind-map-info-title { font-size: 0.65em; }
@@ -980,7 +983,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.9</div>
+            <div class="subtitle">v5.10</div>
         </div>
     </div>
 </header>
@@ -1036,7 +1039,7 @@
                             <!-- Pill CORRENT (blau) — dades ICATMAR -->
                             <div class="current-pill-orbit" id="current-pill-orbit" style="display:none;">
                                 <div class="current-pill" id="current-pill">
-                                    <div class="current-pill-icon" id="current-pill-icon">≈</div>
+                                    <div class="current-pill-label" id="current-pill-label">CORRENT</div>
                                     <div class="current-pill-text" id="current-pill-text"><span id="current-pill-val">--</span><small>kn</small></div>
                                 </div>
                             </div>
@@ -1824,8 +1827,8 @@
                 var cpPill = document.getElementById('current-pill');
                 var cpVal = document.getElementById('current-pill-val');
                 var cpText = document.getElementById('current-pill-text');
-                var cpIcon = document.getElementById('current-pill-icon');
-                console.log('[CORRENT] DOM elements:', !!cpOrbit, !!cpPill, !!cpVal, !!cpText, !!cpIcon);
+                var cpLabel = document.getElementById('current-pill-label');
+                console.log('[CORRENT] DOM elements:', !!cpOrbit, !!cpPill, !!cpVal, !!cpText, !!cpLabel);
                 if (cpOrbit) {
                     cpOrbit.style.display = '';
                     cpOrbit.style.transform = 'rotate(' + sitges.dirDeg + 'deg)';
@@ -1836,9 +1839,10 @@
                     var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
                     cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
                 }
-                // Contra-rotar icona ≈ perquè sempre es vegi horitzontal
-                if (cpIcon) {
-                    cpIcon.style.transform = 'translateX(-50%) rotate(' + (-sitges.dirDeg) + 'deg)';
+                // Contra-rotar label perquè sempre es llegeixi bé
+                if (cpLabel) {
+                    var labelRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? 180 : 0;
+                    cpLabel.style.transform = 'translateX(-50%) rotate(' + labelRot + 'deg)';
                 }
                 // Actualitzar info dreta del widget principal
                 var curDirEl = document.getElementById('current-map-dir');
