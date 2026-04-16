@@ -429,15 +429,15 @@
         }
         .current-pill-label {
             position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(-100%);
             color: #29b6f6;
             font-size: 0.6em;
             font-weight: 800;
             letter-spacing: 1px;
             text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.7);
             white-space: nowrap;
+            z-index: 5;
+            pointer-events: none;
         }
         /* Mini pill per widgets veïns */
         .mini-pill {
@@ -851,7 +851,7 @@
             .current-pill { width: 18px; height: 42px; top: -6px; border-radius: 8px 8px 3px 3px; }
             .current-pill::after { border-left-width: 9px; border-right-width: 9px; border-top-width: 8px; bottom: -8px; }
             .current-pill-text { font-size: 0.85em; }
-            .current-pill-label { font-size: 0.5em; top: -16px; }
+            .current-pill-label { font-size: 0.5em; }
             .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 1.1em; }
             .wind-map-info-title { font-size: 0.65em; }
@@ -982,7 +982,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.17</div>
+            <div class="subtitle">v5.18</div>
         </div>
     </div>
 </header>
@@ -1038,10 +1038,10 @@
                             <!-- Pill CORRENT (blau) — dades ICATMAR -->
                             <div class="current-pill-orbit" id="current-pill-orbit" style="display:none;">
                                 <div class="current-pill" id="current-pill">
-                                    <div class="current-pill-label" id="current-pill-label">Cor.</div>
                                     <div class="current-pill-text" id="current-pill-text"><span id="current-pill-val">--</span><small>kn</small></div>
                                 </div>
                             </div>
+                            <div class="current-pill-label" id="current-pill-label" style="display:none;">Cor.</div>
                         </div>
                     </div>
                     <div class="wind-map-sidebar" id="wind-map-sidebar">
@@ -1838,9 +1838,17 @@
                     var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
                     cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
                 }
-                // Contra-rotar label perquè sempre es llegeixi horitzontal
+                // Posicionar label visualment a sobre del pill (fora de la rotació)
                 if (cpLabel) {
-                    cpLabel.style.transform = 'translateX(-50%) rotate(' + (-sitges.dirDeg) + 'deg)';
+                    var compass = cpOrbit.parentElement;
+                    var sz = compass.offsetWidth;
+                    var tipDist = sz * 0.52;
+                    var rad = sitges.dirDeg * Math.PI / 180;
+                    var tipX = sz / 2 + tipDist * Math.sin(rad);
+                    var tipY = sz / 2 - tipDist * Math.cos(rad);
+                    cpLabel.style.display = '';
+                    cpLabel.style.left = tipX + 'px';
+                    cpLabel.style.top = (tipY - 6) + 'px';
                 }
                 // Actualitzar info dreta del widget principal
                 var curDirEl = document.getElementById('current-map-dir');
