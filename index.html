@@ -282,7 +282,7 @@
             width: 100%;
             aspect-ratio: 4/3;
             border-radius: 10px;
-            overflow: hidden;
+            overflow: visible;
             background: #0b1f33;
         }
         .wind-map img {
@@ -291,6 +291,7 @@
             object-fit: cover;
             object-position: center 70%;
             opacity: 0.85;
+            border-radius: 10px;
         }
         .wind-map-overlay {
             position: absolute;
@@ -563,6 +564,7 @@
             height: 100%;
             z-index: 1;
             pointer-events: none;
+            border-radius: 10px;
         }
 
 
@@ -981,7 +983,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.4</div>
+            <div class="subtitle">v5.5</div>
         </div>
     </div>
 </header>
