@@ -200,7 +200,7 @@
             border-radius: 16px;
             border: 1px solid rgba(102,187,106,0.2);
             background: linear-gradient(165deg, rgba(102,187,106,0.06) 0%, rgba(255,255,255,0.02) 100%);
-            overflow: visible;
+            overflow: hidden;
             backdrop-filter: blur(4px);
             position: sticky;
             top: 10px;
@@ -281,7 +281,7 @@
             position: relative;
             width: 100%;
             aspect-ratio: 4/3;
-            overflow: visible;
+            overflow: hidden;
             background: #0b1f33;
             border-radius: 10px;
         }
@@ -291,7 +291,6 @@
             object-fit: cover;
             object-position: center 70%;
             opacity: 0.85;
-            border-radius: 10px;
         }
         .wind-map-overlay {
             position: absolute;
@@ -428,18 +427,15 @@
             font-weight: 700;
             opacity: 0.85;
         }
-        .current-pill-label {
+        .current-pill-icon {
             position: absolute;
-            top: -105px;
+            top: 2px;
             left: 50%;
             transform: translateX(-50%);
-            color: #29b6f6;
-            font-size: 0.85em;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7);
-            white-space: nowrap;
-            writing-mode: vertical-rl;
+            font-size: 0.7em;
+            line-height: 1;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         /* Mini pill per widgets veïns */
         .mini-pill {
@@ -564,7 +560,6 @@
             height: 100%;
             z-index: 1;
             pointer-events: none;
-            border-radius: 10px;
         }
 
 
@@ -577,9 +572,7 @@
             overflow: hidden;
             backdrop-filter: blur(4px);
         }
-        /* Permetre que el pill de corrent sobresurti del contenidor */
         #wind-map-section {
-            overflow: visible;
         }
         .category-header {
             display: flex;
@@ -856,7 +849,7 @@
             .current-pill { width: 18px; height: 42px; top: -6px; border-radius: 8px 8px 3px 3px; }
             .current-pill::after { border-left-width: 9px; border-right-width: 9px; border-top-width: 8px; bottom: -8px; }
             .current-pill-text { font-size: 0.85em; }
-            .current-pill-label { font-size: 0.65em; top: -76px; }
+            .current-pill-icon { font-size: 0.55em; top: 1px; }
             .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 1.1em; }
             .wind-map-info-title { font-size: 0.65em; }
@@ -987,7 +980,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.8</div>
+            <div class="subtitle">v5.9</div>
         </div>
     </div>
 </header>
@@ -1043,9 +1036,9 @@
                             <!-- Pill CORRENT (blau) — dades ICATMAR -->
                             <div class="current-pill-orbit" id="current-pill-orbit" style="display:none;">
                                 <div class="current-pill" id="current-pill">
+                                    <div class="current-pill-icon" id="current-pill-icon">≈</div>
                                     <div class="current-pill-text" id="current-pill-text"><span id="current-pill-val">--</span><small>kn</small></div>
                                 </div>
-                                <div class="current-pill-label" id="current-pill-label">CORRENT</div>
                             </div>
                         </div>
                     </div>
@@ -1831,8 +1824,8 @@
                 var cpPill = document.getElementById('current-pill');
                 var cpVal = document.getElementById('current-pill-val');
                 var cpText = document.getElementById('current-pill-text');
-                var cpLabel = document.getElementById('current-pill-label');
-                console.log('[CORRENT] DOM elements:', !!cpOrbit, !!cpPill, !!cpVal, !!cpText, !!cpLabel);
+                var cpIcon = document.getElementById('current-pill-icon');
+                console.log('[CORRENT] DOM elements:', !!cpOrbit, !!cpPill, !!cpVal, !!cpText, !!cpIcon);
                 if (cpOrbit) {
                     cpOrbit.style.display = '';
                     cpOrbit.style.transform = 'rotate(' + sitges.dirDeg + 'deg)';
@@ -1843,10 +1836,9 @@
                     var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
                     cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
                 }
-                // Rotar label "CORRENT" perquè es llegeixi igual que el text del pill
-                if (cpLabel) {
-                    var labelRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? 180 : 0;
-                    cpLabel.style.transform = 'translateX(-50%) rotate(' + labelRot + 'deg)';
+                // Contra-rotar icona ≈ perquè sempre es vegi horitzontal
+                if (cpIcon) {
+                    cpIcon.style.transform = 'translateX(-50%) rotate(' + (-sitges.dirDeg) + 'deg)';
                 }
                 // Actualitzar info dreta del widget principal
                 var curDirEl = document.getElementById('current-map-dir');
