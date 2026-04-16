@@ -982,7 +982,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.18</div>
+            <div class="subtitle">v5.19</div>
         </div>
     </div>
 </header>
@@ -1838,17 +1838,17 @@
                     var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
                     cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
                 }
-                // Posicionar label visualment a sobre del pill (fora de la rotació)
+                // Posicionar label visualment a sobre del cos del pill
                 if (cpLabel) {
                     var compass = cpOrbit.parentElement;
                     var sz = compass.offsetWidth;
-                    var tipDist = sz * 0.52;
+                    var bodyDist = sz * 0.38;
                     var rad = sitges.dirDeg * Math.PI / 180;
-                    var tipX = sz / 2 + tipDist * Math.sin(rad);
-                    var tipY = sz / 2 - tipDist * Math.cos(rad);
+                    var bodyX = sz / 2 + bodyDist * Math.sin(rad);
+                    var bodyY = sz / 2 - bodyDist * Math.cos(rad);
                     cpLabel.style.display = '';
-                    cpLabel.style.left = tipX + 'px';
-                    cpLabel.style.top = (tipY - 6) + 'px';
+                    cpLabel.style.left = bodyX + 'px';
+                    cpLabel.style.top = (bodyY - 16) + 'px';
                 }
                 // Actualitzar info dreta del widget principal
                 var curDirEl = document.getElementById('current-map-dir');
