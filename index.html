@@ -429,16 +429,15 @@
         }
         .current-pill-label {
             position: absolute;
-            top: -55px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
             color: #29b6f6;
-            font-size: 0.5em;
+            font-size: 0.6em;
             font-weight: 800;
             letter-spacing: 1px;
             text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.7);
             white-space: nowrap;
-            writing-mode: vertical-rl;
         }
         /* Mini pill per widgets veïns */
         .mini-pill {
@@ -852,7 +851,7 @@
             .current-pill { width: 18px; height: 42px; top: -6px; border-radius: 8px 8px 3px 3px; }
             .current-pill::after { border-left-width: 9px; border-right-width: 9px; border-top-width: 8px; bottom: -8px; }
             .current-pill-text { font-size: 0.85em; }
-            .current-pill-label { font-size: 0.4em; top: -42px; letter-spacing: 0.5px; }
+            .current-pill-label { font-size: 0.5em; top: -16px; }
             .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 1.1em; }
             .wind-map-info-title { font-size: 0.65em; }
@@ -983,7 +982,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.16</div>
+            <div class="subtitle">v5.17</div>
         </div>
     </div>
 </header>
@@ -1839,10 +1838,9 @@
                     var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
                     cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
                 }
-                // Rotar label per llegir-se bé segons la meitat del cercle
+                // Contra-rotar label perquè sempre es llegeixi horitzontal
                 if (cpLabel) {
-                    var labelRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? 180 : 0;
-                    cpLabel.style.transform = 'translateX(-50%) rotate(' + labelRot + 'deg)';
+                    cpLabel.style.transform = 'translateX(-50%) rotate(' + (-sitges.dirDeg) + 'deg)';
                 }
                 // Actualitzar info dreta del widget principal
                 var curDirEl = document.getElementById('current-map-dir');
