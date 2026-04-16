@@ -1796,9 +1796,12 @@
     /* ===== CORRENT SUPERFICIAL — ICATMAR HF Radar ===== */
     async function fetchCurrents() {
         try {
+            console.log('[CORRENT] Fetching icatmar-currents...');
             const r = await fetch(API + '/icatmar-currents');
-            if (!r.ok) throw new Error();
+            console.log('[CORRENT] Response status:', r.status, r.ok);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
             const geo = await r.json();
+            console.log('[CORRENT] GeoJSON parsed, features:', geo.features ? geo.features.length : 'NONE', 'metadata:', !!geo.metadata);
             const dataTime = geo.metadata && geo.metadata.var_time ? geo.metadata.var_time : null;
 
             // Trobar punt més proper a Sitges
@@ -1808,7 +1811,7 @@
                 var d = Math.sqrt(Math.pow(c[0] - 1.831, 2) + Math.pow(c[1] - 41.232, 2));
                 if (d < bestDist) { bestDist = d; best = f; }
             });
-            if (!best) return;
+            if (!best) { console.warn('[CORRENT] No best point found'); return; }
             var vd = best.properties.var_data;
             var u = vd[0], v = vd[1];
             var spdMs = Math.sqrt(u * u + v * v);
@@ -1816,12 +1819,14 @@
                 spdKn: Math.round(spdMs * 1.9438 * 100) / 100,
                 dirDeg: Math.round((Math.atan2(u, v) * 180 / Math.PI + 360) % 360)
             };
+            console.log('[CORRENT] Sitges:', sitges, 'coords:', best.geometry.coordinates, 'dist:', bestDist.toFixed(4));
             if (sitges) {
                 var cpOrbit = document.getElementById('current-pill-orbit');
                 var cpPill = document.getElementById('current-pill');
                 var cpVal = document.getElementById('current-pill-val');
                 var cpText = document.getElementById('current-pill-text');
                 var cpLabel = document.getElementById('current-pill-label');
+                console.log('[CORRENT] DOM elements:', !!cpOrbit, !!cpPill, !!cpVal, !!cpText, !!cpLabel);
                 if (cpOrbit) {
                     cpOrbit.style.display = '';
                     cpOrbit.style.transform = 'rotate(' + sitges.dirDeg + 'deg)';
@@ -1847,8 +1852,9 @@
                     var hm = dataTime.substring(11, 16);
                     curTimeEl.innerHTML = '\u00daltima act.: <span style="color:#ffd740;">' + hm + ' UTC</span>';
                 }
+                console.log('[CORRENT] ✓ Widget actualitzat');
             }
-        } catch(e) { /* retry next interval */ }
+        } catch(e) { console.error('[CORRENT] ERROR:', e.message, e); }
     }
 
     fetchCurrents();
