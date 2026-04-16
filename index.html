@@ -982,7 +982,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.20</div>
+            <div class="subtitle">v5.21</div>
         </div>
     </div>
 </header>
@@ -1838,7 +1838,7 @@
                     var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
                     cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
                 }
-                // Posicionar label visualment a sobre del cos del pill
+                // Posicionar label a sobre del pill, seguint el seu angle
                 if (cpLabel) {
                     var compass = cpOrbit.parentElement;
                     var sz = compass.offsetWidth;
@@ -1849,6 +1849,10 @@
                     cpLabel.style.display = '';
                     cpLabel.style.left = bodyX + 'px';
                     cpLabel.style.top = (bodyY - 16) + 'px';
+                    // Rotar text per seguir l'angle del pill
+                    var textRot = sitges.dirDeg - 90;
+                    if (sitges.dirDeg > 90 && sitges.dirDeg <= 270) textRot += 180;
+                    cpLabel.style.transform = 'translateX(-50%) translateY(-100%) rotate(' + textRot + 'deg)';
                 }
                 // Actualitzar info dreta del widget principal
                 var curDirEl = document.getElementById('current-map-dir');
