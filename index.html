@@ -982,7 +982,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.21</div>
+            <div class="subtitle">v5.22</div>
         </div>
     </div>
 </header>
@@ -1851,7 +1851,7 @@
                     cpLabel.style.top = (bodyY - 16) + 'px';
                     // Rotar text per seguir l'angle del pill
                     var textRot = sitges.dirDeg - 90;
-                    if (sitges.dirDeg > 90 && sitges.dirDeg <= 270) textRot += 180;
+                    if (sitges.dirDeg > 180) textRot += 180;
                     cpLabel.style.transform = 'translateX(-50%) translateY(-100%) rotate(' + textRot + 'deg)';
                 }
                 // Actualitzar info dreta del widget principal
