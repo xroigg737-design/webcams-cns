@@ -375,70 +375,6 @@
             opacity: 0.85;
             letter-spacing: 0.5px;
         }
-        /* Current pill — blau, més petit que el vent */
-        .current-pill-orbit {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            transition: transform 1.2s ease;
-            z-index: 1;
-        }
-        .current-pill {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 22px;
-            height: 58px;
-            background: var(--cpill-color, #29b6f6);
-            border-radius: 10px 10px 3px 3px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            opacity: 0.9;
-        }
-        .current-pill::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 11px solid transparent;
-            border-right: 11px solid transparent;
-            border-top: 10px solid var(--cpill-color, #29b6f6);
-        }
-        .current-pill-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            color: #fff;
-            font-size: 1.15em;
-            font-weight: 900;
-            line-height: 1;
-            white-space: nowrap;
-        }
-        .current-pill-text small {
-            font-size: 0.45em;
-            font-weight: 700;
-            opacity: 0.85;
-        }
-        .current-pill-label {
-            position: absolute;
-            transform: translateX(-50%) translateY(-100%);
-            color: #29b6f6;
-            font-size: 0.6em;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.7);
-            white-space: nowrap;
-            z-index: 5;
-            pointer-events: none;
-        }
         /* Mini pill per widgets veïns */
         .mini-pill {
             position: absolute;
@@ -468,25 +404,6 @@
             color: #5ef0e6;
             white-space: nowrap;
             line-height: 1.1;
-        }
-        .proves-badge {
-            display: inline-block;
-            background: #d32f2f;
-            color: #fff;
-            font-size: 0.55em;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-bottom: 3px;
-            animation: blink-proves 1s ease-in-out infinite;
-            white-space: nowrap;
-            box-shadow: 0 0 6px rgba(211,47,47,0.6);
-        }
-        @keyframes blink-proves {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
         }
         .wind-map-sidebar {
             position: absolute;
@@ -520,16 +437,17 @@
         .wg-combined-card {
             align-items: center;
         }
-        .wind-map-info-left, .wind-map-info-right {
+        .wind-map-info-right {
             position: absolute;
             bottom: 4px;
+            right: 4px;
             z-index: 20;
             display: flex;
             flex-direction: column;
             gap: 1px;
+            text-align: right;
+            align-items: flex-end;
         }
-        .wind-map-info-left { left: 4px; }
-        .wind-map-info-right { right: 4px; text-align: right; align-items: flex-end; }
         .wind-map-info-title {
             font-size: 0.85em;
             font-weight: 800;
@@ -868,19 +786,12 @@
             .wind-pill { width: 22px; height: 72px; top: -30px; border-radius: 10px 10px 3px 3px; }
             .wind-pill::after { border-left-width: 11px; border-right-width: 11px; border-top-width: 11px; bottom: -11px; }
             .wind-pill-text { font-size: 1.3em; }
-            .current-pill { width: 18px; height: 42px; top: -6px; border-radius: 8px 8px 3px 3px; }
-            .current-pill::after { border-left-width: 9px; border-right-width: 9px; border-top-width: 8px; bottom: -8px; }
-            .current-pill-text { font-size: 0.85em; }
-            .current-pill-label { font-size: 0.5em; }
             .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 0.85em; }
             .wind-map-info-title { font-size: 0.65em; }
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
-            .wind-map-info-right { right: 2px; max-width: 46%; bottom: 2px; }
-            .wind-map-info-left { left: 2px; max-width: 48%; bottom: 2px; }
-            #current-map-dir { font-size: 0.95em !important; }
-            .proves-badge { font-size: 0.5em; padding: 1px 4px; margin-bottom: 2px; }
+            .wind-map-info-right { right: 2px; max-width: 50%; bottom: 2px; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
         }
@@ -1002,7 +913,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.24</div>
+            <div class="subtitle">v5.25</div>
         </div>
     </div>
 </header>
@@ -1055,13 +966,6 @@
                                     <div class="wind-pill-text" id="wind-pill-text"><span id="wind-pill-val">--</span><small>kts</small></div>
                                 </div>
                             </div>
-                            <!-- Pill CORRENT (blau) — dades ICATMAR -->
-                            <div class="current-pill-orbit" id="current-pill-orbit" style="display:none;">
-                                <div class="current-pill" id="current-pill">
-                                    <div class="current-pill-text" id="current-pill-text"><span id="current-pill-val">--</span><small>kn</small></div>
-                                </div>
-                            </div>
-                            <div class="current-pill-label" id="current-pill-label" style="display:none;">Corrent</div>
                         </div>
                     </div>
                     <div class="wind-map-sidebar" id="wind-map-sidebar">
@@ -1106,19 +1010,12 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Esquerra: Vent Real -->
-                    <div class="wind-map-info-left">
+                    <!-- Dreta: Vent Real -->
+                    <div class="wind-map-info-right">
                         <div class="wind-map-info-title" style="color:#66bb6a;">Vent Real</div>
                         <div class="wind-compass-label" id="wind-map-dir" style="position:static;text-shadow:0 2px 8px rgba(0,0,0,0.8);">--</div>
                         <div class="wind-map-info-sub" id="wm-time">--</div>
                         <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall dades estació &rarr;</a>
-                    </div>
-                    <!-- Dreta: Corrent superfície -->
-                    <div class="wind-map-info-right">
-                        <div class="proves-badge">En proves...</div>
-                        <div class="wind-map-info-title" style="color:#29b6f6;">Corrent superfície</div>
-                        <div class="wind-compass-label" id="current-map-dir" style="position:static;color:#29b6f6;text-shadow:0 2px 8px rgba(0,0,0,0.8);font-size:1.1em;">--</div>
-                        <div class="wind-map-info-sub" id="current-map-time">--</div>
                     </div>
                     <div class="role-detall-panel" id="role-detall-panel">
                         <div class="role-detall-header">
@@ -1818,83 +1715,6 @@
     fetchNeighbours();
     setInterval(fetchNeighbours, 120000);  // cada 2 min
 
-    /* ===== CORRENT SUPERFICIAL — ICATMAR HF Radar ===== */
-    async function fetchCurrents() {
-        try {
-            console.log('[CORRENT] Fetching icatmar-currents...');
-            const r = await fetch(API + '/icatmar-currents');
-            console.log('[CORRENT] Response status:', r.status, r.ok);
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            const geo = await r.json();
-            console.log('[CORRENT] GeoJSON parsed, features:', geo.features ? geo.features.length : 'NONE', 'metadata:', !!geo.metadata);
-            const dataTime = geo.metadata && geo.metadata.var_time ? geo.metadata.var_time : null;
-
-            // Trobar punt més proper a Sitges
-            var best = null, bestDist = Infinity;
-            geo.features.forEach(function(f) {
-                var c = f.geometry.coordinates;
-                var d = Math.sqrt(Math.pow(c[0] - 1.831, 2) + Math.pow(c[1] - 41.232, 2));
-                if (d < bestDist) { bestDist = d; best = f; }
-            });
-            if (!best) { console.warn('[CORRENT] No best point found'); return; }
-            var vd = best.properties.var_data;
-            var u = vd[0], v = vd[1];
-            var spdMs = Math.sqrt(u * u + v * v);
-            var sitges = {
-                spdKn: Math.round(spdMs * 1.9438 * 100) / 100,
-                dirDeg: Math.round((Math.atan2(u, v) * 180 / Math.PI + 360) % 360)
-            };
-            console.log('[CORRENT] Sitges:', sitges, 'coords:', best.geometry.coordinates, 'dist:', bestDist.toFixed(4));
-            if (sitges) {
-                var cpOrbit = document.getElementById('current-pill-orbit');
-                var cpPill = document.getElementById('current-pill');
-                var cpVal = document.getElementById('current-pill-val');
-                var cpText = document.getElementById('current-pill-text');
-                var cpLabel = document.getElementById('current-pill-label');
-                console.log('[CORRENT] DOM elements:', !!cpOrbit, !!cpPill, !!cpVal, !!cpText, !!cpLabel);
-                if (cpOrbit) {
-                    cpOrbit.style.display = '';
-                    cpOrbit.style.transform = 'rotate(' + sitges.dirDeg + 'deg)';
-                }
-                if (cpPill) cpPill.style.setProperty('--cpill-color', '#29b6f6');
-                if (cpVal) cpVal.textContent = sitges.spdKn.toFixed(1);
-                if (cpText) {
-                    var textRot = (sitges.dirDeg > 0 && sitges.dirDeg < 180) ? -90 : 90;
-                    cpText.style.transform = 'translate(-50%, -50%) rotate(' + textRot + 'deg)';
-                }
-                // Posicionar label a sobre del pill, seguint el seu angle
-                if (cpLabel) {
-                    var compass = cpOrbit.parentElement;
-                    var sz = compass.offsetWidth;
-                    var bodyDist = sz * 0.38;
-                    var rad = sitges.dirDeg * Math.PI / 180;
-                    var bodyX = sz / 2 + bodyDist * Math.sin(rad);
-                    var bodyY = sz / 2 - bodyDist * Math.cos(rad);
-                    cpLabel.style.display = '';
-                    cpLabel.style.left = bodyX + 'px';
-                    cpLabel.style.top = (bodyY - 16) + 'px';
-                    // Rotar text per seguir l'angle del pill
-                    var textRot = sitges.dirDeg - 90;
-                    if (sitges.dirDeg > 180) textRot += 180;
-                    cpLabel.style.transform = 'translateX(-50%) translateY(-100%) rotate(' + textRot + 'deg)';
-                }
-                // Actualitzar info dreta del widget principal
-                var curDirEl = document.getElementById('current-map-dir');
-                var curTimeEl = document.getElementById('current-map-time');
-                if (curDirEl) {
-                    curDirEl.textContent = degToCompass(sitges.dirDeg) + ' ' + sitges.dirDeg + '\u00b0';
-                }
-                if (curTimeEl && dataTime) {
-                    var hm = dataTime.substring(11, 16);
-                    curTimeEl.innerHTML = '\u00daltima act.: <span style="color:#ffd740;">' + hm + ' UTC</span>';
-                }
-                console.log('[CORRENT] ✓ Widget actualitzat');
-            }
-        } catch(e) { console.error('[CORRENT] ERROR:', e.message, e); }
-    }
-
-    fetchCurrents();
-    setInterval(fetchCurrents, 600000);  // cada 10 min (dades horàries)
 
     /* ===== WIND FLOW — estil Windy/cambecc earth: trails que s'esvaeixen ===== */
     (function windFlow() {
@@ -2407,7 +2227,6 @@
     setInterval(loadRadarData, 3 * 60 * 1000);
 })();
 
-/* (corrent superficial via iframe ICATMAR) */
 </script>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
