@@ -608,6 +608,22 @@
             50% { opacity: 1; }
         }
         .role-clickable:hover { opacity: 0.7; }
+        .role-detall-hint {
+            font-size: 0.5em;
+            font-weight: 700;
+            color: #e0a0ff;
+            cursor: pointer;
+            text-align: center;
+            padding: 2px 0 0;
+            letter-spacing: 0.5px;
+            opacity: 0.85;
+            animation: hint-pulse 2s ease-in-out infinite;
+        }
+        .role-detall-hint:hover { opacity: 1; text-decoration: underline; }
+        @keyframes hint-pulse {
+            0%, 100% { opacity: 0.55; }
+            50% { opacity: 1; }
+        }
         .role-detall-panel {
             display: none;
             position: absolute;
@@ -913,7 +929,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.27</div>
+            <div class="subtitle">v5.28</div>
         </div>
     </div>
 </header>
@@ -991,6 +1007,7 @@
                                 <div class="wg-sec-val role-clickable" onclick="toggleRoleDetall()"><span id="wm-rolada">--</span><small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small></div>
                             </div>
                         </div>
+                        <div class="role-detall-hint wg-desktop-only" onclick="toggleRoleDetall()">&#x1F50D; Veure detall ›</div>
                         <!-- Mòbil: 1 tarja combinada Ratxa | Rolada -->
                         <div class="wg-sec-card wg-mobile-only wg-combined-card">
                             <div class="wg-combined-half" style="flex:0.9;">
@@ -1009,6 +1026,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="role-detall-hint wg-mobile-only" onclick="toggleRoleDetall()" style="display:none;">&#x1F50D; Veure detall ›</div>
                     </div>
                     <!-- Dreta: Vent Real -->
                     <div class="wind-map-info-right">
