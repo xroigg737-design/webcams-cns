@@ -558,6 +558,27 @@
         .badge-meteo { background: rgba(76,175,80,0.25); color: #66bb6a; }
         .badge-regata { background: rgba(255,183,77,0.25); color: #ffb74d; }
         .badge-info { background: rgba(79,195,247,0.25); color: #4fc3f7; }
+        .video-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 18px; border-radius: 10px; border: 1px solid rgba(255,183,77,0.3);
+            background: rgba(255,183,77,0.1); color: #ffb74d;
+            font-size: 0.82em; font-weight: 600; cursor: pointer;
+            transition: all 0.25s ease; -webkit-tap-highlight-color: transparent;
+        }
+        .video-btn:hover { background: rgba(255,183,77,0.2); border-color: rgba(255,183,77,0.5); transform: translateY(-1px); }
+        .video-btn:active { transform: scale(0.97); }
+        .video-btn-icon { font-size: 1.1em; }
+        .video-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 10000;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .video-overlay.active { display: flex; }
+        .video-overlay video { max-width: 95%; max-height: 85%; border-radius: 12px; }
+        .video-overlay-close {
+            position: absolute; top: 16px; right: 20px; color: #fff; font-size: 2em;
+            cursor: pointer; z-index: 10001; background: none; border: none; line-height: 1;
+        }
 
         .card-icon-placeholder {
             width: 100%; height: 90px; display: flex; align-items: center; justify-content: center;
@@ -952,7 +973,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.34</div>
+            <div class="subtitle">v5.35</div>
         </div>
     </div>
 </header>
@@ -1380,29 +1401,15 @@
                         <span class="card-badge badge-regata">PDF</span>
                     </div>
                 </a>
-                <div class="card" onclick="document.getElementById('videoRegles').style.display=document.getElementById('videoRegles').style.display==='none'?'block':'none'" style="cursor:pointer">
-                    <img class="card-img" src="img/sailboat-instructor.png" alt="SailboatInstructor.com" loading="lazy" style="object-fit:contain;background:#fff">
-                    <div class="card-body">
-                        <div class="card-name">10 Regles Basiques</div>
-                        <div class="card-desc">Mirar-ho en apaisat/horitzontal</div>
-                        <span class="card-badge badge-regata">Video</span>
-                    </div>
-                </div>
             </div>
-            <video id="videoRegles" style="display:none;width:100%;border-radius:12px;margin-top:10px" controls preload="none">
-                <source src="video/regles-regates-ca.mp4" type="video/mp4">
-            </video>
-            <div class="card" onclick="document.getElementById('videoRegla11').style.display=document.getElementById('videoRegla11').style.display==='none'?'block':'none'" style="cursor:pointer;margin-top:10px;">
-                <img class="card-img" src="img/sailboat-instructor.png" alt="Regla 11" loading="lazy" style="object-fit:contain;background:#fff">
-                <div class="card-body">
-                    <div class="card-name">Regla 11 - Mateix bord amb solape</div>
-                    <div class="card-desc">Subtítols en català</div>
-                    <span class="card-badge badge-regata">Video</span>
-                </div>
+            <div class="video-buttons" style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+                <button class="video-btn" onclick="openVideoOverlay('video/regles-regates-ca.mp4')">
+                    <span class="video-btn-icon">&#9654;</span> 10 Regles Basiques
+                </button>
+                <button class="video-btn" onclick="openVideoOverlay('video/regla11-mateix-bord-solape.mp4')">
+                    <span class="video-btn-icon">&#9654;</span> Regla 11 - Mateix bord amb solape
+                </button>
             </div>
-            <video id="videoRegla11" style="display:none;width:100%;border-radius:12px;margin-top:10px" controls preload="none">
-                <source src="video/regla11-mateix-bord-solape.mp4" type="video/mp4">
-            </video>
         </section>
 
 
@@ -2285,6 +2292,31 @@
 
 </script>
 
+<div class="video-overlay" id="videoOverlay">
+    <button class="video-overlay-close" onclick="closeVideoOverlay()">&times;</button>
+    <video id="overlayVideo" controls></video>
+</div>
+<script>
+function openVideoOverlay(src) {
+    var o = document.getElementById('videoOverlay');
+    var v = document.getElementById('overlayVideo');
+    v.src = src;
+    o.classList.add('active');
+    v.play();
+    document.body.style.overflow = 'hidden';
+}
+function closeVideoOverlay() {
+    var o = document.getElementById('videoOverlay');
+    var v = document.getElementById('overlayVideo');
+    v.pause();
+    v.src = '';
+    o.classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.getElementById('videoOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeVideoOverlay();
+});
+</script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
