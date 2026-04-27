@@ -973,7 +973,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.35</div>
+            <div class="subtitle">v5.36</div>
         </div>
     </div>
 </header>
@@ -1650,7 +1650,7 @@
     setInterval(fetchRolada, 60000);
 
     /* ===== ESTACIONS VEÏNES ===== */
-    const WU_API = 'https://api.weather.com/v2/pws/observations/current?format=json&units=m&apiKey=6532d6454b8aa370768e63d6ba5a832e';
+    const WU_API = API + '/wu';
 
     function updateNeighbour(prefix, obs) {
         const m = obs.metric;
@@ -1688,7 +1688,7 @@
 
     async function fetchStation(stationId, prefix) {
         try {
-            const r = await fetch(WU_API + '&stationId=' + stationId);
+            const r = await fetch(WU_API + '?station=' + stationId);
             if (!r.ok) throw new Error();
             const d = await r.json();
             if (d.observations && d.observations[0]) updateNeighbour(prefix, d.observations[0]);
