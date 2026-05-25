@@ -417,6 +417,35 @@
         .wind-map-sidebar .wg-sec-card {
             background: rgba(11,31,51,0.85);
         }
+        /* Temperatura card — estil diferent, amb icona termòmetre */
+        .wg-temp-card {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 6px 10px;
+        }
+        .wg-temp-icon {
+            width: 18px;
+            height: 30px;
+            flex-shrink: 0;
+            color: #ff6b6b;
+        }
+        .wg-temp-info { flex: 1; }
+        .wg-temp-val {
+            font-size: 1.15em;
+            font-weight: 900;
+            color: #eef4ff;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+        }
+        .wg-temp-val small {
+            font-size: 0.5em;
+            color: rgba(234,242,255,0.45);
+            font-weight: 700;
+        }
         .wg-mobile-only { display: none; }
         .wg-combined-card {
             display: none;
@@ -854,6 +883,10 @@
             .role-hint-text { font-size: 0.42em; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
+            .wg-temp-card.wg-mobile-only { padding: 5px 7px; border-radius: 7px; }
+            .wg-temp-card.wg-mobile-only .wg-temp-icon { width: 14px; height: 24px; }
+            .wg-temp-card.wg-mobile-only .wg-sec-label { font-size: 0.45em; }
+            .wg-temp-card.wg-mobile-only .wg-temp-val { font-size: 0.85em; }
         }
         @media (max-width: 480px) {
             .windy-map-body { height: 350px; }
@@ -973,7 +1006,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.37</div>
+            <div class="subtitle">v5.38</div>
         </div>
     </div>
 </header>
@@ -1051,6 +1084,19 @@
                                 <div class="wg-sec-val role-clickable" onclick="toggleRoleDetall()"><span id="wm-rolada">--</span><small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small></div>
                             </div>
                         </div>
+                        <!-- Temperatura actual — Desktop -->
+                        <div class="wg-temp-card wg-desktop-only" id="wm-temp-card">
+                            <svg class="wg-temp-icon" viewBox="0 0 24 40" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="2" width="8" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="12" cy="31" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="12" cy="31" r="4" fill="currentColor" id="wm-temp-bulb"/>
+                                <rect x="10.5" y="12" width="3" height="14" rx="1.5" fill="currentColor" id="wm-temp-col"/>
+                            </svg>
+                            <div class="wg-temp-info">
+                                <div class="wg-sec-label">Temp.</div>
+                                <div class="wg-temp-val" id="wm-temp">--<small>°C</small></div>
+                            </div>
+                        </div>
                         <!-- Mòbil: 1 tarja combinada Ratxa | Rolada -->
                         <div class="wg-sec-card wg-mobile-only wg-combined-card">
                             <div class="wg-combined-half" style="flex:0.9;">
@@ -1067,6 +1113,19 @@
                                     <div class="wg-sec-label" style="white-space:nowrap;">Role 30'</div>
                                     <div class="wg-sec-val role-clickable" onclick="toggleRoleDetall()"><span id="wm-rolada-m">--</span><small style="vertical-align:super;font-size:0.5em;color:inherit;">°</small></div>
                                 </div>
+                            </div>
+                        </div>
+                        <!-- Temperatura actual — Mòbil -->
+                        <div class="wg-temp-card wg-mobile-only" id="wm-temp-card-m">
+                            <svg class="wg-temp-icon" viewBox="0 0 24 40" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="2" width="8" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="12" cy="31" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="12" cy="31" r="4" fill="currentColor"/>
+                                <rect x="10.5" y="12" width="3" height="14" rx="1.5" fill="currentColor"/>
+                            </svg>
+                            <div class="wg-temp-info">
+                                <div class="wg-sec-label">Temp.</div>
+                                <div class="wg-temp-val" id="wm-temp-m">--<small>°C</small></div>
                             </div>
                         </div>
                     </div>
@@ -1524,6 +1583,22 @@
             const ts = d.timestamp ? new Date(d.timestamp * 1000) : null;
             const t = ts ? ts.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'}) : '--:--';
             timeEl.innerHTML = '\u00daltima act.: <span style="color:#ffd740">' + t + '</span>';
+        }
+        // Temperatura
+        if (d.temp_c != null) {
+            const tc = d.temp_c;
+            const tempColor = tc <= 5 ? '#64b5f6' : tc <= 12 ? '#4dd0e1' : tc <= 20 ? '#66bb6a' : tc <= 28 ? '#ffd740' : tc <= 35 ? '#ff9a76' : '#ef5350';
+            ['wm-temp','wm-temp-m'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) { el.innerHTML = tc.toFixed(1) + '<small>\u00b0C</small>'; el.style.color = tempColor; }
+            });
+            ['wm-temp-card','wm-temp-card-m'].forEach(function(id) {
+                const card = document.getElementById(id);
+                if (card) {
+                    const svg = card.querySelector('.wg-temp-icon');
+                    if (svg) svg.style.color = tempColor;
+                }
+            });
         }
     }
 
