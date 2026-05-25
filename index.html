@@ -446,6 +446,18 @@
             color: rgba(234,242,255,0.45);
             font-weight: 700;
         }
+        .wg-temp-mobile-float {
+            display: none;
+            position: absolute;
+            right: 4px;
+            z-index: 4;
+            background: rgba(11,31,51,0.85);
+            padding: 5px 7px;
+            border-radius: 7px;
+        }
+        .wg-temp-mobile-float .wg-temp-icon { width: 14px; height: 24px; }
+        .wg-temp-mobile-float .wg-sec-label { font-size: 0.45em; }
+        .wg-temp-mobile-float .wg-temp-val { font-size: 0.85em; }
         .wg-mobile-only { display: none; }
         .wg-combined-card {
             display: none;
@@ -883,10 +895,7 @@
             .role-hint-text { font-size: 0.42em; }
             .wg-desktop-only { display: none; }
             .wg-mobile-only { display: flex !important; }
-            .wg-temp-card.wg-mobile-only { padding: 5px 7px; border-radius: 7px; }
-            .wg-temp-card.wg-mobile-only .wg-temp-icon { width: 14px; height: 24px; }
-            .wg-temp-card.wg-mobile-only .wg-sec-label { font-size: 0.45em; }
-            .wg-temp-card.wg-mobile-only .wg-temp-val { font-size: 0.85em; }
+            .wg-temp-mobile-float { display: flex !important; top: 110px; }
         }
         @media (max-width: 480px) {
             .windy-map-body { height: 350px; }
@@ -1115,23 +1124,23 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Temperatura actual — Mòbil -->
-                        <div class="wg-temp-card wg-mobile-only" id="wm-temp-card-m">
-                            <svg class="wg-temp-icon" viewBox="0 0 24 40" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="8" y="2" width="8" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                                <circle cx="12" cy="31" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                                <circle cx="12" cy="31" r="4" fill="currentColor"/>
-                                <rect x="10.5" y="12" width="3" height="14" rx="1.5" fill="currentColor"/>
-                            </svg>
-                            <div class="wg-temp-info">
-                                <div class="wg-sec-label">Temp.</div>
-                                <div class="wg-temp-val" id="wm-temp-m">--<small>°C</small></div>
-                            </div>
-                        </div>
                     </div>
                     <div class="role-detall-hint" id="role-detall-hint" onclick="toggleRoleDetall()">
                         <span class="role-hint-arrow">&#8593;</span>
                         <span class="role-hint-text">Click x detall</span>
+                    </div>
+                    <!-- Temperatura actual — Mòbil (posició independent, sota hint) -->
+                    <div class="wg-temp-card wg-temp-mobile-float" id="wm-temp-card-m">
+                        <svg class="wg-temp-icon" viewBox="0 0 24 40" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="8" y="2" width="8" height="24" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <circle cx="12" cy="31" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <circle cx="12" cy="31" r="4" fill="currentColor"/>
+                            <rect x="10.5" y="12" width="3" height="14" rx="1.5" fill="currentColor"/>
+                        </svg>
+                        <div class="wg-temp-info">
+                            <div class="wg-sec-label">Temp.</div>
+                            <div class="wg-temp-val" id="wm-temp-m">--<small>°C</small></div>
+                        </div>
                     </div>
                     <!-- Dreta: Vent Real -->
                     <div class="wind-map-info-right">
