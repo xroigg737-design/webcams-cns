@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.52</div>
+            <div class="subtitle">v5.53</div>
         </div>
     </div>
 </header>
@@ -2080,82 +2080,133 @@
             if (source) source.textContent = 'Font: Windy';
         }
 
+        var mmMap = null;
+        var mmLayers = [];
+        var mmHourIdx = 0;
+        var mmData = null;
+
         function loadMultimodel() {
-            container.innerHTML = '<div style="color:rgba(255,255,255,0.5);text-align:center;padding:40px;">Carregant models...</div>';
+            container.innerHTML = '<div id="mm-map" style="width:100%;height:350px;"></div>'
+                + '<div id="mm-slider-wrap" style="padding:6px 12px;display:flex;align-items:center;gap:8px;">'
+                + '<span id="mm-hour" style="color:#ffd740;font-weight:700;font-size:0.75em;min-width:40px;">--:--</span>'
+                + '<input id="mm-slider" type="range" min="0" max="23" value="0" style="flex:1;accent-color:#66bb6a;">'
+                + '</div>'
+                + '<div id="mm-legend" style="padding:2px 12px 6px;display:flex;gap:12px;flex-wrap:wrap;"></div>'
+                + '<div id="mm-detail" style="padding:0 12px 8px;font-size:0.65em;color:rgba(255,255,255,0.6);"></div>';
             container.style.height = 'auto';
-            container.style.minHeight = '200px';
+            container.style.minHeight = '400px';
             container.style.background = '#0b1f33';
+
+            if (mmMap) { mmMap.remove(); mmMap = null; }
+            mmMap = L.map('mm-map', { zoomControl: true, attributionControl: false })
+                .setView([41.233, 1.812], 13);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 18
+            }).addTo(mmMap);
+
+            var models = [
+                { key: 'ecmwf_ifs025', name: 'ECMWF', color: '#ef5350' },
+                { key: 'gfs_seamless', name: 'GFS', color: '#42a5f5' },
+                { key: 'icon_seamless', name: 'ICON', color: '#66bb6a' }
+            ];
+
+            // Llegenda
+            var legendEl = document.getElementById('mm-legend');
+            models.forEach(function(m) {
+                legendEl.innerHTML += '<span style="display:flex;align-items:center;gap:4px;">'
+                    + '<span style="width:10px;height:3px;background:' + m.color + ';border-radius:2px;"></span>'
+                    + '<span style="font-size:0.65em;font-weight:700;color:' + m.color + ';">' + m.name + '</span></span>';
+            });
+
             fetch(API + '/multimodel').then(function(r) { return r.json(); }).then(function(d) {
-                var h = d.hourly;
-                if (!h || !h.time) { container.innerHTML = '<div style="color:#ff5252;text-align:center;padding:40px;">Error carregant models</div>'; return; }
-                var models = [
-                    { key: 'ecmwf_ifs025', name: 'ECMWF', color: '#ef5350' },
-                    { key: 'gfs_seamless', name: 'GFS', color: '#42a5f5' },
-                    { key: 'icon_seamless', name: 'ICON', color: '#66bb6a' }
-                ];
-                var hours = h.time.map(function(t) { return t.split('T')[1].substring(0,5); });
-                var dates = h.time.map(function(t) { var p = t.split('T')[0].split('-'); return p[2]+'/'+p[1]; });
-
-                var html = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 0;">';
-                html += '<table style="border-collapse:collapse;width:max-content;min-width:100%;font-size:0.65em;font-family:system-ui,sans-serif;">';
-
-                // Header: hores
-                html += '<tr><td style="padding:3px 6px;color:rgba(255,255,255,0.4);font-weight:700;position:sticky;left:0;background:#0b1f33;z-index:1;">Hora</td>';
-                for (var i = 0; i < hours.length; i++) {
-                    var showDate = (i === 0 || dates[i] !== dates[i-1]);
-                    html += '<td style="padding:3px 5px;text-align:center;color:rgba(255,255,255,0.5);font-weight:600;white-space:nowrap;">'
-                        + (showDate ? '<div style="font-size:0.8em;color:#ffd740;">' + dates[i] + '</div>' : '')
-                        + hours[i] + '</td>';
-                }
-                html += '</tr>';
-
-                // Per cada model: velocitat + fletxa direcció, i ratxa
-                models.forEach(function(m) {
-                    var spd = h['wind_speed_10m_' + m.key] || [];
-                    var dir = h['wind_direction_10m_' + m.key] || [];
-                    var gust = h['wind_gusts_10m_' + m.key] || [];
-
-                    // Fila vent
-                    html += '<tr><td style="padding:3px 6px;color:' + m.color + ';font-weight:800;position:sticky;left:0;background:#0b1f33;z-index:1;white-space:nowrap;">'
-                        + m.name + ' <span style="font-weight:400;font-size:0.85em;color:rgba(255,255,255,0.35);">kn</span></td>';
-                    for (var i = 0; i < spd.length; i++) {
-                        var v = spd[i] != null ? Math.round(spd[i]) : '--';
-                        var c = typeof v === 'number' ? arcColor(v) : 'rgba(255,255,255,0.3)';
-                        html += '<td style="padding:3px 5px;text-align:center;color:' + c + ';font-weight:700;">' + v + '</td>';
-                    }
-                    html += '</tr>';
-
-                    // Fila ratxa
-                    html += '<tr><td style="padding:1px 6px;color:' + m.color + ';font-size:0.85em;position:sticky;left:0;background:#0b1f33;z-index:1;white-space:nowrap;">'
-                        + '<span style="opacity:0.6;">ratxa</span></td>';
-                    for (var i = 0; i < gust.length; i++) {
-                        var g = gust[i] != null ? Math.round(gust[i]) : '--';
-                        var cg = typeof g === 'number' ? arcColor(g) : 'rgba(255,255,255,0.3)';
-                        html += '<td style="padding:1px 5px;text-align:center;color:' + cg + ';font-size:0.85em;opacity:0.7;">' + g + '</td>';
-                    }
-                    html += '</tr>';
-
-                    // Fila direcció (fletxes)
-                    html += '<tr><td style="padding:1px 6px;position:sticky;left:0;background:#0b1f33;z-index:1;"><span style="color:' + m.color + ';font-size:0.85em;opacity:0.6;">dir</span></td>';
-                    for (var i = 0; i < dir.length; i++) {
-                        var d2 = dir[i] != null ? dir[i] : 0;
-                        html += '<td style="padding:1px 5px;text-align:center;font-size:1.1em;">'
-                            + '<span style="display:inline-block;transform:rotate(' + d2 + 'deg);color:' + m.color + ';opacity:0.8;">↓</span></td>';
-                    }
-                    html += '</tr>';
-
-                    // Separador entre models
-                    html += '<tr><td colspan="' + (hours.length + 1) + '" style="border-bottom:1px solid rgba(255,255,255,0.08);"></td></tr>';
+                mmData = d;
+                var slider = document.getElementById('mm-slider');
+                slider.max = d.hourly.time.length - 1;
+                slider.value = 0;
+                mmHourIdx = 0;
+                drawModelArrows(models, 0);
+                slider.addEventListener('input', function() {
+                    mmHourIdx = parseInt(this.value);
+                    drawModelArrows(models, mmHourIdx);
                 });
-
-                html += '</table></div>';
-                container.innerHTML = html;
             }).catch(function() {
                 container.innerHTML = '<div style="color:#ff5252;text-align:center;padding:40px;">Error carregant models</div>';
             });
+
             if (subtitle) subtitle.textContent = 'Comparació multi-model — Sitges';
-            if (caption) caption.textContent = 'Models solapats (ECMWF, GFS, ICON) — previsió 24h per Sitges en nusos.';
+            if (caption) caption.textContent = 'Models solapats (ECMWF, GFS, ICON) centrats a Sitges.';
             if (source) source.textContent = 'Font: Open-Meteo';
+        }
+
+        function drawModelArrows(models, idx) {
+            if (!mmData || !mmMap) return;
+            var h = mmData.hourly;
+            var hourEl = document.getElementById('mm-hour');
+            var detailEl = document.getElementById('mm-detail');
+            var t = h.time[idx] || '';
+            var hh = t.split('T')[1] || '';
+            var dd = t.split('T')[0] || '';
+            if (hourEl) hourEl.textContent = hh.substring(0,5) + ' · ' + dd.split('-').reverse().join('/');
+
+            mmLayers.forEach(function(l) { mmMap.removeLayer(l); });
+            mmLayers = [];
+
+            var center = [41.233, 1.812];
+            var detailHtml = '';
+
+            models.forEach(function(m, mi) {
+                var spd = h['wind_speed_10m_' + m.key] ? h['wind_speed_10m_' + m.key][idx] : null;
+                var dir = h['wind_direction_10m_' + m.key] ? h['wind_direction_10m_' + m.key][idx] : null;
+                var gust = h['wind_gusts_10m_' + m.key] ? h['wind_gusts_10m_' + m.key][idx] : null;
+                if (spd == null || dir == null) return;
+
+                var spdR = Math.round(spd * 10) / 10;
+                var gustR = gust != null ? Math.round(gust * 10) / 10 : '--';
+                var dirS = degToCompass(dir);
+                var len = 0.005 + spd * 0.002;
+                var rad = (dir) * Math.PI / 180;
+                var endLat = center[0] + len * Math.cos(rad);
+                var endLon = center[1] + len * Math.sin(rad);
+
+                // Línia del vent (des del centre cap a on va el vent)
+                var line = L.polyline([center, [endLat, endLon]], {
+                    color: m.color, weight: 3, opacity: 0.85
+                }).addTo(mmMap);
+                mmLayers.push(line);
+
+                // Punta de fletxa
+                var tipLen = 0.003;
+                var tipAngle = 0.5;
+                var tip1Lat = endLat - tipLen * Math.cos(rad - tipAngle);
+                var tip1Lon = endLon - tipLen * Math.sin(rad - tipAngle);
+                var tip2Lat = endLat - tipLen * Math.cos(rad + tipAngle);
+                var tip2Lon = endLon - tipLen * Math.sin(rad + tipAngle);
+                var arrow = L.polyline([[tip1Lat, tip1Lon], [endLat, endLon], [tip2Lat, tip2Lon]], {
+                    color: m.color, weight: 2.5, opacity: 0.85
+                }).addTo(mmMap);
+                mmLayers.push(arrow);
+
+                // Etiqueta velocitat al final de la fletxa
+                var label = L.marker([endLat, endLon], {
+                    icon: L.divIcon({
+                        className: '',
+                        html: '<div style="font-size:11px;font-weight:800;color:' + m.color + ';text-shadow:0 0 4px rgba(0,0,0,0.9);white-space:nowrap;">' + spdR + ' kn</div>',
+                        iconSize: [50, 16],
+                        iconAnchor: [-4, 8]
+                    })
+                }).addTo(mmMap);
+                mmLayers.push(label);
+
+                detailHtml += '<span style="color:' + m.color + ';font-weight:700;">' + m.name + '</span>: '
+                    + spdR + ' kn ' + dirS + ' ' + dir + '° · ratxa ' + gustR + ' kn &nbsp;&nbsp;';
+            });
+
+            // Punt central Sitges
+            if (mmLayers.length === 0) return;
+            var dot = L.circleMarker(center, { radius: 5, color: '#fff', fillColor: '#fff', fillOpacity: 0.9, weight: 1 }).addTo(mmMap);
+            mmLayers.push(dot);
+
+            if (detailEl) detailEl.innerHTML = detailHtml;
         }
 
         var wgCounter = 0;
