@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.58</div>
+            <div class="subtitle">v5.57</div>
         </div>
     </div>
 </header>
@@ -2082,167 +2082,133 @@
 
         var mmMap = null;
         var mmLayers = [];
-        var mmModels = null;
         var mmHourIdx = 0;
         var mmData = null;
 
         function loadMultimodel() {
-            container.innerHTML =
-                '<div id="mm-map" style="width:100%;height:400px;"></div>'
-                + '<div id="mm-timebar" style="display:flex;overflow-x:auto;gap:2px;background:rgba(11,31,51,0.97);padding:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;align-items:center;"></div>'
-                + '<div id="mm-detail" style="padding:4px 12px 8px;font-size:0.62em;color:rgba(255,255,255,0.55);background:rgba(11,31,51,0.97);line-height:1.7;"></div>';
+            container.innerHTML = '<div id="mm-map" style="width:100%;height:350px;"></div>'
+                + '<div id="mm-slider-wrap" style="padding:6px 12px;display:flex;align-items:center;gap:8px;">'
+                + '<span id="mm-hour" style="color:#ffd740;font-weight:700;font-size:0.75em;min-width:40px;">--:--</span>'
+                + '<input id="mm-slider" type="range" min="0" max="23" value="0" style="flex:1;accent-color:#66bb6a;">'
+                + '</div>'
+                + '<div id="mm-legend" style="padding:2px 12px 6px;display:flex;gap:12px;flex-wrap:wrap;"></div>'
+                + '<div id="mm-detail" style="padding:0 12px 8px;font-size:0.65em;color:rgba(255,255,255,0.6);"></div>';
             container.style.height = 'auto';
-            container.style.minHeight = '460px';
+            container.style.minHeight = '400px';
             container.style.background = '#0b1f33';
-            var sty = document.getElementById('mm-tb-css');
-            if (!sty) { sty = document.createElement('style'); sty.id = 'mm-tb-css'; sty.textContent = '#mm-timebar::-webkit-scrollbar{display:none}'; document.head.appendChild(sty); }
 
             if (mmMap) { mmMap.remove(); mmMap = null; }
-            mmMap = L.map('mm-map', { zoomControl: false, attributionControl: false })
-                .setView([41.233, 1.812], 14);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            mmMap = L.map('mm-map', { zoomControl: true, attributionControl: false })
+                .setView([41.233, 1.812], 13);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 18
             }).addTo(mmMap);
 
-            mmModels = [
+            var models = [
                 { key: 'ecmwf_ifs025', name: 'ECMWF', color: '#ef5350' },
                 { key: 'gfs_seamless', name: 'GFS', color: '#42a5f5' },
                 { key: 'icon_seamless', name: 'ICON', color: '#66bb6a' },
-                { key: 'meteofrance_seamless', name: 'MétéoFr', color: '#ffa726' },
+                { key: 'meteofrance_seamless', name: 'MétéoFr', color: '#ffd740' },
                 { key: 'meteofrance_arome_seamless', name: 'AROME', color: '#f48fb1' },
                 { key: 'gem_seamless', name: 'GEM', color: '#ce93d8' },
                 { key: 'jma_seamless', name: 'JMA', color: '#ff8a65' }
             ];
 
+            // Llegenda
+            var legendEl = document.getElementById('mm-legend');
+            models.forEach(function(m) {
+                legendEl.innerHTML += '<span style="display:flex;align-items:center;gap:4px;">'
+                    + '<span style="width:10px;height:3px;background:' + m.color + ';border-radius:2px;"></span>'
+                    + '<span style="font-size:0.65em;font-weight:700;color:' + m.color + ';">' + m.name + '</span></span>';
+            });
+
             fetch(API + '/multimodel').then(function(r) { return r.json(); }).then(function(d) {
                 mmData = d;
+                var slider = document.getElementById('mm-slider');
+                slider.max = d.hourly.time.length - 1;
+                slider.value = 0;
                 mmHourIdx = 0;
-                buildMMTimeBar(d.hourly.time);
-                drawModelArrows(mmModels, 0);
+                drawModelArrows(models, 0);
+                slider.addEventListener('input', function() {
+                    mmHourIdx = parseInt(this.value);
+                    drawModelArrows(models, mmHourIdx);
+                });
             }).catch(function() {
                 container.innerHTML = '<div style="color:#ff5252;text-align:center;padding:40px;">Error carregant models</div>';
             });
 
             if (subtitle) subtitle.textContent = 'Comparació multi-model — Sitges';
-            if (caption) caption.textContent = 'Previsió vent per Sitges: 7 models meteorològics solapats.';
+            if (caption) caption.textContent = 'Models solapats (ECMWF, GFS, ICON) centrats a Sitges.';
             if (source) source.textContent = 'Font: Open-Meteo';
-        }
-
-        function buildMMTimeBar(times) {
-            var bar = document.getElementById('mm-timebar');
-            if (!bar) return;
-            var DIES = ['DG','DL','DM','DC','DJ','DV','DS'];
-            var lastDay = '', html = '';
-            times.forEach(function(t, i) {
-                var parts = t.split('T');
-                var day = parseInt(parts[0].split('-')[2]);
-                var hour = parts[1] ? parts[1].substring(0,2) : '00';
-                var d = new Date(parts[0] + 'T12:00:00');
-                var dayName = DIES[d.getDay()];
-                if (parts[0] !== lastDay) {
-                    if (lastDay) html += '<span style="width:1px;height:18px;background:rgba(255,255,255,0.15);flex-shrink:0;margin:0 2px;"></span>';
-                    html += '<span style="color:rgba(255,255,255,0.45);font-size:0.55em;font-weight:800;padding:2px 3px;white-space:nowrap;letter-spacing:0.5px;">' + dayName + '&nbsp;' + day + '</span>';
-                    lastDay = parts[0];
-                }
-                var act = i === 0;
-                html += '<button data-idx="' + i + '" style="background:' + (act ? 'rgba(102,187,106,0.3)' : 'rgba(255,255,255,0.05)') + ';color:' + (act ? '#66bb6a' : 'rgba(255,255,255,0.5)') + ';border:1px solid ' + (act ? 'rgba(102,187,106,0.5)' : 'transparent') + ';border-radius:6px;padding:3px 6px;font-size:0.55em;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;min-width:26px;">' + hour + 'h</button>';
-            });
-            bar.innerHTML = html;
-            bar.querySelectorAll('button[data-idx]').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    mmHourIdx = parseInt(this.getAttribute('data-idx'));
-                    bar.querySelectorAll('button[data-idx]').forEach(function(b) {
-                        b.style.background = 'rgba(255,255,255,0.05)';
-                        b.style.color = 'rgba(255,255,255,0.5)';
-                        b.style.borderColor = 'transparent';
-                    });
-                    this.style.background = 'rgba(102,187,106,0.3)';
-                    this.style.color = '#66bb6a';
-                    this.style.borderColor = 'rgba(102,187,106,0.5)';
-                    drawModelArrows(mmModels, mmHourIdx);
-                });
-            });
         }
 
         function drawModelArrows(models, idx) {
             if (!mmData || !mmMap) return;
             var h = mmData.hourly;
+            var hourEl = document.getElementById('mm-hour');
             var detailEl = document.getElementById('mm-detail');
+            var t = h.time[idx] || '';
+            var hh = t.split('T')[1] || '';
+            var dd = t.split('T')[0] || '';
+            if (hourEl) hourEl.textContent = hh.substring(0,5) + ' · ' + dd.split('-').reverse().join('/');
 
             mmLayers.forEach(function(l) { mmMap.removeLayer(l); });
             mmLayers = [];
 
             var center = [41.233, 1.812];
-            var lonScale = 1 / Math.cos(center[0] * Math.PI / 180);
-
-            var circle = L.circle(center, {
-                radius: 300, color: 'rgba(180,180,180,0.45)',
-                fillColor: 'transparent', fillOpacity: 0, weight: 1.5
-            }).addTo(mmMap);
-            mmLayers.push(circle);
-
-            var dot = L.circleMarker(center, {
-                radius: 5, color: '#fff', fillColor: '#fff', fillOpacity: 0.9, weight: 2
-            }).addTo(mmMap);
-            mmLayers.push(dot);
-
-            var ktLabel = L.marker([center[0] - 0.0032, center[1]], {
-                icon: L.divIcon({
-                    className: '',
-                    html: '<div style="color:rgba(120,120,120,0.55);font-size:13px;font-weight:700;text-align:center;font-family:system-ui,sans-serif;">kt</div>',
-                    iconSize: [30, 16], iconAnchor: [15, 8]
-                })
-            }).addTo(mmMap);
-            mmLayers.push(ktLabel);
-
             var detailHtml = '';
-            var t = h.time[idx] || '';
-            var hh = t.split('T')[1] || '';
-            var dd = t.split('T')[0] || '';
-            detailHtml += '<span style="color:#66bb6a;font-weight:800;">' + hh.substring(0,5) + ' · ' + dd.split('-').reverse().join('/') + '</span> &nbsp; ';
 
-            models.forEach(function(m) {
+            models.forEach(function(m, mi) {
                 var spd = h['wind_speed_10m_' + m.key] ? h['wind_speed_10m_' + m.key][idx] : null;
                 var dir = h['wind_direction_10m_' + m.key] ? h['wind_direction_10m_' + m.key][idx] : null;
                 var gust = h['wind_gusts_10m_' + m.key] ? h['wind_gusts_10m_' + m.key][idx] : null;
                 if (spd == null || dir == null) return;
 
                 var spdR = Math.round(spd * 10) / 10;
-                var gustR = gust != null ? Math.round(gust * 10) / 10 : null;
+                var gustR = gust != null ? Math.round(gust * 10) / 10 : '--';
                 var dirS = degToCompass(dir);
+                var len = 0.005 + spd * 0.002;
+                var rad = (dir) * Math.PI / 180;
+                var endLat = center[0] + len * Math.cos(rad);
+                var endLon = center[1] + len * Math.sin(rad);
 
-                var flowDeg = (dir + 180) % 360;
-                var flowRad = flowDeg * Math.PI / 180;
-                var len = 0.001 + spd * 0.00012;
-
-                var endLat = center[0] + len * Math.cos(flowRad);
-                var endLon = center[1] + len * Math.sin(flowRad) * lonScale;
-
+                // Línia del vent (des del centre cap a on va el vent)
                 var line = L.polyline([center, [endLat, endLon]], {
-                    color: '#fff', weight: 2, opacity: 0.85
+                    color: m.color, weight: 3, opacity: 0.85
                 }).addTo(mmMap);
                 mmLayers.push(line);
 
-                var lOff = 0.0008;
-                var labelLat = endLat + lOff * Math.cos(flowRad);
-                var labelLon = endLon + lOff * Math.sin(flowRad) * lonScale;
+                // Punta de fletxa
+                var tipLen = 0.003;
+                var tipAngle = 0.5;
+                var tip1Lat = endLat - tipLen * Math.cos(rad - tipAngle);
+                var tip1Lon = endLon - tipLen * Math.sin(rad - tipAngle);
+                var tip2Lat = endLat - tipLen * Math.cos(rad + tipAngle);
+                var tip2Lon = endLon - tipLen * Math.sin(rad + tipAngle);
+                var arrow = L.polyline([[tip1Lat, tip1Lon], [endLat, endLon], [tip2Lat, tip2Lon]], {
+                    color: m.color, weight: 2.5, opacity: 0.85
+                }).addTo(mmMap);
+                mmLayers.push(arrow);
 
-                var label = L.marker([labelLat, labelLon], {
+                // Etiqueta velocitat al final de la fletxa
+                var label = L.marker([endLat, endLon], {
                     icon: L.divIcon({
                         className: '',
-                        html: '<div style="background:rgba(50,50,50,0.88);color:#fff;padding:3px 7px;border-radius:5px;white-space:nowrap;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.3);line-height:1.25;">'
-                            + '<div style="font-size:9px;font-weight:800;letter-spacing:0.3px;opacity:0.9;">' + m.name + '</div>'
-                            + '<div style="font-size:12px;font-weight:800;">' + Math.round(spd) + '</div>'
-                            + '</div>',
-                        iconSize: [90, 38], iconAnchor: [45, 19]
+                        html: '<div style="font-size:11px;font-weight:800;color:' + m.color + ';text-shadow:0 0 4px rgba(0,0,0,0.9);white-space:nowrap;">' + spdR + ' kn</div>',
+                        iconSize: [50, 16],
+                        iconAnchor: [-4, 8]
                     })
                 }).addTo(mmMap);
                 mmLayers.push(label);
 
                 detailHtml += '<span style="color:' + m.color + ';font-weight:700;">' + m.name + '</span>: '
-                    + spdR + ' kn ' + dirS + ' ' + dir + '°'
-                    + (gustR != null ? ' · ratxa ' + gustR + ' kn' : '') + ' &nbsp; ';
+                    + spdR + ' kn ' + dirS + ' ' + dir + '° · ratxa ' + gustR + ' kn &nbsp;&nbsp;';
             });
+
+            // Punt central Sitges
+            if (mmLayers.length === 0) return;
+            var dot = L.circleMarker(center, { radius: 5, color: '#fff', fillColor: '#fff', fillOpacity: 0.9, weight: 1 }).addTo(mmMap);
+            mmLayers.push(dot);
 
             if (detailEl) detailEl.innerHTML = detailHtml;
         }
