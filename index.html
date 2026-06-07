@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.51</div>
+            <div class="subtitle">v5.52</div>
         </div>
     </div>
 </header>
@@ -1381,7 +1381,7 @@
                     </div>
                     <div class="windy-map-tabs">
                         <span class="windy-map-tab active" id="tabWindy">Windy</span>
-                        <span class="windy-map-tab" id="tabWindyModels">Windy-Models &#8599;</span>
+                        <span class="windy-map-tab" id="tabWindyModels">Models</span>
                         <span class="windy-map-tab" id="tabWindguru">Windguru</span>
                         <span class="windy-map-tab" id="tabPressio">Pressió</span>
                     </div>
@@ -2080,6 +2080,84 @@
             if (source) source.textContent = 'Font: Windy';
         }
 
+        function loadMultimodel() {
+            container.innerHTML = '<div style="color:rgba(255,255,255,0.5);text-align:center;padding:40px;">Carregant models...</div>';
+            container.style.height = 'auto';
+            container.style.minHeight = '200px';
+            container.style.background = '#0b1f33';
+            fetch(API + '/multimodel').then(function(r) { return r.json(); }).then(function(d) {
+                var h = d.hourly;
+                if (!h || !h.time) { container.innerHTML = '<div style="color:#ff5252;text-align:center;padding:40px;">Error carregant models</div>'; return; }
+                var models = [
+                    { key: 'ecmwf_ifs025', name: 'ECMWF', color: '#ef5350' },
+                    { key: 'gfs_seamless', name: 'GFS', color: '#42a5f5' },
+                    { key: 'icon_seamless', name: 'ICON', color: '#66bb6a' }
+                ];
+                var hours = h.time.map(function(t) { return t.split('T')[1].substring(0,5); });
+                var dates = h.time.map(function(t) { var p = t.split('T')[0].split('-'); return p[2]+'/'+p[1]; });
+
+                var html = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 0;">';
+                html += '<table style="border-collapse:collapse;width:max-content;min-width:100%;font-size:0.65em;font-family:system-ui,sans-serif;">';
+
+                // Header: hores
+                html += '<tr><td style="padding:3px 6px;color:rgba(255,255,255,0.4);font-weight:700;position:sticky;left:0;background:#0b1f33;z-index:1;">Hora</td>';
+                for (var i = 0; i < hours.length; i++) {
+                    var showDate = (i === 0 || dates[i] !== dates[i-1]);
+                    html += '<td style="padding:3px 5px;text-align:center;color:rgba(255,255,255,0.5);font-weight:600;white-space:nowrap;">'
+                        + (showDate ? '<div style="font-size:0.8em;color:#ffd740;">' + dates[i] + '</div>' : '')
+                        + hours[i] + '</td>';
+                }
+                html += '</tr>';
+
+                // Per cada model: velocitat + fletxa direcció, i ratxa
+                models.forEach(function(m) {
+                    var spd = h['wind_speed_10m_' + m.key] || [];
+                    var dir = h['wind_direction_10m_' + m.key] || [];
+                    var gust = h['wind_gusts_10m_' + m.key] || [];
+
+                    // Fila vent
+                    html += '<tr><td style="padding:3px 6px;color:' + m.color + ';font-weight:800;position:sticky;left:0;background:#0b1f33;z-index:1;white-space:nowrap;">'
+                        + m.name + ' <span style="font-weight:400;font-size:0.85em;color:rgba(255,255,255,0.35);">kn</span></td>';
+                    for (var i = 0; i < spd.length; i++) {
+                        var v = spd[i] != null ? Math.round(spd[i]) : '--';
+                        var c = typeof v === 'number' ? arcColor(v) : 'rgba(255,255,255,0.3)';
+                        html += '<td style="padding:3px 5px;text-align:center;color:' + c + ';font-weight:700;">' + v + '</td>';
+                    }
+                    html += '</tr>';
+
+                    // Fila ratxa
+                    html += '<tr><td style="padding:1px 6px;color:' + m.color + ';font-size:0.85em;position:sticky;left:0;background:#0b1f33;z-index:1;white-space:nowrap;">'
+                        + '<span style="opacity:0.6;">ratxa</span></td>';
+                    for (var i = 0; i < gust.length; i++) {
+                        var g = gust[i] != null ? Math.round(gust[i]) : '--';
+                        var cg = typeof g === 'number' ? arcColor(g) : 'rgba(255,255,255,0.3)';
+                        html += '<td style="padding:1px 5px;text-align:center;color:' + cg + ';font-size:0.85em;opacity:0.7;">' + g + '</td>';
+                    }
+                    html += '</tr>';
+
+                    // Fila direcció (fletxes)
+                    html += '<tr><td style="padding:1px 6px;position:sticky;left:0;background:#0b1f33;z-index:1;"><span style="color:' + m.color + ';font-size:0.85em;opacity:0.6;">dir</span></td>';
+                    for (var i = 0; i < dir.length; i++) {
+                        var d2 = dir[i] != null ? dir[i] : 0;
+                        html += '<td style="padding:1px 5px;text-align:center;font-size:1.1em;">'
+                            + '<span style="display:inline-block;transform:rotate(' + d2 + 'deg);color:' + m.color + ';opacity:0.8;">↓</span></td>';
+                    }
+                    html += '</tr>';
+
+                    // Separador entre models
+                    html += '<tr><td colspan="' + (hours.length + 1) + '" style="border-bottom:1px solid rgba(255,255,255,0.08);"></td></tr>';
+                });
+
+                html += '</table></div>';
+                container.innerHTML = html;
+            }).catch(function() {
+                container.innerHTML = '<div style="color:#ff5252;text-align:center;padding:40px;">Error carregant models</div>';
+            });
+            if (subtitle) subtitle.textContent = 'Comparació multi-model — Sitges';
+            if (caption) caption.textContent = 'Models solapats (ECMWF, GFS, ICON) — previsió 24h per Sitges en nusos.';
+            if (source) source.textContent = 'Font: Open-Meteo';
+        }
+
         var wgCounter = 0;
         function loadWindguru() {
             container.innerHTML = '';
@@ -2152,7 +2230,9 @@
         });
 
         tabWindyModels.addEventListener('click', function() {
-            window.open('https://www.windy.com/-Multimodel/multimodel?41.233,1.812,13&metricWind=kt&metricTemp=%C2%B0C', '_blank');
+            if (tabWindyModels.classList.contains('active')) return;
+            setActiveTab(tabWindyModels);
+            loadMultimodel();
         });
 
         tabWindguru.addEventListener('click', function() {
