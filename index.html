@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.63</div>
+            <div class="subtitle">v5.62</div>
         </div>
     </div>
 </header>
@@ -2091,7 +2091,8 @@
                 + '<span id="mm-hour" style="color:#ffd740;font-weight:700;font-size:0.75em;min-width:40px;">--:--</span>'
                 + '<input id="mm-slider" type="range" min="0" max="23" value="0" style="flex:1;accent-color:#66bb6a;">'
                 + '</div>'
-                + '<div id="mm-legend" style="padding:8px 12px 10px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;"></div>';
+                + '<div id="mm-legend" style="padding:2px 12px 6px;display:flex;gap:12px;flex-wrap:wrap;"></div>'
+                + '<div id="mm-detail" style="padding:0 12px 8px;font-size:0.65em;color:rgba(255,255,255,0.6);"></div>';
             container.style.height = 'auto';
             container.style.minHeight = '400px';
             container.style.background = '#0b1f33';
@@ -2122,9 +2123,9 @@
             // Llegenda
             var legendEl = document.getElementById('mm-legend');
             models.forEach(function(m) {
-                legendEl.innerHTML += '<span style="display:flex;align-items:center;gap:6px;">'
-                    + '<span style="width:14px;height:4px;background:' + m.color + ';border-radius:2px;"></span>'
-                    + '<span style="font-size:0.85em;font-weight:700;color:' + m.color + ';">' + m.name + '</span></span>';
+                legendEl.innerHTML += '<span style="display:flex;align-items:center;gap:4px;">'
+                    + '<span style="width:10px;height:3px;background:' + m.color + ';border-radius:2px;"></span>'
+                    + '<span style="font-size:0.65em;font-weight:700;color:' + m.color + ';">' + m.name + '</span></span>';
             });
 
             fetch(API + '/multimodel').then(function(r) { return r.json(); }).then(function(d) {
@@ -2151,6 +2152,7 @@
             if (!mmData || !mmMap) return;
             var h = mmData.hourly;
             var hourEl = document.getElementById('mm-hour');
+            var detailEl = document.getElementById('mm-detail');
             var t = h.time[idx] || '';
             var hh = t.split('T')[1] || '';
             var dd = t.split('T')[0] || '';
@@ -2160,6 +2162,7 @@
             mmLayers = [];
 
             var center = [41.233, 1.812];
+            var detailHtml = '';
 
             models.forEach(function(m, mi) {
                 var spd = h['wind_speed_10m_' + m.key] ? h['wind_speed_10m_' + m.key][idx] : null;
@@ -2204,6 +2207,8 @@
                 }).addTo(mmMap);
                 mmLayers.push(label);
 
+                detailHtml += '<span style="color:' + m.color + ';font-weight:700;">' + m.name + '</span>: '
+                    + spdR + ' kn ' + dirS + ' ' + dir + '° · ratxa ' + gustR + ' kn &nbsp;&nbsp;';
             });
 
             // Punt central Sitges
@@ -2211,6 +2216,7 @@
             var dot = L.circleMarker(center, { radius: 5, color: '#fff', fillColor: '#fff', fillOpacity: 0.9, weight: 1 }).addTo(mmMap);
             mmLayers.push(dot);
 
+            if (detailEl) detailEl.innerHTML = detailHtml;
         }
 
         var wgCounter = 0;
