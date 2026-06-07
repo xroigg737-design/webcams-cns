@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.45</div>
+            <div class="subtitle">v5.46</div>
         </div>
     </div>
 </header>
@@ -1323,44 +1323,6 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
                         <span id="cd-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
                         <a href="https://www.17nudos.com/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
-                    </div>
-                </div>
-                <!-- Port de Barcelona -->
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#9875;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#66bb6a;letter-spacing:1px;text-transform:uppercase;">Bocana Sud Port BCN</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-                        <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
-                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-                                <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-                                <g stroke="rgba(255,255,255,0.3)" stroke-width="0.8">
-                                    <line x1="50" y1="3" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="97"/>
-                                    <line x1="3" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="97" y2="50"/>
-                                </g>
-                                <text x="50" y="11" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
-                            </svg>
-                            <div id="pb-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;">
-                                <div class="mini-pill" id="pb-pill"></div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="pb-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
-                            </div>
-                            <div id="pb-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
-                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
-                        <span id="pb-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="pb-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                        <a href="https://opendatapre.portdebarcelona.cat/es/dataset/120b4825-96cd-4d64-8578-2a7d321aa596" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -1859,45 +1821,6 @@
         } catch(e) { /* retry next interval */ }
     }
 
-    // Port de Barcelona — Bocana Sud, via proxy Cloudflare Worker
-    async function fetchPortBcn() {
-        try {
-            const r = await fetch(API + '/portbcn');
-            if (!r.ok) throw new Error();
-            const d = await r.json();
-            const dir = d.dir || 0;
-            const spd = d.speed_kn ?? 0;
-            const gust = d.gust_kn ?? 0;
-            const dirS = degToCompass(dir);
-            const ventNom = degToVentCatala(dir, spd);
-            const c = arcColor(spd);
-
-            const arrowEl = document.getElementById('pb-arrow');
-            const spdEl = document.getElementById('pb-speed');
-            const dirEl = document.getElementById('pb-dir');
-            const gustEl = document.getElementById('pb-gust');
-            const timeEl = document.getElementById('pb-time');
-
-            if (arrowEl) {
-                arrowEl.style.transform = 'rotate(' + dir + 'deg)';
-                var pill = document.getElementById('pb-pill');
-                if (pill) pill.style.setProperty('--pill-color', c);
-            }
-            if (spdEl) { spdEl.textContent = spd; spdEl.style.color = c; }
-            if (dirEl) { dirEl.textContent = dirS + ' ' + dir + '° ' + ventNom; dirEl.style.color = c; }
-            if (gustEl) { gustEl.textContent = gust + ' kn'; gustEl.style.color = arcColor(gust); }
-            if (timeEl) {
-                const ts = d.timestamp;
-                if (ts) {
-                    // Format "2026-04-12 14:30:00" → show "14:30"
-                    const parts = ts.split(' ');
-                    const hm = (parts[1] || '').substring(0, 5);
-                    timeEl.innerHTML = '<span style="color:rgba(255,255,255,0.55)">Actualitzat:</span> ' + hm;
-                }
-            }
-        } catch(e) { /* retry next interval */ }
-    }
-
     // Port d'Aiguadolç de Sitges — via proxy Cloudflare Worker
     async function fetchAiguadolc() {
         try {
@@ -1936,7 +1859,6 @@
         fetchStation('IVILAN45', 'vn');
         fetchStation('ICUBEL17', 'cb');
         fetch17nudos();
-        fetchPortBcn();
         fetchAiguadolc();
     }
 
