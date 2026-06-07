@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.48</div>
+            <div class="subtitle">v5.49</div>
         </div>
     </div>
 </header>
@@ -1381,6 +1381,7 @@
                     </div>
                     <div class="windy-map-tabs">
                         <span class="windy-map-tab active" id="tabWindy">Windy</span>
+                        <span class="windy-map-tab" id="tabWindyModels">Windy-Models</span>
                         <span class="windy-map-tab" id="tabWindguru">Windguru</span>
                         <span class="windy-map-tab" id="tabPressio">Pressió</span>
                     </div>
@@ -2041,12 +2042,13 @@
 
         const container = document.getElementById('windyMapBody');
         const tabWindy = document.getElementById('tabWindy');
+        const tabWindyModels = document.getElementById('tabWindyModels');
         const tabWindguru = document.getElementById('tabWindguru');
         const tabPressio = document.getElementById('tabPressio');
         const subtitle = document.querySelector('#windyMapWidget .windy-map-subtitle');
         const caption = document.getElementById('forecastCaption');
         const source = document.getElementById('forecastSource');
-        const allTabs = [tabWindy, tabWindguru, tabPressio];
+        const allTabs = [tabWindy, tabWindyModels, tabWindguru, tabPressio];
 
         function setActiveTab(tab) {
             allTabs.forEach(function(t) { t.classList.remove('active'); });
@@ -2075,6 +2077,30 @@
             container.appendChild(iframe);
             if (subtitle) subtitle.textContent = 'Mapa interactiu amb previsió detallada';
             if (caption) caption.textContent = 'Mapa interactiu amb previsió de vent, pluja, ratxes i més.';
+            if (source) source.textContent = 'Font: Windy';
+        }
+
+        function loadWindyModels() {
+            container.innerHTML = '';
+            container.style.height = '520px';
+            container.style.minHeight = '';
+            container.style.background = '#0b1f33';
+            var url = 'https://embed.windy.com/embed2.html'
+                + '?type=multimodel&location=coordinates'
+                + '&lat=41.233&lon=1.812&zoom=13'
+                + '&overlay=wind&metricWind=kt'
+                + '&marker=true&detail=true'
+                + '&detailLat=41.233&detailLon=1.812'
+                + '&pressure=true&calendar=now';
+            var iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.title = 'Windy Multi-Model — Sitges';
+            iframe.loading = 'lazy';
+            iframe.allow = 'geolocation';
+            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+            container.appendChild(iframe);
+            if (subtitle) subtitle.textContent = 'Comparació multi-model — Sitges';
+            if (caption) caption.textContent = 'Models solapats (ECMWF, GFS, ICON, etc.) centrats a Sitges.';
             if (source) source.textContent = 'Font: Windy';
         }
 
@@ -2147,6 +2173,15 @@
             container.style.minHeight = '';
             container.style.background = '#0b1f33';
             loadWindy();
+        });
+
+        tabWindyModels.addEventListener('click', function() {
+            if (tabWindyModels.classList.contains('active')) return;
+            setActiveTab(tabWindyModels);
+            container.style.height = '520px';
+            container.style.minHeight = '';
+            container.style.background = '#0b1f33';
+            loadWindyModels();
         });
 
         tabWindguru.addEventListener('click', function() {
