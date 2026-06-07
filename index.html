@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.41</div>
+            <div class="subtitle">v5.42</div>
         </div>
     </div>
 </header>
@@ -1173,6 +1173,44 @@
             </div>
             <hr class="category-line line-meteo">
             <div class="category-cards" style="padding:10px 12px 12px;display:flex;flex-wrap:wrap;gap:10px;">
+                <!-- Aiguadolç (destacat — estació més propera) -->
+                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;border:1.5px solid rgba(255,215,0,0.45);box-shadow:0 0 8px rgba(255,215,0,0.15);">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-size:0.9em;">&#9875;</span>
+                        <span style="font-size:0.72em;font-weight:800;color:#ffd740;letter-spacing:1px;text-transform:uppercase;">Aiguadolç</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+                        <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
+                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
+                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+                                <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                                <g stroke="rgba(255,255,255,0.3)" stroke-width="0.8">
+                                    <line x1="50" y1="3" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="97"/>
+                                    <line x1="3" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="97" y2="50"/>
+                                </g>
+                                <text x="50" y="11" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
+                            </svg>
+                            <div id="aq-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;">
+                                <div class="mini-pill" id="aq-pill"></div>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:baseline;gap:4px;">
+                                <span id="aq-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
+                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
+                            </div>
+                            <div id="aq-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
+                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
+                        <span id="aq-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                        <span id="aq-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
+                        <a href="https://www.portdesitges.com/estacio/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Estació &rarr;</a>
+                    </div>
+                </div>
                 <!-- Cubelles -->
                 <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
                     <div style="display:flex;align-items:center;gap:6px;">
@@ -1247,44 +1285,6 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
                         <span id="vn-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
                         <a href="https://www.wunderground.com/dashboard/pws/IVILAN45" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">WU &rarr;</a>
-                    </div>
-                </div>
-                <!-- Aiguadolç -->
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#9875;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#66bb6a;letter-spacing:1px;text-transform:uppercase;">Aiguadolç</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-                        <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
-                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-                                <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-                                <g stroke="rgba(255,255,255,0.3)" stroke-width="0.8">
-                                    <line x1="50" y1="3" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="97"/>
-                                    <line x1="3" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="97" y2="50"/>
-                                </g>
-                                <text x="50" y="11" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
-                            </svg>
-                            <div id="aq-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;">
-                                <div class="mini-pill" id="aq-pill"></div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="aq-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
-                            </div>
-                            <div id="aq-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
-                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
-                        <span id="aq-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="aq-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                        <a href="https://www.portdesitges.com/estacio/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Estació &rarr;</a>
                     </div>
                 </div>
                 <!-- Castelldefels -->
