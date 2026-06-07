@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.60</div>
+            <div class="subtitle">v5.61</div>
         </div>
     </div>
 </header>
@@ -2103,21 +2103,6 @@
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 18
             }).addTo(mmMap);
-
-            L.polyline([
-                [41.2510,1.7820],[41.2480,1.7880],[41.2445,1.7940],[41.2415,1.7990],
-                [41.2385,1.8030],[41.2365,1.8065],[41.2350,1.8085],[41.2338,1.8100],
-                [41.2335,1.8120],[41.2340,1.8145],[41.2350,1.8160],[41.2345,1.8180],
-                [41.2340,1.8110],[41.2335,1.8120],[41.2342,1.8155],[41.2348,1.8175],
-                [41.2355,1.8195],[41.2360,1.8220],[41.2365,1.8260],[41.2360,1.8310],
-                [41.2350,1.8380],[41.2340,1.8440],[41.2330,1.8500]
-            ], { color: 'rgba(180,210,240,0.35)', weight: 2, smoothFactor: 2 }).addTo(mmMap);
-
-            L.marker([41.2385, 1.8120], { icon: L.divIcon({
-                className: '',
-                html: '<div style="color:rgba(200,220,240,0.55);font-size:13px;font-weight:800;letter-spacing:2px;font-family:system-ui,sans-serif;text-transform:uppercase;text-shadow:0 0 8px rgba(0,0,0,0.8);">Sitges</div>',
-                iconSize: [70, 18], iconAnchor: [35, 9]
-            }) }).addTo(mmMap);
 
             var models = [
                 { key: 'ecmwf_ifs025', name: 'ECMWF', color: '#ef5350' },
