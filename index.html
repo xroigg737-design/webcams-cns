@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.50</div>
+            <div class="subtitle">v5.51</div>
         </div>
     </div>
 </header>
@@ -1381,7 +1381,7 @@
                     </div>
                     <div class="windy-map-tabs">
                         <span class="windy-map-tab active" id="tabWindy">Windy</span>
-                        <span class="windy-map-tab" id="tabWindyModels">Windy-Models</span>
+                        <span class="windy-map-tab" id="tabWindyModels">Windy-Models &#8599;</span>
                         <span class="windy-map-tab" id="tabWindguru">Windguru</span>
                         <span class="windy-map-tab" id="tabPressio">Pressió</span>
                     </div>
@@ -2080,26 +2080,6 @@
             if (source) source.textContent = 'Font: Windy';
         }
 
-        function loadWindyModels() {
-            container.innerHTML = '';
-            container.style.height = '520px';
-            container.style.minHeight = '';
-            container.style.background = '#0b1f33';
-            var url = 'https://www.windy.com/-Multimodel/multimodel'
-                + '?41.233,1.812,13'
-                + '&metricWind=kt&metricTemp=%C2%B0C';
-            var iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.title = 'Windy Multi-Model — Sitges';
-            iframe.loading = 'lazy';
-            iframe.allow = 'geolocation';
-            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-            container.appendChild(iframe);
-            if (subtitle) subtitle.textContent = 'Comparació multi-model — Sitges';
-            if (caption) caption.textContent = 'Models solapats (ECMWF, GFS, ICON, etc.) centrats a Sitges.';
-            if (source) source.textContent = 'Font: Windy';
-        }
-
         var wgCounter = 0;
         function loadWindguru() {
             container.innerHTML = '';
@@ -2172,12 +2152,7 @@
         });
 
         tabWindyModels.addEventListener('click', function() {
-            if (tabWindyModels.classList.contains('active')) return;
-            setActiveTab(tabWindyModels);
-            container.style.height = '520px';
-            container.style.minHeight = '';
-            container.style.background = '#0b1f33';
-            loadWindyModels();
+            window.open('https://www.windy.com/-Multimodel/multimodel?41.233,1.812,13&metricWind=kt&metricTemp=%C2%B0C', '_blank');
         });
 
         tabWindguru.addEventListener('click', function() {
