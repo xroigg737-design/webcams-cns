@@ -809,9 +809,9 @@
             gap: 6px;
         }
         .windy-map-tab {
-            padding: 6px 16px;
-            border-radius: 10px;
-            font-size: 0.75em;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 0.6em;
             font-weight: 700;
             letter-spacing: 0.5px;
             cursor: pointer;
@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.49</div>
+            <div class="subtitle">v5.50</div>
         </div>
     </div>
 </header>
@@ -2085,13 +2085,9 @@
             container.style.height = '520px';
             container.style.minHeight = '';
             container.style.background = '#0b1f33';
-            var url = 'https://embed.windy.com/embed2.html'
-                + '?type=multimodel&location=coordinates'
-                + '&lat=41.233&lon=1.812&zoom=13'
-                + '&overlay=wind&metricWind=kt'
-                + '&marker=true&detail=true'
-                + '&detailLat=41.233&detailLon=1.812'
-                + '&pressure=true&calendar=now';
+            var url = 'https://www.windy.com/-Multimodel/multimodel'
+                + '?41.233,1.812,13'
+                + '&metricWind=kt&metricTemp=%C2%B0C';
             var iframe = document.createElement('iframe');
             iframe.src = url;
             iframe.title = 'Windy Multi-Model — Sitges';
