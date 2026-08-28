@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.65</div>
+            <div class="subtitle">v5.66</div>
         </div>
     </div>
 </header>
@@ -1322,7 +1322,7 @@
                     </div>
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
                         <span id="cd-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                        <a href="https://www.17nudos.com/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
+                        <a href="https://www.wunderground.com/dashboard/pws/ICASTE46" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -1859,7 +1859,7 @@
     async function fetchNeighbours() {
         fetchStation('IVILAN45', 'vn');
         fetchStation('ICUBEL17', 'cb');
-        fetch17nudos();
+        fetchStation('ICASTE46', 'cd');
         fetchAiguadolc();
     }
 
