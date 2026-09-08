@@ -1156,7 +1156,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.75</div>
+            <div class="subtitle">v5.76</div>
         </div>
     </div>
 </header>
@@ -2115,6 +2115,22 @@
     let curLastHour = null;   // hora UTC ('YYYY-MM-DDTHH') ja carregada
     let curHasData = false;   // ja hem mostrat una mesura alguna vegada?
 
+    /* L'ICATMAR marca les hores en UTC, però a la gent li diu poc.
+       Es mostra l'hora LOCAL i quant fa que es va mesurar. */
+    function curHoraLocal(iso) {
+        if (!iso) return null;
+        // accepta '2026-09-08T12:00:00Z' i '2026-09-08T12'
+        const d = new Date(iso.length <= 13 ? iso + ':00:00Z' : iso);
+        if (isNaN(d)) return null;
+        const hora = d.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+        const min = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
+        let fa;
+        if (min < 60) fa = 'fa ' + min + ' min';
+        else if (min < 120) fa = 'fa 1 h';
+        else fa = 'fa ' + Math.floor(min / 60) + ' h';
+        return { hora: hora, fa: fa };
+    }
+
     function renderCurrent(c) {
         const arrow = document.getElementById('cur-arrow');
         const spd = document.getElementById('cur-speed');
@@ -2131,11 +2147,17 @@
         if (meta) {
             meta.innerHTML =
                 '<b>Font:</b> radar HF de l\'ICATMAR, antena de <b>Port Ginesta</b> ' +
-                '(41.256N 1.922E), amb Port de Barcelona i Segur de Calafell';
+                '(41.256N 1.922E), amb Port de Barcelona i Segur de Calafell<br>' +
+                '<b>Una mesura cada hora</b>, publicada uns 20 min després; ' +
+                'per això sol veure\'s la de l\'hora anterior';
         }
         if (time && c.time) {
-            time.innerHTML = 'Última act.: <span style="color:#ffd740;">' +
-                c.time.substring(11, 16) + ' UTC</span>';
+            const hl = curHoraLocal(c.time);
+            if (hl) {
+                time.innerHTML = 'Mesura de les <span style="color:#ffd740;">' +
+                    hl.hora + '</span> <span style="color:rgba(255,255,255,0.45);' +
+                    'font-weight:600;">(' + hl.fa + ')</span>';
+            }
         }
     }
 
@@ -2245,8 +2267,11 @@
                 '<b>Port Ginesta</b> (41.256N 1.922E)';
         }
         if (time && hora) {
-            time.innerHTML = 'Sense dades a les <span style="color:#ffab40;">' +
-                hora.substring(11, 16) + ' UTC</span>';
+            const hl = curHoraLocal(hora);
+            if (hl) {
+                time.innerHTML = 'Sense dades de les <span style="color:#ffab40;">' +
+                    hl.hora + '</span>';
+            }
         }
     }
 
