@@ -646,6 +646,10 @@
         .cur-hist-table th {
             position: sticky;
             top: 0;
+            /* La fletxa de cada fila porta transform, i això la promou a una
+               capa pròpia que es pintaria per sobre de la capçalera enganxada.
+               Amb z-index la capçalera queda sempre al davant. */
+            z-index: 3;
             background: #12293f;
             color: #8ab4d6;
             font-size: 0.78em;
@@ -665,16 +669,18 @@
         .cur-hist-table tr:last-child td { border-bottom: none; }
         .cur-hist-table tbody tr.ara { background: rgba(0,191,165,0.14); }
         .cur-hist-table tbody tr.ara td { color: #fff; font-weight: 800; }
+        /* La capçalera de dia NO pot ser sticky: totes comparteixen el mateix
+           contenidor, s'enganxarien a la mateixa alçada i se solaparien entre
+           elles (i amb la capçalera de columnes), quedant illegibles. */
         .cur-hist-table tr.cur-hist-dia td {
-            background: rgba(0,191,165,0.16);
+            background: rgba(0,191,165,0.18);
             color: #7fe7dc;
             font-size: 0.88em;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.7px;
-            padding: 5px 9px;
-            position: sticky;
-            top: 26px;
+            padding: 6px 9px;
+            border-top: 1px solid rgba(0,191,165,0.35);
         }
         .cur-hist-h { color: #ffd740; font-weight: 700; }
         .cur-hist-v { color: #fff; font-weight: 800; }
@@ -1156,7 +1162,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.76</div>
+            <div class="subtitle">v5.77</div>
         </div>
     </div>
 </header>
