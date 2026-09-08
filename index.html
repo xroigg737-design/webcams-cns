@@ -725,6 +725,33 @@
             color: #90caf9;
             border-top-color: rgba(66,165,245,0.35);
         }
+        .cur-hist-setmana td {
+            background: rgba(0,191,165,0.10);
+            color: #7fe7dc;
+            font-size: 0.82em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            padding: 8px 9px;
+            border-top: 1.5px solid rgba(0,191,165,0.30);
+            cursor: pointer;
+            user-select: none;
+        }
+        .cur-hist-setmana td:hover { background: rgba(0,191,165,0.18); }
+        .cur-hist-setmana .chevron {
+            display: inline-block;
+            transition: transform 0.2s ease;
+            margin-right: 5px;
+            font-size: 0.85em;
+        }
+        .cur-hist-setmana.collapsed .chevron { transform: rotate(0deg); }
+        .cur-hist-setmana.expanded .chevron { transform: rotate(90deg); }
+        .mas-hist-table .cur-hist-setmana td {
+            background: rgba(66,165,245,0.10);
+            color: #90caf9;
+            border-top-color: rgba(66,165,245,0.30);
+        }
+        .mas-hist-table .cur-hist-setmana td:hover { background: rgba(66,165,245,0.18); }
         .cur-hist-h { color: #ffd740; font-weight: 700; }
         .cur-hist-v { color: #fff; font-weight: 800; }
         .cur-hist-d { color: #4dd0c4; font-weight: 700; }
@@ -1205,7 +1232,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.81</div>
+            <div class="subtitle">v5.82</div>
         </div>
     </div>
 </header>
@@ -2464,6 +2491,99 @@
     fetchCurrents();
     sondeja(fetchCurrents, 15 * 60 * 1000);  // les dades s'actualitzen cada hora
 
+    function isoWeekNumber(d) {
+        var t = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12);
+        t.setDate(t.getDate() + 3 - ((t.getDay() + 6) % 7));
+        var jan4 = new Date(t.getFullYear(), 0, 4);
+        return Math.round((t - jan4) / 86400000 / 7) + 1;
+    }
+
+    function weekMonday(d) {
+        var t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        var dow = (t.getDay() + 6) % 7;
+        t.setDate(t.getDate() - dow);
+        return t;
+    }
+
+    function renderHistoricRows(hist, prefix) {
+        var araUTC = new Date().toISOString().substring(0, 13);
+        var horaAnterior = new Date(Date.now() - 3600000)
+                               .toISOString().substring(0, 13);
+        var avui = new Date();
+        var setmanaActual = isoWeekNumber(avui);
+        var anyActual = avui.getFullYear();
+
+        var setmanes = {};
+        var ordreSetmanes = [];
+        hist.forEach(function(e) {
+            var dt = new Date(e.t + ':00:00Z');
+            var wn = isoWeekNumber(dt);
+            var yr = dt.getFullYear();
+            var key = yr + '-W' + wn;
+            if (!setmanes[key]) {
+                setmanes[key] = { wn: wn, yr: yr, entries: [], monday: weekMonday(dt) };
+                ordreSetmanes.push(key);
+            }
+            setmanes[key].entries.push(e);
+        });
+
+        var html = '';
+        var uid = 0;
+        ordreSetmanes.forEach(function(key) {
+            var w = setmanes[key];
+            var esSetmanaActual = (w.wn === setmanaActual && w.yr === anyActual);
+
+            if (!esSetmanaActual) {
+                var diumenge = new Date(w.monday);
+                diumenge.setDate(diumenge.getDate() + 6);
+                var dlLabel = w.monday.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+                var dgLabel = diumenge.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+                var groupId = prefix + '-wk-' + (uid++);
+                html += '<tr class="cur-hist-setmana collapsed" data-group="' + groupId + '" onclick="toggleWeekGroup(this)">' +
+                    '<td colspan="4"><span class="chevron">&#9654;</span>Setmana ' + dlLabel + ' – ' + dgLabel + '</td></tr>';
+            }
+
+            var diaPrevi = null;
+            w.entries.forEach(function(e) {
+                var dt = new Date(e.t + ':00:00Z');
+                var hora = dt.toLocaleTimeString('ca-ES', {
+                    hour: '2-digit', minute: '2-digit'
+                });
+                var dia = dt.toLocaleDateString('ca-ES', {
+                    weekday: 'long', day: 'numeric', month: 'short'
+                });
+                var sep = '';
+                if (dia !== diaPrevi) {
+                    diaPrevi = dia;
+                    sep = '<tr class="cur-hist-dia' +
+                        (!esSetmanaActual ? ' ' + prefix + '-wk-' + (uid - 1) : '') +
+                        '"' + (!esSetmanaActual ? ' hidden' : '') +
+                        '><td colspan="4">' + dia + '</td></tr>';
+                }
+                var recent = (e.t === araUTC || e.t === horaAnterior);
+                var rowClass = (recent ? 'ara' : '') +
+                    (!esSetmanaActual ? (recent ? ' ' : '') + prefix + '-wk-' + (uid - 1) : '');
+                html += sep + '<tr' + (rowClass ? ' class="' + rowClass + '"' : '') +
+                    (!esSetmanaActual ? ' hidden' : '') + '>' +
+                    '<td class="cur-hist-h">' + hora + '</td>' +
+                    '<td class="cur-hist-v">' + e.s.toFixed(2) + '<span style="font-size:0.8em;color:rgba(255,255,255,0.45);"> kn</span></td>' +
+                    '<td class="cur-hist-d">' + degToCompass(e.d) + ' ' + e.d + '°</td>' +
+                    '<td><span class="cur-hist-arrow" style="transform:rotate(' + e.d + 'deg);display:inline-block;">↑</span></td>' +
+                    '</tr>';
+            });
+        });
+        return html;
+    }
+
+    function toggleWeekGroup(tr) {
+        var groupId = tr.getAttribute('data-group');
+        var isCollapsed = tr.classList.contains('collapsed');
+        var rows = tr.closest('tbody').querySelectorAll('.' + groupId);
+        rows.forEach(function(r) { r.hidden = !isCollapsed; });
+        tr.classList.toggle('collapsed');
+        tr.classList.toggle('expanded');
+    }
+
     /* ----- Històric horari del corrent (taula) -----
        El servidor va acumulant una entrada per hora a partir del radar.
        Les hores arriben en UTC i es mostren en horari local, perquè la
@@ -2477,33 +2597,7 @@
             const hist = await r.json();
             if (!Array.isArray(hist) || !hist.length) throw new Error('buit');
 
-            const araUTC = new Date().toISOString().substring(0, 13);
-            const horaAnterior = new Date(Date.now() - 3600000)
-                                     .toISOString().substring(0, 13);
-            let diaPrevi = null;
-            body.innerHTML = hist.map(function(e) {
-                // e.t ve com '2026-09-08T09' (UTC) -> hora local
-                const dt = new Date(e.t + ':00:00Z');
-                const hora = dt.toLocaleTimeString('ca-ES', {
-                    hour: '2-digit', minute: '2-digit'
-                });
-                // Amb un mes d'hores cal poder-s'hi orientar: capçalera de dia
-                const dia = dt.toLocaleDateString('ca-ES', {
-                    weekday: 'long', day: 'numeric', month: 'short'
-                });
-                let sep = '';
-                if (dia !== diaPrevi) {
-                    diaPrevi = dia;
-                    sep = '<tr class="cur-hist-dia"><td colspan="4">' + dia + '</td></tr>';
-                }
-                const recent = (e.t === araUTC || e.t === horaAnterior);
-                return sep + '<tr' + (recent ? ' class="ara"' : '') + '>' +
-                    '<td class="cur-hist-h">' + hora + '</td>' +
-                    '<td class="cur-hist-v">' + e.s.toFixed(2) + '<span style="font-size:0.8em;color:rgba(255,255,255,0.45);"> kn</span></td>' +
-                    '<td class="cur-hist-d">' + degToCompass(e.d) + ' ' + e.d + '\u00b0</td>' +
-                    '<td><span class="cur-hist-arrow" style="transform:rotate(' + e.d + 'deg);display:inline-block;">\u2191</span></td>' +
-                    '</tr>';
-            }).join('');
+            body.innerHTML = renderHistoricRows(hist, 'cur');
 
             const abast = document.getElementById('cur-hist-abast');
             if (abast) {
@@ -2613,31 +2707,7 @@
             const hist = await r.json();
             if (!Array.isArray(hist) || !hist.length) throw new Error('buit');
 
-            const araUTC = new Date().toISOString().substring(0, 13);
-            const horaAnterior = new Date(Date.now() - 3600000)
-                                     .toISOString().substring(0, 13);
-            let diaPrevi = null;
-            body.innerHTML = hist.map(function(e) {
-                const dt = new Date(e.t + ':00:00Z');
-                const hora = dt.toLocaleTimeString('ca-ES', {
-                    hour: '2-digit', minute: '2-digit'
-                });
-                const dia = dt.toLocaleDateString('ca-ES', {
-                    weekday: 'long', day: 'numeric', month: 'short'
-                });
-                let sep = '';
-                if (dia !== diaPrevi) {
-                    diaPrevi = dia;
-                    sep = '<tr class="cur-hist-dia"><td colspan="4">' + dia + '</td></tr>';
-                }
-                const recent = (e.t === araUTC || e.t === horaAnterior);
-                return sep + '<tr' + (recent ? ' class="ara"' : '') + '>' +
-                    '<td class="cur-hist-h">' + hora + '</td>' +
-                    '<td class="cur-hist-v">' + e.s.toFixed(2) + '<span style="font-size:0.8em;color:rgba(255,255,255,0.45);"> kn</span></td>' +
-                    '<td class="cur-hist-d">' + degToCompass(e.d) + ' ' + e.d + '°</td>' +
-                    '<td><span class="cur-hist-arrow" style="transform:rotate(' + e.d + 'deg);display:inline-block;">↑</span></td>' +
-                    '</tr>';
-            }).join('');
+            body.innerHTML = renderHistoricRows(hist, 'mas');
 
             const abast = document.getElementById('mas-hist-abast');
             if (abast) {
