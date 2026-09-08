@@ -580,6 +580,7 @@
             max-width: 440px;
             display: flex;
             flex-direction: column;
+            align-items: stretch;   /* .wg-sec-card porta align-items:center */
             gap: 7px;
             padding: 13px 14px;
             border: 1.5px solid rgba(0,191,165,0.45);
@@ -623,22 +624,23 @@
             max-width: 440px;
             display: flex;
             flex-direction: column;
+            align-items: stretch;   /* .wg-sec-card porta align-items:center */
             gap: 7px;
             padding: 13px 14px;
             border: 1.5px solid rgba(0,191,165,0.28);
             background: linear-gradient(145deg, rgba(0,191,165,0.06), rgba(255,255,255,0.03) 55%);
         }
         .cur-hist-scroll {
-            max-height: 232px;
+            max-height: 268px;
             overflow-y: auto;
-            overflow-x: hidden;
+            overflow-x: auto;   /* mai retallar en pantalles molt estretes */
             border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.07);
         }
         .cur-hist-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.62em;
+            font-size: 0.82em;
             font-variant-numeric: tabular-nums;
         }
         .cur-hist-table th {
@@ -646,16 +648,17 @@
             top: 0;
             background: #12293f;
             color: #8ab4d6;
-            font-size: 0.85em;
+            font-size: 0.78em;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             text-align: left;
-            padding: 6px 8px;
+            padding: 7px 9px;
             border-bottom: 1px solid rgba(255,255,255,0.12);
         }
         .cur-hist-table td {
-            padding: 5px 8px;
+            padding: 7px 9px;
+            white-space: nowrap;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             color: rgba(255,255,255,0.8);
         }
@@ -668,12 +671,18 @@
         .cur-hist-arrow {
             display: inline-block;
             color: #00bfa5;
-            font-size: 1.15em;
+            font-size: 1.3em;
             line-height: 1;
         }
         @media (max-width: 520px) {
-            .cur-hist-table { font-size: 0.58em; }
-            .cur-hist-scroll { max-height: 200px; }
+            .cur-hist-table { font-size: 0.76em; }
+            .cur-hist-table th { padding: 6px 6px; letter-spacing: 0.3px; }
+            .cur-hist-table td { padding: 7px 6px; }
+            .cur-hist-scroll { max-height: 250px; }
+        }
+        @media (max-width: 360px) {
+            .cur-hist-card, .cur-card { padding: 11px 9px; }
+            .cur-hist-table th, .cur-hist-table td { padding-left: 4px; padding-right: 4px; }
         }
 
         .category-line { height: 1px; margin: 8px 14px 0; border: none; }
@@ -1136,7 +1145,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.73</div>
+            <div class="subtitle">v5.74</div>
         </div>
     </div>
 </header>
