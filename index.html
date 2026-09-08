@@ -1198,7 +1198,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.78</div>
+            <div class="subtitle">v5.79</div>
         </div>
     </div>
 </header>
@@ -1922,11 +1922,22 @@
 
     // Carrega inicial + refresh cada 60s
     fetchWind();
-    setInterval(fetchWind, 30000);
+    /* Els sondejos s'aturen quan la pestanya no es veu.
+       Sense això, una pestanya oberta tot el dia fa ~7.400 peticions al
+       servidor propi, i n'hi ha un límit diari. En tornar a primer pla es
+       refresca de seguida (visibilitychange, just a sota). */
+    function sondeja(fn, ms) {
+        return setInterval(function() { if (!document.hidden) fn(); }, ms);
+    }
+
+    sondeja(fetchWind, 30000);
 
     // Refresh immediat quan l'app torna a primer pla
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') fetchWind();
+        if (document.visibilityState !== 'visible') return;
+        fetchWind();
+        if (typeof fetchNeighbours === 'function') fetchNeighbours();
+        if (typeof fetchCurrents === 'function') fetchCurrents();
     });
 
     /* ===== ROLADA (oscil·lació angular del vent) ===== */
@@ -2029,7 +2040,7 @@
     }
 
     fetchRolada();
-    setInterval(fetchRolada, 60000);
+    sondeja(fetchRolada, 60000);
 
     /* ===== ESTACIONS VEÏNES ===== */
     const WU_API = API + '/wu';
@@ -2153,7 +2164,7 @@
     }
 
     fetchNeighbours();
-    setInterval(fetchNeighbours, 120000);  // cada 2 min
+    sondeja(fetchNeighbours, 120000);  // cada 2 min
 
 
     /* ===== CORRENT SUPERFICIAL — radar HF ICATMAR (antena Port Ginesta) =====
@@ -2334,7 +2345,7 @@
     }
 
     fetchCurrents();
-    setInterval(fetchCurrents, 15 * 60 * 1000);  // les dades s'actualitzen cada hora
+    sondeja(fetchCurrents, 15 * 60 * 1000);  // les dades s'actualitzen cada hora
 
     /* ----- Històric horari del corrent (taula) -----
        El servidor va acumulant una entrada per hora a partir del radar.
@@ -2414,7 +2425,7 @@
     }
 
     fetchCurrentHistory();
-    setInterval(fetchCurrentHistory, 15 * 60 * 1000);
+    sondeja(fetchCurrentHistory, 15 * 60 * 1000);
 
 
     /* ===== WIND FLOW — estil Windy/cambecc earth: trails que s'esvaeixen ===== */
