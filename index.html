@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.70</div>
+            <div class="subtitle">v5.71</div>
         </div>
     </div>
 </header>
@@ -1336,7 +1336,7 @@
             </div>
             <hr class="category-line line-current">
             <div class="category-cards" style="padding:10px 12px 12px;display:flex;flex-wrap:wrap;gap:10px;">
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:200px;max-width:290px;border:1.5px solid rgba(0,191,165,0.4);box-shadow:0 0 8px rgba(0,191,165,0.12);">
+                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:200px;max-width:420px;border:1.5px solid rgba(0,191,165,0.4);box-shadow:0 0 8px rgba(0,191,165,0.12);">
                     <div style="display:flex;align-items:center;gap:6px;">
                         <span style="font-size:0.9em;">&#9973;</span>
                         <span style="font-size:0.72em;font-weight:800;color:#00bfa5;letter-spacing:1px;text-transform:uppercase;">Davant de Sitges</span>
@@ -1925,6 +1925,7 @@
     const CUR_LAT = 41.233, CUR_LON = 1.812, CUR_RADI_KM = 8, CUR_GDOP_MAX = 2;
     const CUR_GEOJSON_LON_OFFSET = 0.0354;
     let curLastHour = null;   // hora UTC ('YYYY-MM-DDTHH') ja carregada
+    let curHasData = false;   // ja hem mostrat una mesura alguna vegada?
 
     function renderCurrent(c) {
         const arrow = document.getElementById('cur-arrow');
@@ -1989,6 +1990,7 @@
                 const c = await r.json();
                 if (c && c.convention === 'toward' && isFinite(c.spdKn)) {
                     curLastHour = c.time ? c.time.substring(0, 13) : null;
+                    curHasData = true;
                     renderCurrent(c);
                     return;
                 }
@@ -2008,15 +2010,61 @@
             const r = await fetch(API + '/icatmar-currents');
             if (!r.ok) throw new Error('HTTP ' + r.status);
             const geo = await r.json();
+            const hora = r.headers.get('X-Data-Time') ||
+                         (geo.metadata && geo.metadata.var_time) || null;
             const c = currentFromGeoJSON(geo);
-            if (!c) throw new Error('sense punts vàlids prop de Sitges');
-            c.time = r.headers.get('X-Data-Time') ||
-                     (geo.metadata && geo.metadata.var_time) || null;
-            curLastHour = c.time ? c.time.substring(0, 13) : null;
+            if (!c) {
+                // El radar cobreix Sitges el ~98% de les hores, però hi ha
+                // caigudes. /icatmar-currents dona el fitxer més recent que
+                // existeix, encara que no tingui punts prop de Sitges (el
+                // Worker sí que retrocedeix hores: /corrent ho resol millor).
+                // No amaguem la secció: ho diem, i mantenim l'últim valor.
+                curNoCoverage(hora);
+                return;
+            }
+            c.time = hora;
+            curLastHour = hora ? hora.substring(0, 13) : null;
+            curHasData = true;
             renderCurrent(c);
         } catch (e) {
-            const sec = document.getElementById('current-section');
-            if (sec) sec.style.display = 'none';
+            // Error real de xarxa: si mai hem tingut dades, amaguem la secció;
+            // si en teníem, deixem l'últim valor visible amb avís.
+            if (!curHasData) {
+                const sec = document.getElementById('current-section');
+                if (sec) sec.style.display = 'none';
+            } else {
+                curStaleNote();
+            }
+        }
+    }
+
+    function curNoCoverage(hora) {
+        const meta = document.getElementById('cur-meta');
+        const time = document.getElementById('cur-time');
+        if (!curHasData) {
+            const spd = document.getElementById('cur-speed');
+            const dir = document.getElementById('cur-dir');
+            const arrow = document.getElementById('cur-arrow');
+            if (spd) spd.textContent = '--';
+            if (dir) dir.textContent = '--';
+            if (arrow) arrow.style.opacity = '0';
+        }
+        if (meta) {
+            meta.innerHTML = '<span style="color:#ffab40;">El radar no cobreix ' +
+                'Sitges en aquesta hora</span>' +
+                (curHasData ? '<br>es mostra l\'última mesura disponible' : '');
+        }
+        if (time && hora) {
+            time.innerHTML = 'Sense dades a les <span style="color:#ffab40;">' +
+                hora.substring(11, 16) + ' UTC</span>';
+        }
+    }
+
+    function curStaleNote() {
+        const meta = document.getElementById('cur-meta');
+        if (meta && curHasData) {
+            meta.innerHTML = '<span style="color:#ffab40;">No s\'ha pogut ' +
+                'actualitzar</span><br>es mostra l\'última mesura rebuda';
         }
     }
 
