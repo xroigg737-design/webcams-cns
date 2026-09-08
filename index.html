@@ -617,6 +617,42 @@
             .cur-dir-txt { font-size: 1.2em; }
             .cur-meta { font-size: 0.54em; }
         }
+        /* --- KPI del màxim de la setmana, a la capçalera de l'històric --- */
+        .cur-hist-head {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+        .cur-kpi {
+            margin-left: auto;          /* empeny el KPI a la dreta */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1px;
+            padding: 4px 9px;
+            border-radius: 7px;
+            background: rgba(255,215,64,0.09);
+            border: 1px solid rgba(255,215,64,0.3);
+            line-height: 1.15;
+        }
+        .cur-kpi-lab {
+            font-size: 0.5em;
+            font-weight: 800;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+            color: rgba(255,215,64,0.75);
+            white-space: nowrap;
+        }
+        .cur-kpi-body { display: flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+        .cur-kpi-val { font-size: 0.98em; font-weight: 900; color: #ffd740; font-variant-numeric: tabular-nums; }
+        .cur-kpi-when { font-size: 0.56em; font-weight: 700; color: rgba(255,255,255,0.55); }
+        @media (max-width: 400px) {
+            .cur-kpi { margin-left: 0; width: 100%; align-items: flex-start; }
+            .cur-kpi-body { }
+        }
+
         /* --- Taula d'històric del corrent --- */
         .cur-hist-card {
             flex: 1;
@@ -1162,7 +1198,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.77</div>
+            <div class="subtitle">v5.78</div>
         </div>
     </div>
 </header>
@@ -1550,9 +1586,17 @@
                 <!-- HISTÒRIC HORARI — per contrastar la mesura del radar amb el
                      que es veu realment a la costa. Hores en horari local. -->
                 <div class="wg-sec-card cur-hist-card">
-                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+                    <div class="cur-hist-head">
                         <span style="font-size:1em;">&#128337;</span>
                         <span style="font-size:0.8em;font-weight:800;color:#00bfa5;letter-spacing:1.2px;text-transform:uppercase;">Històric horari</span>
+                        <!-- KPI: màxim de la darrera setmana -->
+                        <div class="cur-kpi">
+                            <span class="cur-kpi-lab">Màx. últ. setmana</span>
+                            <span class="cur-kpi-body">
+                                <span class="cur-kpi-val" id="cur-max-val">--</span>
+                                <span class="cur-kpi-when" id="cur-max-when">--</span>
+                            </span>
+                        </div>
                     </div>
                     <div class="cur-hist-scroll">
                         <table class="cur-hist-table">
@@ -2337,6 +2381,30 @@
             if (abast) {
                 abast.textContent = hist.length + ' hores (' +
                     Math.round(hist.length / 24) + ' dies)';
+            }
+
+            // KPI: valor màxim de la darrera setmana
+            const limit = Date.now() - 7 * 24 * 3600 * 1000;
+            let max = null;
+            hist.forEach(function(e) {
+                if (new Date(e.t + ':00:00Z').getTime() < limit) return;
+                if (!max || e.s > max.s) max = e;
+            });
+            const mv = document.getElementById('cur-max-val');
+            const mw = document.getElementById('cur-max-when');
+            if (max) {
+                const d = new Date(max.t + ':00:00Z');
+                if (mv) mv.textContent = max.s.toFixed(2) + ' kn';
+                if (mw) {
+                    mw.textContent = d.toLocaleDateString('ca-ES', {
+                        weekday: 'short', day: 'numeric'
+                    }) + ', ' + d.toLocaleTimeString('ca-ES', {
+                        hour: '2-digit', minute: '2-digit'
+                    }) + ' \u00b7 ' + degToCompass(max.d);
+                }
+            } else {
+                if (mv) mv.textContent = '--';
+                if (mw) mw.textContent = '--';
             }
         } catch (err) {
             body.innerHTML = '<tr><td colspan="4" style="text-align:center;' +
