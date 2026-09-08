@@ -1015,7 +1015,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.69</div>
+            <div class="subtitle">v5.70</div>
         </div>
     </div>
 </header>
@@ -1323,6 +1323,57 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
                         <span id="cd-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
                         <a href="https://www.17nudos.com/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CORRENT SUPERFICIAL — radar HF ICATMAR (antena Port Ginesta) -->
+        <section class="category" id="current-section">
+            <div class="category-header">
+                <span class="category-icon">&#127754;</span>
+                <span class="category-title title-current">Corrent superficial</span>
+            </div>
+            <hr class="category-line line-current">
+            <div class="category-cards" style="padding:10px 12px 12px;display:flex;flex-wrap:wrap;gap:10px;">
+                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:200px;max-width:290px;border:1.5px solid rgba(0,191,165,0.4);box-shadow:0 0 8px rgba(0,191,165,0.12);">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="font-size:0.9em;">&#9973;</span>
+                        <span style="font-size:0.72em;font-weight:800;color:#00bfa5;letter-spacing:1px;text-transform:uppercase;">Davant de Sitges</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-top:2px;">
+                        <div style="position:relative;width:52px;height:52px;flex-shrink:0;">
+                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
+                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+                                <g stroke="rgba(255,255,255,0.28)" stroke-width="0.8">
+                                    <line x1="50" y1="4" x2="50" y2="30"/><line x1="50" y1="70" x2="50" y2="96"/>
+                                    <line x1="4" y1="50" x2="30" y2="50"/><line x1="70" y1="50" x2="96" y2="50"/>
+                                </g>
+                                <text x="50" y="12" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
+                            </svg>
+                            <!-- Fletxa: apunta CAP ON va el corrent (conveni oceanogràfic) -->
+                            <div id="cur-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;opacity:0;">
+                                <svg viewBox="0 0 100 100" style="width:100%;height:100%;">
+                                    <line x1="50" y1="70" x2="50" y2="30" stroke="#00bfa5" stroke-width="7" stroke-linecap="round"/>
+                                    <path d="M50 18 L61 38 L50 33 L39 38 Z" fill="#00bfa5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="display:flex;align-items:baseline;gap:4px;">
+                                <span id="cur-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
+                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
+                            </div>
+                            <div style="display:flex;align-items:baseline;gap:4px;margin-top:1px;">
+                                <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">cap a</span>
+                                <span id="cur-dir" style="font-size:0.9em;font-weight:700;color:#4dd0c4;">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="cur-meta" style="font-size:0.46em;color:rgba(255,255,255,0.4);line-height:1.5;margin-top:3px;">--</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                        <span id="cur-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
+                        <a href="https://www.icatmar.cat/observacions/" target="_blank" rel="noopener" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Visor ICATMAR &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -1865,6 +1916,112 @@
 
     fetchNeighbours();
     setInterval(fetchNeighbours, 120000);  // cada 2 min
+
+
+    /* ===== CORRENT SUPERFICIAL — radar HF ICATMAR (antena Port Ginesta) =====
+       Prova primer /corrent (JSON compacte, calculat al Worker des del .tuv).
+       Si no hi és desplegat encara, cau al GeoJSON, que cal corregir: les
+       seves longituds van desplaçades una cel·la de graella (+0.0354°). */
+    const CUR_LAT = 41.233, CUR_LON = 1.812, CUR_RADI_KM = 8, CUR_GDOP_MAX = 2;
+    const CUR_GEOJSON_LON_OFFSET = 0.0354;
+    let curLastHour = null;   // hora UTC ('YYYY-MM-DDTHH') ja carregada
+
+    function renderCurrent(c) {
+        const arrow = document.getElementById('cur-arrow');
+        const spd = document.getElementById('cur-speed');
+        const dir = document.getElementById('cur-dir');
+        const meta = document.getElementById('cur-meta');
+        const time = document.getElementById('cur-time');
+
+        if (spd) spd.textContent = c.spdKn.toFixed(2);
+        if (dir) dir.textContent = degToCompass(c.dirDeg) + ' ' + c.dirDeg + '°';
+        if (arrow) {
+            arrow.style.opacity = '1';
+            arrow.style.transform = 'rotate(' + c.dirDeg + 'deg)';
+        }
+        if (meta) {
+            meta.innerHTML = 'Radar HF ICATMAR &middot; mitjana de ' + c.points +
+                ' punts a menys de ' + CUR_RADI_KM + ' km<br>més proper ' +
+                c.nearestKm.toFixed(1) + ' km &middot; GDOP ' + c.gdop.toFixed(2);
+        }
+        if (time && c.time) {
+            time.innerHTML = 'Última act.: <span style="color:#ffd740;">' +
+                c.time.substring(11, 16) + ' UTC</span>';
+        }
+    }
+
+    function currentFromGeoJSON(geo) {
+        if (!geo || !geo.features) return null;
+        const kmLat = 111.0, kmLon = 111.0 * Math.cos(CUR_LAT * Math.PI / 180);
+        let sumU = 0, sumV = 0, sumG = 0, n = 0, minDist = Infinity;
+        geo.features.forEach(function(f) {
+            const vd = f.properties && f.properties.var_data;
+            if (!vd || vd.length < 5) return;
+            const lon = f.geometry.coordinates[0] + CUR_GEOJSON_LON_OFFSET;
+            const lat = f.geometry.coordinates[1];
+            const u = vd[0], v = vd[1], gdop = vd[4];   // u,v en m/s
+            if (!isFinite(u) || !isFinite(v) || !isFinite(gdop)) return;
+            if (gdop > CUR_GDOP_MAX) return;
+            const dx = (lon - CUR_LON) * kmLon, dy = (lat - CUR_LAT) * kmLat;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d > CUR_RADI_KM) return;
+            sumU += u; sumV += v; sumG += gdop; n++;
+            if (d < minDist) minDist = d;
+        });
+        if (!n) return null;
+        const u = sumU / n, v = sumV / n;
+        return {
+            spdKn: Math.sqrt(u * u + v * v) * 1.94384,
+            dirDeg: Math.round((Math.atan2(u, v) * 180 / Math.PI + 360) % 360),
+            points: n,
+            nearestKm: minDist,
+            gdop: sumG / n
+        };
+    }
+
+    async function fetchCurrents() {
+        // 1) Endpoint compacte del Worker. Atenció: si /corrent no hi és
+        //    desplegat, el catch-all del Worker respon 200 amb dades de vent,
+        //    per això exigim un marcador inequívoc abans de fer-lo servir.
+        try {
+            const r = await fetch(API + '/corrent');
+            if (r.ok) {
+                const c = await r.json();
+                if (c && c.convention === 'toward' && isFinite(c.spdKn)) {
+                    curLastHour = c.time ? c.time.substring(0, 13) : null;
+                    renderCurrent(c);
+                    return;
+                }
+            }
+        } catch (e) { /* provem el fallback */ }
+
+        // 2) Fallback: GeoJSON complet (~520 KB), amb correcció de longitud.
+        //    Les dades són horàries: si ja tenim l'hora UTC actual, no el tornem
+        //    a baixar (estalvi de dades en mòbil).
+        //    L'ICATMAR publica el fitxer de l'hora H cap a H+1:18, per tant
+        //    la dada més nova que pot existir és la de fa una hora.
+        //    (+20 min de marge, per no demanar un fitxer que encara no hi és)
+        const horaEsperada = new Date(Date.now() - 3600000 - 20 * 60000)
+                                 .toISOString().substring(0, 13);
+        if (curLastHour && curLastHour >= horaEsperada) return;
+        try {
+            const r = await fetch(API + '/icatmar-currents');
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const geo = await r.json();
+            const c = currentFromGeoJSON(geo);
+            if (!c) throw new Error('sense punts vàlids prop de Sitges');
+            c.time = r.headers.get('X-Data-Time') ||
+                     (geo.metadata && geo.metadata.var_time) || null;
+            curLastHour = c.time ? c.time.substring(0, 13) : null;
+            renderCurrent(c);
+        } catch (e) {
+            const sec = document.getElementById('current-section');
+            if (sec) sec.style.display = 'none';
+        }
+    }
+
+    fetchCurrents();
+    setInterval(fetchCurrents, 15 * 60 * 1000);  // les dades s'actualitzen cada hora
 
 
     /* ===== WIND FLOW — estil Windy/cambecc earth: trails que s'esvaeixen ===== */
