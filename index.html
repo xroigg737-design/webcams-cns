@@ -555,6 +555,68 @@
         .category-title.title-nautica { color: #4fc3f7; }
         .category-title.title-current { color: #00bfa5; }
 
+        /* ===== Targeta del CORRENT SUPERFICIAL ===== */
+        .proves-badge {
+            display: inline-block;
+            background: #d32f2f;
+            color: #fff;
+            font-size: 0.55em;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 4px;
+            animation: blink-proves 1s ease-in-out infinite;
+            white-space: nowrap;
+            box-shadow: 0 0 6px rgba(211,47,47,0.6);
+        }
+        @keyframes blink-proves {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .cur-card {
+            flex: 1;
+            min-width: 240px;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            padding: 13px 14px;
+            border: 1.5px solid rgba(0,191,165,0.45);
+            box-shadow: 0 0 14px rgba(0,191,165,0.14);
+            background: linear-gradient(145deg, rgba(0,191,165,0.10), rgba(255,255,255,0.04) 55%);
+        }
+        .cur-val {
+            font-size: 2.3em;
+            font-weight: 900;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            text-shadow: 0 2px 12px rgba(0,191,165,0.45);
+        }
+        .cur-unit { font-size: 0.72em; color: rgba(255,255,255,0.55); font-weight: 700; }
+        .cur-toward {
+            font-size: 0.58em;
+            color: #8ab4d6;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            font-weight: 700;
+        }
+        .cur-dir-txt { font-size: 1.35em; font-weight: 800; color: #4dd0c4; }
+        .cur-meta {
+            font-size: 0.58em;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.65;
+            border-top: 1px solid rgba(255,255,255,0.09);
+            padding-top: 7px;
+        }
+        .cur-meta b { color: rgba(255,255,255,0.72); font-weight: 700; }
+        @media (max-width: 520px) {
+            .cur-val { font-size: 2em; }
+            .cur-dir-txt { font-size: 1.2em; }
+            .cur-meta { font-size: 0.54em; }
+        }
+
         .category-line { height: 1px; margin: 8px 14px 0; border: none; }
         .line-webcam { background: linear-gradient(90deg, rgba(239,83,80,0.4), transparent); }
         .line-meteo { background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent); }
@@ -1015,7 +1077,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.71</div>
+            <div class="subtitle">v5.72</div>
         </div>
     </div>
 </header>
@@ -1328,52 +1390,75 @@
             </div>
         </section>
 
-        <!-- CORRENT SUPERFICIAL — radar HF ICATMAR (antena Port Ginesta) -->
+        <!-- ===================== CORRENT SUPERFICIAL =====================
+             FONT DE DADES — xarxa de radars HF de l'ICATMAR (Generalitat).
+             NO és una boia: l'antena és a TERRA i mesura la superfície del mar
+             per reflexió d'ones de ràdio (efecte Doppler, 13,5 MHz).
+
+               · Antena "GNST" — Port Ginesta (Les Botigues de Sitges)
+                 41.2561 N, 1.9222 E — a 9,5 km del port d'Aiguadolç.
+                 Per triangular el vector cal com a mínim una segona antena:
+                 hi contribueixen Port de Barcelona (PBCN) i Segur de
+                 Calafell (SCAL).
+
+               · ZONA MESURADA que fem servir: graella de 3 km, 10 punts
+                 situats entre 3,4 i 7,6 km mar endins davant de Sitges.
+                 Centre de la zona: 41.1997 N, 1.8270 E (3,9 km del port).
+                 Es fa la mitjana vectorial d'aquests 10 punts.
+
+               · Mesura la capa superficial (~1 m de fondària), cada hora.
+                 GDOP = error geomètric de la triangulació; per sota de 2 és
+                 bo, i aquí surt ~0,3.
+
+             Referència de càlcul a l'app: 41.233 N, 1.812 E (CUR_LAT/CUR_LON).
+             ================================================================ -->
         <section class="category" id="current-section">
             <div class="category-header">
                 <span class="category-icon">&#127754;</span>
                 <span class="category-title title-current">Corrent superficial</span>
+                <span class="proves-badge">En proves...</span>
             </div>
             <hr class="category-line line-current">
             <div class="category-cards" style="padding:10px 12px 12px;display:flex;flex-wrap:wrap;gap:10px;">
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:200px;max-width:420px;border:1.5px solid rgba(0,191,165,0.4);box-shadow:0 0 8px rgba(0,191,165,0.12);">
+                <div class="wg-sec-card cur-card">
                     <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#9973;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#00bfa5;letter-spacing:1px;text-transform:uppercase;">Davant de Sitges</span>
+                        <span style="font-size:1em;">&#9973;</span>
+                        <span style="font-size:0.8em;font-weight:800;color:#00bfa5;letter-spacing:1.2px;text-transform:uppercase;">Davant de Sitges</span>
                     </div>
-                    <div style="display:flex;align-items:center;gap:10px;margin-top:2px;">
-                        <div style="position:relative;width:52px;height:52px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
-                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-                                <g stroke="rgba(255,255,255,0.28)" stroke-width="0.8">
-                                    <line x1="50" y1="4" x2="50" y2="30"/><line x1="50" y1="70" x2="50" y2="96"/>
-                                    <line x1="4" y1="50" x2="30" y2="50"/><line x1="70" y1="50" x2="96" y2="50"/>
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <div style="position:relative;width:68px;height:68px;flex-shrink:0;">
+                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.8;">
+                                <circle cx="50" cy="50" r="47" fill="rgba(0,191,165,0.05)" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
+                                <g stroke="rgba(255,255,255,0.3)" stroke-width="0.9">
+                                    <line x1="50" y1="4" x2="50" y2="28"/><line x1="50" y1="72" x2="50" y2="96"/>
+                                    <line x1="4" y1="50" x2="28" y2="50"/><line x1="72" y1="50" x2="96" y2="50"/>
                                 </g>
-                                <text x="50" y="12" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
+                                <text x="50" y="13" text-anchor="middle" font-size="13" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
                             </svg>
-                            <!-- Fletxa: apunta CAP ON va el corrent (conveni oceanogràfic) -->
+                            <!-- La fletxa apunta CAP ON va el corrent (conveni oceanogràfic,
+                                 a l'inrevés del vent, que es nomena per d'on ve) -->
                             <div id="cur-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;opacity:0;">
-                                <svg viewBox="0 0 100 100" style="width:100%;height:100%;">
-                                    <line x1="50" y1="70" x2="50" y2="30" stroke="#00bfa5" stroke-width="7" stroke-linecap="round"/>
-                                    <path d="M50 18 L61 38 L50 33 L39 38 Z" fill="#00bfa5"/>
+                                <svg viewBox="0 0 100 100" style="width:100%;height:100%;overflow:visible;">
+                                    <line x1="50" y1="74" x2="50" y2="30" stroke="#00bfa5" stroke-width="8" stroke-linecap="round"/>
+                                    <path d="M50 15 L63 39 L50 33 L37 39 Z" fill="#00bfa5"/>
                                 </svg>
                             </div>
                         </div>
                         <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="cur-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
+                            <div style="display:flex;align-items:baseline;gap:5px;">
+                                <span class="cur-val" id="cur-speed">--</span>
+                                <span class="cur-unit">kn</span>
                             </div>
-                            <div style="display:flex;align-items:baseline;gap:4px;margin-top:1px;">
-                                <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">cap a</span>
-                                <span id="cur-dir" style="font-size:0.9em;font-weight:700;color:#4dd0c4;">--</span>
+                            <div style="display:flex;align-items:baseline;gap:6px;margin-top:3px;">
+                                <span class="cur-toward">cap a</span>
+                                <span class="cur-dir-txt" id="cur-dir">--</span>
                             </div>
                         </div>
                     </div>
-                    <div id="cur-meta" style="font-size:0.46em;color:rgba(255,255,255,0.4);line-height:1.5;margin-top:3px;">--</div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="cur-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                        <a href="https://www.icatmar.cat/observacions/" target="_blank" rel="noopener" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Visor ICATMAR &rarr;</a>
+                    <div class="cur-meta" id="cur-meta">--</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                        <span id="cur-time" style="font-size:0.58em;color:#ffd740;font-weight:700;">--</span>
+                        <a href="https://www.icatmar.cat/observacions/" target="_blank" rel="noopener" style="font-size:0.56em;color:rgba(255,255,255,0.4);text-decoration:none;white-space:nowrap;">Visor ICATMAR &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -1941,9 +2026,13 @@
             arrow.style.transform = 'rotate(' + c.dirDeg + 'deg)';
         }
         if (meta) {
-            meta.innerHTML = 'Radar HF ICATMAR &middot; mitjana de ' + c.points +
-                ' punts a menys de ' + CUR_RADI_KM + ' km<br>més proper ' +
-                c.nearestKm.toFixed(1) + ' km &middot; GDOP ' + c.gdop.toFixed(2);
+            meta.innerHTML =
+                '<b>Font:</b> radar HF de l\'ICATMAR, antena de <b>Port Ginesta</b> ' +
+                '(41.256N 1.922E), amb Port de Barcelona i Segur de Calafell<br>' +
+                '<b>Zona mesurada:</b> ' + c.points + ' punts entre ' +
+                c.nearestKm.toFixed(1) + ' i ' + CUR_RADI_KM + ' km mar endins ' +
+                'davant de Sitges &middot; graella de 3 km &middot; ~1 m de fondària<br>' +
+                '<b>Qualitat:</b> GDOP ' + c.gdop.toFixed(2) + ' (per sota de 2 és bo)';
         }
         if (time && c.time) {
             time.innerHTML = 'Última act.: <span style="color:#ffd740;">' +
@@ -2052,7 +2141,9 @@
         if (meta) {
             meta.innerHTML = '<span style="color:#ffab40;">El radar no cobreix ' +
                 'Sitges en aquesta hora</span>' +
-                (curHasData ? '<br>es mostra l\'última mesura disponible' : '');
+                (curHasData ? '<br>es mostra l\'última mesura disponible' : '') +
+                '<br><b>Font:</b> radar HF de l\'ICATMAR, antena de ' +
+                '<b>Port Ginesta</b> (41.256N 1.922E)';
         }
         if (time && hora) {
             time.innerHTML = 'Sense dades a les <span style="color:#ffab40;">' +
