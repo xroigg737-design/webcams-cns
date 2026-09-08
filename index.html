@@ -616,6 +616,65 @@
             .cur-dir-txt { font-size: 1.2em; }
             .cur-meta { font-size: 0.54em; }
         }
+        /* --- Taula d'històric del corrent --- */
+        .cur-hist-card {
+            flex: 1;
+            min-width: 240px;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            padding: 13px 14px;
+            border: 1.5px solid rgba(0,191,165,0.28);
+            background: linear-gradient(145deg, rgba(0,191,165,0.06), rgba(255,255,255,0.03) 55%);
+        }
+        .cur-hist-scroll {
+            max-height: 232px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+        .cur-hist-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.62em;
+            font-variant-numeric: tabular-nums;
+        }
+        .cur-hist-table th {
+            position: sticky;
+            top: 0;
+            background: #12293f;
+            color: #8ab4d6;
+            font-size: 0.85em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            text-align: left;
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+        .cur-hist-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
+        }
+        .cur-hist-table tr:last-child td { border-bottom: none; }
+        .cur-hist-table tbody tr.ara { background: rgba(0,191,165,0.14); }
+        .cur-hist-table tbody tr.ara td { color: #fff; font-weight: 800; }
+        .cur-hist-h { color: #ffd740; font-weight: 700; }
+        .cur-hist-v { color: #fff; font-weight: 800; }
+        .cur-hist-d { color: #4dd0c4; font-weight: 700; }
+        .cur-hist-arrow {
+            display: inline-block;
+            color: #00bfa5;
+            font-size: 1.15em;
+            line-height: 1;
+        }
+        @media (max-width: 520px) {
+            .cur-hist-table { font-size: 0.58em; }
+            .cur-hist-scroll { max-height: 200px; }
+        }
 
         .category-line { height: 1px; margin: 8px 14px 0; border: none; }
         .line-webcam { background: linear-gradient(90deg, rgba(239,83,80,0.4), transparent); }
@@ -1077,7 +1136,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.72</div>
+            <div class="subtitle">v5.73</div>
         </div>
     </div>
 </header>
@@ -1459,6 +1518,29 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
                         <span id="cur-time" style="font-size:0.58em;color:#ffd740;font-weight:700;">--</span>
                         <a href="https://www.icatmar.cat/observacions/" target="_blank" rel="noopener" style="font-size:0.56em;color:rgba(255,255,255,0.4);text-decoration:none;white-space:nowrap;">Visor ICATMAR &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- HISTÒRIC HORARI — per contrastar la mesura del radar amb el
+                     que es veu realment a la costa. Hores en horari local. -->
+                <div class="wg-sec-card cur-hist-card">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+                        <span style="font-size:1em;">&#128337;</span>
+                        <span style="font-size:0.8em;font-weight:800;color:#00bfa5;letter-spacing:1.2px;text-transform:uppercase;">Històric horari</span>
+                    </div>
+                    <div class="cur-hist-scroll">
+                        <table class="cur-hist-table">
+                            <thead>
+                                <tr><th>Hora</th><th>Vel.</th><th>Cap a</th><th></th></tr>
+                            </thead>
+                            <tbody id="cur-hist-body">
+                                <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.35);padding:12px 0;">Carregant&hellip;</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="font-size:0.54em;color:rgba(255,255,255,0.38);line-height:1.5;">
+                        Hora local. Per comprovar-ho a la costa: la fletxa indica
+                        <b style="color:rgba(255,255,255,0.6);">cap on va</b> el corrent.
                     </div>
                 </div>
             </div>
@@ -2028,11 +2110,7 @@
         if (meta) {
             meta.innerHTML =
                 '<b>Font:</b> radar HF de l\'ICATMAR, antena de <b>Port Ginesta</b> ' +
-                '(41.256N 1.922E), amb Port de Barcelona i Segur de Calafell<br>' +
-                '<b>Zona mesurada:</b> ' + c.points + ' punts entre ' +
-                c.nearestKm.toFixed(1) + ' i ' + CUR_RADI_KM + ' km mar endins ' +
-                'davant de Sitges &middot; graella de 3 km &middot; ~1 m de fondària<br>' +
-                '<b>Qualitat:</b> GDOP ' + c.gdop.toFixed(2) + ' (per sota de 2 és bo)';
+                '(41.256N 1.922E), amb Port de Barcelona i Segur de Calafell';
         }
         if (time && c.time) {
             time.innerHTML = 'Última act.: <span style="color:#ffd740;">' +
@@ -2161,6 +2239,45 @@
 
     fetchCurrents();
     setInterval(fetchCurrents, 15 * 60 * 1000);  // les dades s'actualitzen cada hora
+
+    /* ----- Històric horari del corrent (taula) -----
+       El servidor va acumulant una entrada per hora a partir del radar.
+       Les hores arriben en UTC i es mostren en horari local, perquè la
+       idea és contrastar-ho estant físicament a la costa. */
+    async function fetchCurrentHistory() {
+        const body = document.getElementById('cur-hist-body');
+        if (!body) return;
+        try {
+            const r = await fetch(API + '/corrent-historic');
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const hist = await r.json();
+            if (!Array.isArray(hist) || !hist.length) throw new Error('buit');
+
+            const araUTC = new Date().toISOString().substring(0, 13);
+            body.innerHTML = hist.map(function(e) {
+                // e.t ve com '2026-09-08T09' (UTC) -> hora local
+                const dt = new Date(e.t + ':00:00Z');
+                const hora = dt.toLocaleString('ca-ES', {
+                    weekday: 'short', hour: '2-digit', minute: '2-digit'
+                });
+                const recent = (e.t === araUTC ||
+                    e.t === new Date(Date.now() - 3600000).toISOString().substring(0, 13));
+                return '<tr' + (recent ? ' class="ara"' : '') + '>' +
+                    '<td class="cur-hist-h">' + hora + '</td>' +
+                    '<td class="cur-hist-v">' + e.s.toFixed(2) + '<span style="font-size:0.8em;color:rgba(255,255,255,0.45);"> kn</span></td>' +
+                    '<td class="cur-hist-d">' + degToCompass(e.d) + ' ' + e.d + '\u00b0</td>' +
+                    '<td><span class="cur-hist-arrow" style="transform:rotate(' + e.d + 'deg);display:inline-block;">\u2191</span></td>' +
+                    '</tr>';
+            }).join('');
+        } catch (err) {
+            body.innerHTML = '<tr><td colspan="4" style="text-align:center;' +
+                'color:rgba(255,255,255,0.35);padding:12px 0;">' +
+                'Històric no disponible</td></tr>';
+        }
+    }
+
+    fetchCurrentHistory();
+    setInterval(fetchCurrentHistory, 15 * 60 * 1000);
 
 
     /* ===== WIND FLOW — estil Windy/cambecc earth: trails que s'esvaeixen ===== */
