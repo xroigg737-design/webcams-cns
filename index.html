@@ -1232,7 +1232,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.82</div>
+            <div class="subtitle">v5.83</div>
         </div>
     </div>
 </header>
@@ -2575,14 +2575,14 @@
         return html;
     }
 
-    function toggleWeekGroup(tr) {
+    window.toggleWeekGroup = function(tr) {
         var groupId = tr.getAttribute('data-group');
         var isCollapsed = tr.classList.contains('collapsed');
         var rows = tr.closest('tbody').querySelectorAll('.' + groupId);
         rows.forEach(function(r) { r.hidden = !isCollapsed; });
         tr.classList.toggle('collapsed');
         tr.classList.toggle('expanded');
-    }
+    };
 
     /* ----- Històric horari del corrent (taula) -----
        El servidor va acumulant una entrada per hora a partir del radar.
