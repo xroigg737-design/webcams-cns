@@ -665,6 +665,17 @@
         .cur-hist-table tr:last-child td { border-bottom: none; }
         .cur-hist-table tbody tr.ara { background: rgba(0,191,165,0.14); }
         .cur-hist-table tbody tr.ara td { color: #fff; font-weight: 800; }
+        .cur-hist-table tr.cur-hist-dia td {
+            background: rgba(0,191,165,0.16);
+            color: #7fe7dc;
+            font-size: 0.88em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            padding: 5px 9px;
+            position: sticky;
+            top: 26px;
+        }
         .cur-hist-h { color: #ffd740; font-weight: 700; }
         .cur-hist-v { color: #fff; font-weight: 800; }
         .cur-hist-d { color: #4dd0c4; font-weight: 700; }
@@ -1145,7 +1156,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.74</div>
+            <div class="subtitle">v5.75</div>
         </div>
     </div>
 </header>
@@ -1548,7 +1559,8 @@
                         </table>
                     </div>
                     <div style="font-size:0.54em;color:rgba(255,255,255,0.38);line-height:1.5;">
-                        Hora local. Per comprovar-ho a la costa: la fletxa indica
+                        Hora local &middot; <span id="cur-hist-abast">--</span>. Per comprovar-ho a la
+                        costa: la fletxa indica
                         <b style="color:rgba(255,255,255,0.6);">cap on va</b> el corrent.
                     </div>
                 </div>
@@ -2263,21 +2275,38 @@
             if (!Array.isArray(hist) || !hist.length) throw new Error('buit');
 
             const araUTC = new Date().toISOString().substring(0, 13);
+            const horaAnterior = new Date(Date.now() - 3600000)
+                                     .toISOString().substring(0, 13);
+            let diaPrevi = null;
             body.innerHTML = hist.map(function(e) {
                 // e.t ve com '2026-09-08T09' (UTC) -> hora local
                 const dt = new Date(e.t + ':00:00Z');
-                const hora = dt.toLocaleString('ca-ES', {
-                    weekday: 'short', hour: '2-digit', minute: '2-digit'
+                const hora = dt.toLocaleTimeString('ca-ES', {
+                    hour: '2-digit', minute: '2-digit'
                 });
-                const recent = (e.t === araUTC ||
-                    e.t === new Date(Date.now() - 3600000).toISOString().substring(0, 13));
-                return '<tr' + (recent ? ' class="ara"' : '') + '>' +
+                // Amb un mes d'hores cal poder-s'hi orientar: capçalera de dia
+                const dia = dt.toLocaleDateString('ca-ES', {
+                    weekday: 'long', day: 'numeric', month: 'short'
+                });
+                let sep = '';
+                if (dia !== diaPrevi) {
+                    diaPrevi = dia;
+                    sep = '<tr class="cur-hist-dia"><td colspan="4">' + dia + '</td></tr>';
+                }
+                const recent = (e.t === araUTC || e.t === horaAnterior);
+                return sep + '<tr' + (recent ? ' class="ara"' : '') + '>' +
                     '<td class="cur-hist-h">' + hora + '</td>' +
                     '<td class="cur-hist-v">' + e.s.toFixed(2) + '<span style="font-size:0.8em;color:rgba(255,255,255,0.45);"> kn</span></td>' +
                     '<td class="cur-hist-d">' + degToCompass(e.d) + ' ' + e.d + '\u00b0</td>' +
                     '<td><span class="cur-hist-arrow" style="transform:rotate(' + e.d + 'deg);display:inline-block;">\u2191</span></td>' +
                     '</tr>';
             }).join('');
+
+            const abast = document.getElementById('cur-hist-abast');
+            if (abast) {
+                abast.textContent = hist.length + ' hores (' +
+                    Math.round(hist.length / 24) + ' dies)';
+            }
         } catch (err) {
             body.innerHTML = '<tr><td colspan="4" style="text-align:center;' +
                 'color:rgba(255,255,255,0.35);padding:12px 0;">' +
