@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Regu — Classificació Regularitat CNS</title>
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="theme-color" content="#0a1628">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+[hidden] { display:none !important; }
+:root{
+  --bg:#0a1628;
+  --panel:rgba(255,255,255,0.055);
+  --panel-2:rgba(255,255,255,0.09);
+  --line:rgba(255,255,255,0.10);
+  --txt:#e8e8e8;
+  --muted:rgba(255,255,255,0.45);
+  --accent:#ffb74d;
+  --gold:#ffd54f;
+  --silver:#cfd8dc;
+  --bronze:#d99b63;
+}
+body{
+  font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+  background:var(--bg); color:var(--txt); min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ===== Capçalera ===== */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:12px;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
+  background:linear-gradient(180deg,#0b1a3b 0%,#123252 60%,#14405f 100%);
+  border-bottom:1px solid rgba(255,183,77,0.25);
+  box-shadow:0 4px 18px rgba(0,0,0,0.45);
+}
+.back{
+  flex-shrink:0; width:34px; height:34px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0.08); border:1px solid var(--line);
+  color:#fff; text-decoration:none; font-size:1.1em; line-height:1;
+}
+.back:active{ transform:scale(0.94); }
+.topbar .titles{ flex:1; min-width:0; }
+.topbar h1{
+  font-size:1.05em; font-weight:800; letter-spacing:0.4px;
+  color:var(--accent); line-height:1.15;
+}
+.topbar .sub{ font-size:0.68em; color:rgba(255,255,255,0.55); margin-top:2px; }
+.iconbtn{
+  flex-shrink:0; width:34px; height:34px; border-radius:10px;
+  background:rgba(255,255,255,0.08); border:1px solid var(--line);
+  color:#fff; font-size:1em; cursor:pointer;
+}
+.iconbtn:active{ transform:scale(0.94); }
+.iconbtn.spin{ animation:sp 0.9s linear infinite; }
+@keyframes sp{ to{ transform:rotate(360deg); } }
+
+.wrap{ max-width:940px; margin:0 auto; padding:0 12px 40px; }
+
+/* ===== Pestanyes de classe ===== */
+.classes{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:7px;
+  padding:12px 12px 4px; max-width:964px; margin:0 auto;
+}
+.ctab{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:8px 10px; border-radius:999px; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line);
+  color:rgba(255,255,255,0.6); font-size:0.76em; font-weight:700;
+  white-space:nowrap; transition:all .18s ease;
+}
+.ctab .dot{ width:7px; height:7px; border-radius:50%; background:currentColor; opacity:.8; }
+.ctab.on{ color:#0a1628; background:var(--accent); border-color:var(--accent); font-weight:800; }
+.ctab:not(.on):active{ background:var(--panel-2); }
+
+/* ===== Selector de vista ===== */
+.views{
+  display:flex; gap:0; margin:12px 0 14px; padding:3px;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+}
+.vtab{
+  flex:1; padding:9px 6px; border:none; border-radius:9px; cursor:pointer;
+  background:transparent; color:rgba(255,255,255,0.55);
+  font-size:0.76em; font-weight:700; font-family:inherit; transition:all .18s ease;
+}
+.vtab.on{ background:rgba(255,183,77,0.16); color:var(--accent); box-shadow:inset 0 0 0 1px rgba(255,183,77,0.3); }
+
+/* ===== Xips d'informació ===== */
+.chips{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.chip{
+  display:flex; align-items:baseline; gap:5px;
+  padding:5px 9px; border-radius:8px;
+  background:var(--panel); border:1px solid var(--line);
+  font-size:0.64em; color:var(--muted);
+}
+.chip b{ font-size:1.25em; color:#fff; font-weight:800; font-variant-numeric:tabular-nums; }
+.chip.warn{ background:rgba(239,83,80,0.14); border-color:rgba(239,83,80,0.4); color:#ffab91; }
+.chip.warn b{ color:#ff8a65; }
+
+/* ===== Podi ===== */
+.podium{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+.pod{
+  position:relative; padding:12px 9px 11px; border-radius:14px; text-align:center;
+  background:linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+  border:1px solid var(--line); overflow:hidden;
+}
+.pod::after{ content:''; position:absolute; left:0; right:0; top:0; height:3px; background:currentColor; }
+.pod.p1{ color:var(--gold); }
+.pod.p2{ color:var(--silver); }
+.pod.p3{ color:var(--bronze); }
+.pod .medal{ font-size:1.35em; line-height:1; }
+.pod .nm{
+  margin-top:6px; font-size:0.78em; font-weight:800; color:#fff; line-height:1.2;
+  overflow-wrap:anywhere;
+}
+.pod .pt{ margin-top:3px; font-size:0.65em; color:rgba(255,255,255,0.5); line-height:1.3; overflow-wrap:anywhere; }
+.pod .pts{ margin-top:7px; font-size:1.05em; font-weight:900; font-variant-numeric:tabular-nums; }
+.pod .pts small{ font-size:0.5em; font-weight:700; color:rgba(255,255,255,0.4); margin-left:2px; }
+
+/* ===== Cercador ===== */
+.search{
+  width:100%; padding:10px 12px; margin-bottom:10px;
+  background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  color:#fff; font-size:0.82em; font-family:inherit;
+}
+.search::placeholder{ color:rgba(255,255,255,0.3); }
+.search:focus{ outline:none; border-color:rgba(255,183,77,0.5); }
+
+/* ===== Llistes ===== */
+.list{ display:flex; flex-direction:column; gap:6px; }
+.row{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 11px; border-radius:11px;
+  background:var(--panel); border:1px solid var(--line);
+}
+.row.tap{ cursor:pointer; }
+.row.tap:active{ background:var(--panel-2); }
+.row.top1{ background:linear-gradient(100deg, rgba(255,213,79,0.16), var(--panel) 60%); border-color:rgba(255,213,79,0.35); }
+.row.top2{ background:linear-gradient(100deg, rgba(207,216,220,0.13), var(--panel) 60%); border-color:rgba(207,216,220,0.28); }
+.row.top3{ background:linear-gradient(100deg, rgba(217,155,99,0.13), var(--panel) 60%); border-color:rgba(217,155,99,0.28); }
+.pos{
+  flex-shrink:0; width:30px; height:30px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.8em; font-weight:900; font-variant-numeric:tabular-nums;
+  background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.75);
+}
+.row.top1 .pos{ background:rgba(255,213,79,0.22); color:var(--gold); }
+.row.top2 .pos{ background:rgba(207,216,220,0.18); color:var(--silver); }
+.row.top3 .pos{ background:rgba(217,155,99,0.2); color:var(--bronze); }
+.pos.dnf{ background:rgba(239,83,80,0.16); color:#ef9a9a; font-size:0.55em; letter-spacing:0.3px; }
+.who{ flex:1; min-width:0; }
+.who .b{ font-size:0.83em; font-weight:800; color:#fff; line-height:1.25; overflow-wrap:anywhere; }
+.who .p{ font-size:0.7em; color:rgba(255,255,255,0.5); line-height:1.3; margin-top:1px; overflow-wrap:anywhere; }
+.who .p .tri{ color:rgba(255,255,255,0.32); }
+.side{ flex-shrink:0; text-align:right; }
+.side .v{ font-size:0.95em; font-weight:900; color:var(--accent); font-variant-numeric:tabular-nums; line-height:1; }
+.side .l{ font-size:0.54em; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.6px; margin-top:3px; }
+.sail{ font-size:0.62em; color:rgba(255,255,255,0.38); font-variant-numeric:tabular-nums; }
+.caret{ flex-shrink:0; color:rgba(255,255,255,0.28); font-size:0.7em; transition:transform .2s ease; }
+.row.open .caret{ transform:rotate(90deg); }
+
+/* ===== Detall de resultats d'una embarcació ===== */
+.detail{
+  margin:-2px 0 2px; padding:10px 11px 11px; border-radius:0 0 11px 11px;
+  background:rgba(255,255,255,0.03); border:1px solid var(--line); border-top:none;
+}
+.detail .dh{ font-size:0.6em; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; }
+.res-grid{ display:flex; flex-wrap:wrap; gap:4px; }
+.res{
+  min-width:40px; padding:4px 5px; border-radius:7px; text-align:center;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.07);
+}
+.res .n{ font-size:0.5em; color:rgba(255,255,255,0.32); line-height:1; }
+.res .v{ font-size:0.76em; font-weight:800; color:#fff; line-height:1.3; font-variant-numeric:tabular-nums; }
+.res.g1{ background:rgba(255,213,79,0.18); border-color:rgba(255,213,79,0.35); }
+.res.g1 .v{ color:var(--gold); }
+.res.g2{ background:rgba(207,216,220,0.14); }
+.res.g3{ background:rgba(217,155,99,0.16); }
+.res.out .v{ color:rgba(255,255,255,0.28); font-weight:700; }
+
+/* ===== Selector de cursa ===== */
+.picker{ display:flex; align-items:stretch; gap:7px; margin-bottom:12px; }
+.navb{
+  flex-shrink:0; width:40px; border-radius:11px; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line);
+  color:var(--accent); font-size:1.1em; font-weight:800; font-family:inherit;
+}
+.navb:disabled{ opacity:0.3; cursor:default; color:#fff; }
+.navb:not(:disabled):active{ background:var(--panel-2); }
+.selwrap{ position:relative; flex:1; min-width:0; }
+select.sel{
+  width:100%; height:100%; padding:11px 30px 11px 12px;
+  background:var(--panel); border:1px solid rgba(255,183,77,0.35); border-radius:11px;
+  color:#fff; font-size:0.82em; font-weight:700; font-family:inherit;
+  appearance:none; -webkit-appearance:none; cursor:pointer;
+}
+select.sel:focus{ outline:none; border-color:var(--accent); }
+select.sel option{ background:#12263f; color:#fff; font-weight:600; }
+.selwrap::after{
+  content:'▾'; position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  color:var(--accent); pointer-events:none; font-size:0.8em;
+}
+
+.racehead{
+  padding:12px 13px; border-radius:13px; margin-bottom:11px;
+  background:linear-gradient(150deg, rgba(255,183,77,0.10), rgba(255,255,255,0.03) 60%);
+  border:1px solid rgba(255,183,77,0.22);
+}
+.racehead .d1{ font-size:0.95em; font-weight:800; color:#fff; }
+.racehead .d2{ font-size:0.66em; color:var(--muted); margin-top:2px; }
+
+.fold{
+  width:100%; margin-top:12px; padding:10px 12px; border-radius:11px; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line);
+  color:rgba(255,255,255,0.55); font-size:0.72em; font-weight:700;
+  font-family:inherit; text-align:left;
+}
+.fold:active{ background:var(--panel-2); }
+.fold .cv{ display:inline-block; margin-right:6px; transition:transform .2s ease; }
+.fold.on .cv{ transform:rotate(90deg); }
+.dns-list{ margin-top:6px; display:flex; flex-wrap:wrap; gap:5px; }
+.dns-pill{
+  padding:5px 9px; border-radius:8px; font-size:0.66em;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.42);
+}
+
+.msg{ padding:28px 16px; text-align:center; color:var(--muted); font-size:0.8em; line-height:1.6; }
+.msg a{ color:var(--accent); }
+.spinner{
+  width:26px; height:26px; margin:0 auto 12px; border-radius:50%;
+  border:3px solid rgba(255,255,255,0.12); border-top-color:var(--accent);
+  animation:sp 0.8s linear infinite;
+}
+footer{
+  margin-top:22px; padding-top:14px; border-top:1px solid var(--line);
+  font-size:0.62em; color:rgba(255,255,255,0.3); line-height:1.7; text-align:center;
+}
+footer a{ color:rgba(255,183,77,0.7); }
+
+@media (min-width:640px){
+  .classes{ grid-template-columns:repeat(4,1fr); }
+  .topbar h1{ font-size:1.2em; }
+  .wrap{ padding:0 16px 48px; }
+  .pod .nm{ font-size:0.9em; }
+  .row{ padding:11px 13px; }
+  .who .b{ font-size:0.9em; }
+  .who .p{ font-size:0.75em; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="back" href="index.html" title="Tornar a Avui Regu?">&larr;</a>
+  <div class="titles">
+    <h1>Regu &middot; Regularitat</h1>
+    <div class="sub">Club Nàutic Sitges &middot; <span id="season">temporada</span></div>
+  </div>
+  <button class="iconbtn" id="refresh" title="Actualitzar">&#10227;</button>
+</header>
+
+<nav class="classes" id="classTabs"></nav>
+
+<div class="wrap">
+  <div class="views">
+    <button class="vtab on" data-view="general">Classificació general</button>
+    <button class="vtab" data-view="cursa">Resultats per cursa</button>
+  </div>
+
+  <div id="loading" class="msg">
+    <div class="spinner"></div>
+    Carregant dades del full del club&hellip;
+  </div>
+  <div id="error" class="msg" hidden></div>
+
+  <section id="viewGeneral" hidden>
+    <div class="chips" id="genChips"></div>
+    <div class="podium" id="podium"></div>
+    <input class="search" id="filter" type="search" placeholder="Cerca embarcació o patró&hellip;" autocomplete="off">
+    <div class="list" id="genList"></div>
+  </section>
+
+  <section id="viewCursa" hidden>
+    <div class="picker">
+      <button class="navb" id="prevRace" title="Cursa anterior">&lsaquo;</button>
+      <div class="selwrap"><select class="sel" id="raceSel"></select></div>
+      <button class="navb" id="nextRace" title="Cursa següent">&rsaquo;</button>
+    </div>
+    <div class="racehead" id="raceHead"></div>
+    <div class="chips" id="raceChips"></div>
+    <div class="list" id="raceList"></div>
+    <button class="fold" id="dnsFold" hidden><span class="cv">&rsaquo;</span><span id="dnsLabel"></span></button>
+    <div class="dns-list" id="dnsList" hidden></div>
+  </section>
+
+  <footer>
+    Dades del full de càlcul oficial del Club Nàutic Sitges &middot;
+    <a href="https://docs.google.com/spreadsheets/d/1ldFW3F_l3Z95Swo9OgbmKb0KsJlXRCCN/edit" target="_blank" rel="noopener">Obrir el Google Sheet</a><br>
+    <span id="stamp"></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var DOC = '1ldFW3F_l3Z95Swo9OgbmKb0KsJlXRCCN';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + DOC + '/export?format=csv&gid=';
+
+var CLASSES = [
+  { key:'senior', gid:'1487945097', tab:'Patí SENIOR', label:'Patí Sènior', color:'#ffb74d' },
+  { key:'cata',   gid:'1269621992', tab:'CATA',        label:'Catamarà',    color:'#4fc3f7' },
+  { key:'mono',   gid:'1109405437', tab:'Monobucs',    label:'Monobucs',    color:'#66bb6a' },
+  { key:'junior', gid:'7154635',    tab:'Pati JUNIOR', label:'Patí Júnior', color:'#ce93d8' }
+];
+
+var MESOS = { gen:1, ene:1, jan:1, feb:2, mar:3, abr:4, apr:4, mai:5, may:5, jun:6,
+              jul:7, ago:8, aug:8, set:9, sep:9, oct:10, nov:11, des:12, dic:12, dec:12 };
+
+var state = { cls:0, view:'general', race:0, data:{}, open:null };
+
+/* ---------- estat a l'URL (#classe/vista/prova) ---------- */
+function writeHash(){
+  var h = CLASSES[state.cls].key + '/' + state.view +
+          (state.view === 'cursa' ? '/' + (state.race + 1) : '');
+  if (location.hash.substring(1) !== h) history.replaceState(null, '', '#' + h);
+}
+function readHash(){
+  var p = decodeURIComponent(location.hash.substring(1)).split('/');
+  for (var i = 0; i < CLASSES.length; i++) if (CLASSES[i].key === p[0]) state.cls = i;
+  if (p[1] === 'cursa' || p[1] === 'general') state.view = p[1];
+  var n = parseInt(p[2], 10);
+  if (isFinite(n) && n > 0) state.race = n - 1;
+}
+
+/* ---------- utilitats ---------- */
+function $(id){ return document.getElementById(id); }
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c];
+  });
+}
+function num(v){
+  if (v == null) return null;
+  var s = String(v).trim();
+  if (!s || s.charAt(0) === '#') return null;
+  s = s.replace(/\s/g,'').replace(',', '.');
+  var n = parseFloat(s);
+  return isFinite(n) ? n : null;
+}
+
+/* CSV -> matriu (gestiona cometes i salts de línia dins de cel·la) */
+function parseCSV(txt){
+  var rows = [], row = [], cur = '', q = false, i, c;
+  txt = txt.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  for (i = 0; i < txt.length; i++){
+    c = txt.charAt(i);
+    if (q){
+      if (c === '"'){
+        if (txt.charAt(i+1) === '"'){ cur += '"'; i++; }
+        else q = false;
+      } else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ','){ row.push(cur); cur = ''; }
+    else if (c === '\n'){ row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  row.push(cur); rows.push(row);
+  return rows;
+}
+
+/* Busca la cel·la que conté exactament una etiqueta -> {r,c} */
+function findLabel(rows, label){
+  var t = label.toLowerCase(), r, c;
+  for (r = 0; r < rows.length; r++){
+    for (c = 0; c < rows[r].length; c++){
+      if (String(rows[r][c]).trim().toLowerCase() === t) return { r:r, c:c };
+    }
+  }
+  return null;
+}
+
+/* "14-des" / "6-sept" -> {d,m} */
+function parseDM(s){
+  var m = /^\s*(\d{1,2})\s*[-\/\s]\s*([a-zçñ]+)\.?\s*$/i.exec(String(s || ''));
+  if (!m) return null;
+  var k = m[2].toLowerCase();
+  var mo = MESOS[k] || MESOS[k.substring(0,3)];
+  return mo ? { d:parseInt(m[1],10), m:mo } : null;
+}
+
+/* ---------- interpretació d'un full ---------- */
+function parseSheet(txt){
+  var rows = parseCSV(txt), W = 0, i;
+  for (i = 0; i < rows.length; i++) if (rows[i].length > W) W = rows[i].length;
+  for (i = 0; i < rows.length; i++) while (rows[i].length < W) rows[i].push('');
+
+  var cell = function(r, c){ return (r == null || c == null) ? '' : String(rows[r][c] || '').trim(); };
+
+  /* temporada: "REGULARITAT 2025-26" */
+  var season = '', y0 = new Date().getFullYear();
+  for (i = 0; i < Math.min(8, rows.length); i++){
+    for (var j = 0; j < W; j++){
+      var m = /(20\d{2})\s*[-–\/]\s*(\d{2,4})/.exec(rows[i][j] || '');
+      if (m){ y0 = parseInt(m[1],10); season = m[0].replace(/\s/g,''); break; }
+    }
+    if (season) break;
+  }
+
+  var lProva = findLabel(rows, 'Prova nº');
+  var lData  = findLabel(rows, 'Data');
+  var lSort  = findLabel(rows, 'Sortits');
+  var lVent  = findLabel(rows, 'Vent (Bf.)');
+  var lHora  = findLabel(rows, 'hora sortida/arribada');
+  var lEmb   = findLabel(rows, 'EMBARCACIO');
+  if (!lProva || !lData || !lEmb) throw new Error('Format del full no reconegut');
+
+  var lPat = findLabel(rows, 'Patró');
+  var lVel = findLabel(rows, 'Nº VELA');
+  var lTri = findLabel(rows, 'Tripulant');
+  var cEmb = lEmb.c;
+  var cPat = lPat ? lPat.c : cEmb + 1;
+  var cVel = lVel ? lVel.c : cEmb - 1;
+  var cTri = lTri ? lTri.c : null;
+  var hRow = lEmb.r;
+
+  /* columnes de cursa: prova nº correlatiu (1,2,3…) amb data vàlida */
+  var races = [], expect = 1, prevM = null, year = y0;
+  for (var c = cEmb + 1; c < W; c++){
+    var n = num(cell(lProva.r, c));
+    if (n === null || n !== Math.round(n) || n !== expect) continue;
+    var dm = parseDM(cell(lData.r, c));
+    if (!dm) continue;
+    if (prevM !== null && dm.m < prevM) year++;
+    prevM = dm.m;
+    races.push({
+      col: c, n: expect,
+      date: new Date(year, dm.m - 1, dm.d),
+      sortits: lSort ? num(cell(lSort.r, c)) : null,
+      vent: lVent ? cell(lVent.r, c) : '',
+      hora: lHora ? cell(lHora.r, c) : ''
+    });
+    expect++;
+  }
+
+  /* embarcacions */
+  var boats = [];
+  for (var r = hRow + 1; r < rows.length; r++){
+    var pos = num(cell(r, 0));
+    if (pos === null) continue;
+    var emb = cell(r, cEmb), pat = cell(r, cPat);
+    if (!emb && !pat) continue;
+    var res = [];
+    for (i = 0; i < races.length; i++) res.push(num(cell(r, races[i].col)));
+    boats.push({
+      pos: Math.round(pos),
+      pts: num(cell(r, 1)),
+      vela: cVel >= 0 ? cell(r, cVel) : '',
+      emb: emb, pat: pat,
+      tri: cTri !== null ? cell(r, cTri) : '',
+      res: res
+    });
+  }
+  boats.sort(function(a,b){ return a.pos - b.pos; });
+
+  /* En algunes classes la columna EMBARCACIO és el model (Laser, Class A…) i es
+     repeteix: llavors el nom que identifica és el del patró. */
+  var uniq = {}, nu = 0;
+  for (i = 0; i < boats.length; i++){
+    var e = boats[i].emb;
+    if (e && !uniq[e]){ uniq[e] = 1; nu++; }
+  }
+  var patroFirst = boats.length > 0 && nu < boats.length * 0.8;
+  for (i = 0; i < boats.length; i++){
+    var b = boats[i];
+    b.title = (patroFirst ? (b.pat || b.emb) : (b.emb || b.pat)) || '—';
+    b.sub = (patroFirst ? b.emb : b.pat) || '';
+    if (b.sub === b.title) b.sub = '';
+  }
+
+  /* penalització DNS = el valor màxim del graella de resultats */
+  var dns = 0;
+  for (i = 0; i < boats.length; i++)
+    for (var k = 0; k < boats[i].res.length; k++)
+      if (boats[i].res[k] !== null && boats[i].res[k] > dns) dns = boats[i].res[k];
+
+  /* dades auxiliars: el valor és a la cel·la de l'esquerra de l'etiqueta */
+  var left = function(lab){
+    var l = findLabel(rows, lab);
+    return l && l.c > 0 ? num(cell(l.r, l.c - 1)) : null;
+  };
+
+  return {
+    season: season, races: races, boats: boats, dns: dns,
+    descartes: left('Descartes'), valides: left('Proves vàlides')
+  };
+}
+
+/* ---------- càrrega ---------- */
+function load(force){
+  $('loading').hidden = false;
+  $('error').hidden = true;
+  $('viewGeneral').hidden = true;
+  $('viewCursa').hidden = true;
+  $('refresh').classList.add('spin');
+
+  var bust = force ? '&_=' + Date.now() : '';
+  var jobs = CLASSES.map(function(cl){
+    return fetch(SHEET_URL + cl.gid + bust, { cache: force ? 'reload' : 'default' })
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function(t){ return { key: cl.key, ok: true, data: parseSheet(t) }; })
+      .catch(function(e){ return { key: cl.key, ok: false, err: e.message }; });
+  });
+
+  Promise.all(jobs).then(function(out){
+    $('refresh').classList.remove('spin');
+    $('loading').hidden = true;
+    var any = false;
+    out.forEach(function(o){
+      state.data[o.key] = o.ok ? o.data : null;
+      if (o.ok) any = true;
+    });
+    if (!any){
+      $('error').hidden = false;
+      $('error').innerHTML = 'No s\'han pogut llegir les dades del full del club.<br>' +
+        'Comprova la connexió o obre\'l directament: ' +
+        '<a href="https://docs.google.com/spreadsheets/d/' + DOC + '/edit" target="_blank" rel="noopener">Google Sheet</a>';
+      return;
+    }
+    var s = null;
+    for (var i = 0; i < CLASSES.length && !s; i++){
+      var d = state.data[CLASSES[i].key];
+      if (d && d.season) s = d.season;
+    }
+    $('season').textContent = s ? 'Temporada ' + s : '';
+    $('stamp').textContent = 'Actualitzat a les ' +
+      new Date().toLocaleTimeString('ca-ES', { hour:'2-digit', minute:'2-digit' });
+    /* primera classe amb dades */
+    if (!state.data[CLASSES[state.cls].key]){
+      for (var j = 0; j < CLASSES.length; j++)
+        if (state.data[CLASSES[j].key]){ state.cls = j; break; }
+    }
+    renderTabs();
+    render();
+  });
+}
+
+/* ---------- pintat ---------- */
+function renderTabs(){
+  $('classTabs').innerHTML = CLASSES.map(function(cl, i){
+    var d = state.data[cl.key];
+    var n = d ? d.boats.length : 0;
+    return '<div class="ctab' + (i === state.cls ? ' on' : '') + '" data-i="' + i + '"' +
+           (d ? '' : ' style="opacity:.35"') + '>' +
+           '<span class="dot" style="background:' + cl.color + '"></span>' +
+           esc(cl.label) + (n ? ' <span style="opacity:.55">(' + n + ')</span>' : '') +
+           '</div>';
+  }).join('');
+}
+
+function fmtDate(d, longMode){
+  var s = d.toLocaleDateString('ca-ES', longMode
+    ? { weekday:'long', day:'numeric', month:'long', year:'numeric' }
+    : { weekday:'short', day:'numeric', month:'short' });
+  return s.charAt(0).toUpperCase() + s.substring(1);
+}
+
+function boatName(b){ return b.title || '—'; }
+
+/* segona línia: l'altre nom (patró o embarcació) + tripulant + nº de vela */
+function subline(b, withSail){
+  var parts = [];
+  if (b.sub) parts.push(esc(b.sub));
+  if (b.tri) parts.push('<span class="tri">+ ' + esc(b.tri) + '</span>');
+  if (withSail && b.vela) parts.push('<span class="sail">' + esc(b.vela) + '</span>');
+  return parts.length ? '<div class="p">' + parts.join(' <span class="tri">·</span> ') + '</div>' : '';
+}
+
+/* etiqueta d'un resultat dins d'una cursa */
+function resultKind(v, race, dns){
+  if (v === null) return 'buit';
+  if (v >= dns) return 'dns';
+  if (race.sortits && v === race.sortits + 1) return 'dnf';
+  return 'pos';
+}
+
+function render(){
+  var d = state.data[CLASSES[state.cls].key];
+  document.querySelectorAll('.vtab').forEach(function(x){
+    x.classList.toggle('on', x.dataset.view === state.view);
+  });
+  writeHash();
+  $('viewGeneral').hidden = (state.view !== 'general');
+  $('viewCursa').hidden = (state.view !== 'cursa');
+  if (!d){
+    $('error').hidden = false;
+    $('error').textContent = 'Aquesta categoria no té dades disponibles.';
+    $('viewGeneral').hidden = true; $('viewCursa').hidden = true;
+    return;
+  }
+  $('error').hidden = true;
+  if (state.view === 'general') renderGeneral(d); else renderRaceView(d);
+}
+
+function renderGeneral(d){
+  var chips = [
+    { l:'embarcacions', v:d.boats.length },
+    { l:'proves fetes', v:d.races.length }
+  ];
+  if (d.valides !== null) chips.push({ l:'proves vàlides', v:d.valides });
+  if (d.descartes !== null) chips.push({ l:'descartes', v:d.descartes });
+  $('genChips').innerHTML = chips.map(function(c){
+    return '<span class="chip"><b>' + c.v + '</b>' + c.l + '</span>';
+  }).join('');
+
+  var medals = ['&#129351;', '&#129352;', '&#129353;'];
+  $('podium').innerHTML = d.boats.slice(0,3).map(function(b, i){
+    return '<div class="pod p' + (i+1) + '">' +
+      '<div class="medal">' + medals[i] + '</div>' +
+      '<div class="nm">' + esc(boatName(b)) + '</div>' +
+      '<div class="pt">' + esc(b.sub) + '</div>' +
+      '<div class="pts">' + (b.pts === null ? '—' : b.pts) + '<small>pts</small></div>' +
+      '</div>';
+  }).join('');
+
+  paintGeneralList(d, $('filter').value);
+}
+
+function paintGeneralList(d, q){
+  q = (q || '').trim().toLowerCase();
+  var html = '', shown = 0;
+  d.boats.forEach(function(b, idx){
+    if (q && (b.emb + ' ' + b.pat + ' ' + b.tri + ' ' + b.vela).toLowerCase().indexOf(q) < 0) return;
+    shown++;
+    var top = b.pos <= 3 ? ' top' + b.pos : '';
+    html += '<div class="row tap' + top + (state.open === idx ? ' open' : '') + '" data-b="' + idx + '">' +
+      '<div class="pos">' + b.pos + '</div>' +
+      '<div class="who"><div class="b">' + esc(boatName(b)) + '</div>' +
+        subline(b, true) +
+      '</div>' +
+      '<div class="side"><div class="v">' + (b.pts === null ? '—' : b.pts) + '</div><div class="l">punts</div></div>' +
+      '<div class="caret">&rsaquo;</div>' +
+    '</div>';
+    if (state.open === idx) html += detailHTML(d, b);
+  });
+  if (!shown) html = '<div class="msg">Cap resultat per a &laquo;' + esc(q) + '&raquo;</div>';
+  $('genList').innerHTML = html;
+}
+
+function detailHTML(d, b){
+  var cells = d.races.map(function(rc, k){
+    var v = b.res[k], kind = resultKind(v, rc, d.dns), cls = '', txt;
+    if (kind === 'buit') txt = '·';
+    else if (kind === 'dns'){ txt = 'DNS'; cls = ' out'; }
+    else if (kind === 'dnf'){ txt = 'DNF'; cls = ' out'; }
+    else { txt = v; if (v === 1) cls = ' g1'; else if (v === 2) cls = ' g2'; else if (v === 3) cls = ' g3'; }
+    return '<div class="res' + cls + '"><div class="n">P' + rc.n + '</div><div class="v">' + txt + '</div></div>';
+  }).join('');
+  return '<div class="detail"><div class="dh">Resultat prova a prova</div>' +
+         '<div class="res-grid">' + cells + '</div></div>';
+}
+
+function renderRaceView(d){
+  if (!d.races.length){
+    $('raceSel').innerHTML = '';
+    $('raceHead').innerHTML = '<div class="d1">Encara no hi ha curses</div>';
+    $('raceChips').innerHTML = '';
+    $('raceList').innerHTML = '';
+    $('dnsFold').hidden = true; $('dnsList').hidden = true;
+    return;
+  }
+  if (state.race >= d.races.length) state.race = d.races.length - 1;
+
+  $('raceSel').innerHTML = d.races.map(function(rc, i){
+    return '<option value="' + i + '"' + (i === state.race ? ' selected' : '') + '>' +
+      'Prova ' + rc.n + ' · ' + fmtDate(rc.date, false) + '</option>';
+  }).join('');
+  $('prevRace').disabled = (state.race === 0);
+  $('nextRace').disabled = (state.race === d.races.length - 1);
+
+  var rc = d.races[state.race];
+  var anulada = /anul/i.test(rc.hora);
+  $('raceHead').innerHTML =
+    '<div class="d1">' + esc(fmtDate(rc.date, true)) + '</div>' +
+    '<div class="d2">Prova nº ' + rc.n + ' de ' + d.races.length +
+      ' &middot; ' + esc(CLASSES[state.cls].label) + '</div>';
+
+  var chips = [];
+  if (rc.sortits !== null) chips.push('<span class="chip"><b>' + rc.sortits + '</b>sortits</span>');
+  if (num(rc.vent) !== null) chips.push('<span class="chip"><b>' + num(rc.vent) + '</b>Beaufort</span>');
+  if (rc.hora && !anulada) chips.push('<span class="chip" style="font-size:.62em">&#128337; ' + esc(rc.hora) + '</span>');
+  if (anulada) chips.push('<span class="chip warn"><b>&#9888;</b>prova anul·lada</span>');
+  $('raceChips').innerHTML = chips.join('');
+
+  /* classificació ascendent del dia */
+  var fin = [], dnf = [], dns = [];
+  d.boats.forEach(function(b){
+    var v = b.res[state.race], kind = resultKind(v, rc, d.dns);
+    if (kind === 'pos') fin.push({ b:b, v:v });
+    else if (kind === 'dnf') dnf.push(b);
+    else if (kind === 'dns') dns.push(b);
+  });
+  fin.sort(function(x, y){ return x.v - y.v; });
+
+  var html = fin.map(function(o){
+    var top = o.v <= 3 ? ' top' + o.v : '';
+    return '<div class="row' + top + '">' +
+      '<div class="pos">' + o.v + '</div>' +
+      '<div class="who"><div class="b">' + esc(boatName(o.b)) + '</div>' +
+        subline(o.b, false) +
+      '</div>' +
+      (o.b.vela ? '<div class="side"><div class="sail">' + esc(o.b.vela) + '</div></div>' : '') +
+    '</div>';
+  }).join('');
+
+  html += dnf.map(function(b){
+    return '<div class="row">' +
+      '<div class="pos dnf">DNF</div>' +
+      '<div class="who"><div class="b">' + esc(boatName(b)) + '</div>' +
+        subline(b, false) +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  if (!fin.length && !dnf.length){
+    html = '<div class="msg">' + (anulada
+      ? 'Prova anul·lada: no hi ha classificació.'
+      : 'No hi ha resultats publicats per a aquesta prova.') + '</div>';
+  }
+  $('raceList').innerHTML = html;
+
+  if (dns.length){
+    $('dnsFold').hidden = false;
+    $('dnsLabel').textContent = 'No van sortir (' + dns.length + ')';
+    $('dnsList').innerHTML = dns.map(function(b){
+      return '<span class="dns-pill">' + esc(boatName(b)) + '</span>';
+    }).join('');
+  } else {
+    $('dnsFold').hidden = true;
+    $('dnsList').hidden = true;
+  }
+}
+
+/* ---------- esdeveniments ---------- */
+$('classTabs').addEventListener('click', function(e){
+  var t = e.target.closest('.ctab');
+  if (!t) return;
+  state.cls = parseInt(t.dataset.i, 10);
+  state.race = 0; state.open = null;
+  $('filter').value = '';
+  renderTabs(); render();
+});
+
+document.querySelectorAll('.vtab').forEach(function(b){
+  b.addEventListener('click', function(){
+    state.view = b.dataset.view;
+    render();
+  });
+});
+
+$('genList').addEventListener('click', function(e){
+  var r = e.target.closest('.row');
+  if (!r) return;
+  var i = parseInt(r.dataset.b, 10);
+  state.open = (state.open === i) ? null : i;
+  paintGeneralList(state.data[CLASSES[state.cls].key], $('filter').value);
+});
+
+$('filter').addEventListener('input', function(){
+  state.open = null;
+  paintGeneralList(state.data[CLASSES[state.cls].key], this.value);
+});
+
+$('raceSel').addEventListener('change', function(){
+  state.race = parseInt(this.value, 10);
+  writeHash();
+  renderRaceView(state.data[CLASSES[state.cls].key]);
+});
+$('prevRace').addEventListener('click', function(){
+  if (state.race > 0){ state.race--; writeHash(); renderRaceView(state.data[CLASSES[state.cls].key]); }
+});
+$('nextRace').addEventListener('click', function(){
+  var d = state.data[CLASSES[state.cls].key];
+  if (state.race < d.races.length - 1){ state.race++; writeHash(); renderRaceView(d); }
+});
+
+$('dnsFold').addEventListener('click', function(){
+  this.classList.toggle('on');
+  $('dnsList').hidden = !this.classList.contains('on');
+});
+
+$('refresh').addEventListener('click', function(){ load(true); });
+
+readHash();
+load(false);
+})();
+</script>
+</body>
+</html>
