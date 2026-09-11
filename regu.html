@@ -240,6 +240,7 @@ select.sel{
 }
 select.sel:focus{ outline:none; border-color:var(--data); }
 select.sel option{ background:#12263f; color:#fff; font-weight:600; }
+select.sel optgroup{ background:#0d1c2e; color:var(--data); font-weight:800; }
 .selwrap::after{
   content:'▾'; position:absolute; right:12px; top:50%; transform:translateY(-50%);
   color:var(--data); pointer-events:none; font-size:0.8em;
@@ -757,14 +758,21 @@ function renderRaceView(d){
   if (state.race >= d.races.length) state.race = d.races.length - 1;
   if (state.race < 0) state.race = 0;
 
-  /* la llista es desplega de la cursa més recent a la més antiga */
-  var opts = [];
+  /* De la cursa més recent a la més antiga, agrupades per any: sense l'any
+     a la vista, saltar de gener a desembre semblava un desordre. */
+  var opts = [], anyActual = null;
   for (i = d.races.length - 1; i >= 0; i--){
-    var r = d.races[i];
+    var r = d.races[i], y = r.date.getFullYear();
+    if (y !== anyActual){
+      if (anyActual !== null) opts.push('</optgroup>');
+      opts.push('<optgroup label="' + y + '">');
+      anyActual = y;
+    }
     opts.push('<option value="' + i + '"' + (i === state.race ? ' selected' : '') + '>' +
       fmtDate(r.date, false) + ' · Prova ' + r.n +
       (i === d.races.length - 1 ? ' · última' : '') + '</option>');
   }
+  if (anyActual !== null) opts.push('</optgroup>');
   $('raceSel').innerHTML = opts.join('');
   $('prevRace').disabled = (state.race === 0);
   $('nextRace').disabled = (state.race === d.races.length - 1);
