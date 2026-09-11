@@ -251,7 +251,13 @@ select.sel option{ background:#12263f; color:#fff; font-weight:600; }
   border:1px solid rgba(0,191,165,0.22);
 }
 .racehead .d1{ font-size:0.95em; font-weight:800; color:var(--data); }
-.racehead .d2{ font-size:0.66em; color:var(--muted); margin-top:2px; }
+.racehead .d2{ font-size:0.66em; color:var(--muted); margin-top:3px; }
+.lastbadge{
+  display:inline-block; margin-left:7px; padding:2px 7px; border-radius:6px;
+  background:rgba(0,191,165,0.18); border:1px solid rgba(0,191,165,0.4);
+  color:var(--data); font-size:0.86em; font-weight:800;
+  text-transform:uppercase; letter-spacing:0.6px;
+}
 
 .fold{
   width:100%; margin-top:12px; padding:10px 12px; border-radius:11px; cursor:pointer;
@@ -737,6 +743,7 @@ function detailHTML(d, b){
 }
 
 function renderRaceView(d){
+  var i;
   if (!d.races.length){
     $('raceSel').innerHTML = '';
     $('raceHead').innerHTML = '<div class="d1">Encara no hi ha curses</div>';
@@ -750,10 +757,15 @@ function renderRaceView(d){
   if (state.race >= d.races.length) state.race = d.races.length - 1;
   if (state.race < 0) state.race = 0;
 
-  $('raceSel').innerHTML = d.races.map(function(rc, i){
-    return '<option value="' + i + '"' + (i === state.race ? ' selected' : '') + '>' +
-      'Prova ' + rc.n + ' · ' + fmtDate(rc.date, false) + '</option>';
-  }).join('');
+  /* la llista es desplega de la cursa més recent a la més antiga */
+  var opts = [];
+  for (i = d.races.length - 1; i >= 0; i--){
+    var r = d.races[i];
+    opts.push('<option value="' + i + '"' + (i === state.race ? ' selected' : '') + '>' +
+      fmtDate(r.date, false) + ' · Prova ' + r.n +
+      (i === d.races.length - 1 ? ' · última' : '') + '</option>');
+  }
+  $('raceSel').innerHTML = opts.join('');
   $('prevRace').disabled = (state.race === 0);
   $('nextRace').disabled = (state.race === d.races.length - 1);
 
@@ -762,7 +774,9 @@ function renderRaceView(d){
   $('raceHead').innerHTML =
     '<div class="d1">' + esc(fmtDate(rc.date, true)) + '</div>' +
     '<div class="d2">Prova nº ' + rc.n + ' de ' + d.races.length +
-      ' &middot; ' + esc(CLASSES[state.cls].label) + '</div>';
+      ' &middot; ' + esc(CLASSES[state.cls].label) +
+      (state.race === d.races.length - 1 ? '<span class="lastbadge">última cursa</span>' : '') +
+      '</div>';
 
   var chips = [];
   if (rc.sortits !== null) chips.push('<span class="chip"><b>' + rc.sortits + '</b>sortits</span>');
