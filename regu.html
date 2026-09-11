@@ -332,8 +332,8 @@ footer a{ color:rgba(255,183,77,0.7); }
 <!-- Tall 1: quina vista -->
 <div class="band band-views">
   <div class="band-in switch">
-    <button class="gbtn on" data-view="general"><span class="gi">&#127942;</span>Classificació general</button>
-    <button class="gbtn" data-view="cursa"><span class="gi">&#128197;</span>Resultats per cursa</button>
+    <button class="gbtn on" data-view="cursa"><span class="gi">&#128197;</span>Resultats per cursa</button>
+    <button class="gbtn" data-view="general"><span class="gi">&#127942;</span>Classificació general</button>
   </div>
 </div>
 
@@ -400,7 +400,7 @@ var CLASSES = [
 var MESOS = { gen:1, ene:1, jan:1, feb:2, mar:3, abr:4, apr:4, mai:5, may:5, jun:6,
               jul:7, ago:8, aug:8, set:9, sep:9, oct:10, nov:11, des:12, dic:12, dec:12 };
 
-var state = { cls:0, view:'general', race:0, raceAuto:true, data:{}, open:null, last:0 };
+var state = { cls:0, view:'cursa', race:0, raceAuto:true, data:{}, open:null, last:0 };
 
 /* ---------- estat a l'URL (#classe/vista/prova) ---------- */
 function writeHash(){
