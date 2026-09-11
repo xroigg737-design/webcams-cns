@@ -53,12 +53,25 @@ body{
 }
 .topbar .sub{ font-size:0.68em; color:rgba(255,255,255,0.55); margin-top:2px; }
 .iconbtn{
-  flex-shrink:0; width:34px; height:34px; border-radius:10px;
-  background:rgba(255,255,255,0.08); border:1px solid var(--line);
-  color:#fff; font-size:1em; cursor:pointer;
+  flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  height:42px; padding:0 14px; border-radius:12px; cursor:pointer;
+  border:1px solid rgba(255,213,79,0.45);
+  background:linear-gradient(180deg, #d4920a 0%, #a06800 100%);
+  color:#fff; font-family:inherit; font-size:0.68em; font-weight:800;
+  letter-spacing:0.4px; text-transform:uppercase;
+  box-shadow:0 3px 12px rgba(160,104,0,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.iconbtn:active{ transform:scale(0.94); }
-.iconbtn.spin{ animation:sp 0.9s linear infinite; }
+.iconbtn .ri{ font-size:1.55em; line-height:1; display:inline-block; }
+.iconbtn .rl{ display:none; }
+.iconbtn:hover{
+  background:linear-gradient(180deg, #e8a420 0%, #b87800 100%);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(255,170,0,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.iconbtn:active{ transform:translateY(1px) scale(0.97); box-shadow:0 1px 4px rgba(0,0,0,0.35), inset 0 2px 4px rgba(0,0,0,0.2); }
+.iconbtn.spin{ pointer-events:none; opacity:0.85; }
+.iconbtn.spin .ri{ animation:sp 0.8s linear infinite; }
 @keyframes sp{ to{ transform:rotate(360deg); } }
 
 .wrap{ max-width:940px; margin:0 auto; padding:0 12px 40px; }
@@ -295,6 +308,8 @@ footer a{ color:rgba(255,183,77,0.7); }
   .kpi .n{ font-size:1.6em; }
   .kpi .l{ font-size:0.58em; }
   .topbar h1{ font-size:1.2em; }
+  .iconbtn{ height:44px; padding:0 16px; font-size:0.72em; }
+  .iconbtn .rl{ display:inline; }
   .wrap{ padding:0 16px 48px; }
   .pod .nm{ font-size:0.9em; }
   .row{ padding:11px 13px; }
@@ -311,7 +326,7 @@ footer a{ color:rgba(255,183,77,0.7); }
     <h1>Regu &middot; Regularitat</h1>
     <div class="sub">Club Nàutic Sitges &middot; <span id="season">temporada</span></div>
   </div>
-  <button class="iconbtn" id="refresh" title="Actualitzar">&#10227;</button>
+  <button class="iconbtn" id="refresh" title="Tornar a llegir el full del club"><span class="ri">&#10227;</span><span class="rl">Actualitzar</span></button>
 </header>
 
 <!-- Tall 1: quina vista -->
