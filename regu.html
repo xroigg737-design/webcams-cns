@@ -22,6 +22,7 @@
   --gold:#ffd54f;
   --silver:#cfd8dc;
   --bronze:#d99b63;
+  --data:#4dd8c4;
 }
 body{
   font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -224,31 +225,32 @@ body{
 .picker{ display:flex; align-items:stretch; gap:7px; margin-bottom:12px; }
 .navb{
   flex-shrink:0; width:40px; border-radius:11px; cursor:pointer;
-  background:var(--panel); border:1px solid var(--line);
-  color:var(--accent); font-size:1.1em; font-weight:800; font-family:inherit;
+  background:var(--panel); border:1px solid rgba(0,191,165,0.28);
+  color:var(--data); font-size:1.1em; font-weight:800; font-family:inherit;
 }
 .navb:disabled{ opacity:0.3; cursor:default; color:#fff; }
 .navb:not(:disabled):active{ background:var(--panel-2); }
 .selwrap{ position:relative; flex:1; min-width:0; }
 select.sel{
   width:100%; height:100%; padding:11px 30px 11px 12px;
-  background:var(--panel); border:1px solid rgba(255,183,77,0.35); border-radius:11px;
-  color:#fff; font-size:0.82em; font-weight:700; font-family:inherit;
+  background:linear-gradient(180deg, rgba(0,191,165,0.14), rgba(0,191,165,0.06));
+  border:1px solid rgba(0,191,165,0.45); border-radius:11px;
+  color:var(--data); font-size:0.82em; font-weight:800; font-family:inherit;
   appearance:none; -webkit-appearance:none; cursor:pointer;
 }
-select.sel:focus{ outline:none; border-color:var(--accent); }
+select.sel:focus{ outline:none; border-color:var(--data); }
 select.sel option{ background:#12263f; color:#fff; font-weight:600; }
 .selwrap::after{
   content:'▾'; position:absolute; right:12px; top:50%; transform:translateY(-50%);
-  color:var(--accent); pointer-events:none; font-size:0.8em;
+  color:var(--data); pointer-events:none; font-size:0.8em;
 }
 
 .racehead{
   padding:12px 13px; border-radius:13px; margin-bottom:11px;
-  background:linear-gradient(150deg, rgba(255,183,77,0.10), rgba(255,255,255,0.03) 60%);
-  border:1px solid rgba(255,183,77,0.22);
+  background:linear-gradient(150deg, rgba(0,191,165,0.10), rgba(255,255,255,0.03) 60%);
+  border:1px solid rgba(0,191,165,0.22);
 }
-.racehead .d1{ font-size:0.95em; font-weight:800; color:#fff; }
+.racehead .d1{ font-size:0.95em; font-weight:800; color:var(--data); }
 .racehead .d2{ font-size:0.66em; color:var(--muted); margin-top:2px; }
 
 .fold{
@@ -376,7 +378,7 @@ var CLASSES = [
 var MESOS = { gen:1, ene:1, jan:1, feb:2, mar:3, abr:4, apr:4, mai:5, may:5, jun:6,
               jul:7, ago:8, aug:8, set:9, sep:9, oct:10, nov:11, des:12, dic:12, dec:12 };
 
-var state = { cls:0, view:'general', race:0, data:{}, open:null };
+var state = { cls:0, view:'general', race:0, raceAuto:true, data:{}, open:null, last:0 };
 
 /* ---------- estat a l'URL (#classe/vista/prova) ---------- */
 function writeHash(){
@@ -391,7 +393,7 @@ function readHash(){
   for (var i = 0; i < CLASSES.length; i++) if (CLASSES[i].key === p[0]) state.cls = i;
   if (p[1] === 'cursa' || p[1] === 'general') state.view = p[1];
   var n = parseInt(p[2], 10);
-  if (isFinite(n) && n > 0) state.race = n - 1;
+  if (isFinite(n) && n > 0){ state.race = n - 1; state.raceAuto = false; }
 }
 
 /* ---------- utilitats ---------- */
@@ -598,7 +600,8 @@ function load(force){
       if (d && d.season) s = d.season;
     }
     $('season').textContent = s ? 'Temporada ' + s : '';
-    $('stamp').textContent = 'Actualitzat a les ' +
+    state.last = Date.now();
+    $('stamp').textContent = 'Dades llegides a les ' +
       new Date().toLocaleTimeString('ca-ES', { hour:'2-digit', minute:'2-digit' });
     /* primera classe amb dades */
     if (!state.data[CLASSES[state.cls].key]){
@@ -742,7 +745,10 @@ function renderRaceView(d){
     $('dnsFold').hidden = true; $('dnsList').hidden = true;
     return;
   }
+  /* per defecte, l'última cursa publicada */
+  if (state.raceAuto) state.race = d.races.length - 1;
   if (state.race >= d.races.length) state.race = d.races.length - 1;
+  if (state.race < 0) state.race = 0;
 
   $('raceSel').innerHTML = d.races.map(function(rc, i){
     return '<option value="' + i + '"' + (i === state.race ? ' selected' : '') + '>' +
@@ -819,7 +825,7 @@ $('classTabs').addEventListener('click', function(e){
   var t = e.target.closest('.ctab');
   if (!t) return;
   state.cls = parseInt(t.dataset.i, 10);
-  state.race = 0; state.open = null;
+  state.race = 0; state.raceAuto = true; state.open = null;
   $('filter').value = '';
   renderTabs(); render();
 });
@@ -846,15 +852,16 @@ $('filter').addEventListener('input', function(){
 
 $('raceSel').addEventListener('change', function(){
   state.race = parseInt(this.value, 10);
+  state.raceAuto = false;
   writeHash();
   renderRaceView(state.data[CLASSES[state.cls].key]);
 });
 $('prevRace').addEventListener('click', function(){
-  if (state.race > 0){ state.race--; writeHash(); renderRaceView(state.data[CLASSES[state.cls].key]); }
+  if (state.race > 0){ state.race--; state.raceAuto = false; writeHash(); renderRaceView(state.data[CLASSES[state.cls].key]); }
 });
 $('nextRace').addEventListener('click', function(){
   var d = state.data[CLASSES[state.cls].key];
-  if (state.race < d.races.length - 1){ state.race++; writeHash(); renderRaceView(d); }
+  if (state.race < d.races.length - 1){ state.race++; state.raceAuto = false; writeHash(); renderRaceView(d); }
 });
 
 $('dnsFold').addEventListener('click', function(){
@@ -863,6 +870,12 @@ $('dnsFold').addEventListener('click', function(){
 });
 
 $('refresh').addEventListener('click', function(){ load(true); });
+
+/* Si tornes a la pàgina després d'una bona estona, torna a llegir el full.
+   No cal res més: el full només es toca després de cada regata. */
+document.addEventListener('visibilitychange', function(){
+  if (!document.hidden && state.last && Date.now() - state.last > 15 * 60 * 1000) load(true);
+});
 
 readHash();
 load(false);
