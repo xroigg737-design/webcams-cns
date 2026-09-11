@@ -211,7 +211,8 @@ body{
 .side{ flex-shrink:0; text-align:right; }
 .side .v{ font-size:0.95em; font-weight:900; color:var(--accent); font-variant-numeric:tabular-nums; line-height:1; }
 .side .l{ font-size:0.54em; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.6px; margin-top:3px; }
-.sail{ font-size:0.62em; color:rgba(255,255,255,0.38); font-variant-numeric:tabular-nums; }
+.sail{ font-size:0.62em; color:rgba(255,255,255,0.45); font-variant-numeric:tabular-nums; }
+.sail i{ font-style:normal; color:rgba(255,255,255,0.3); font-weight:700; }
 .caret{ flex-shrink:0; color:rgba(255,255,255,0.28); font-size:0.7em; transition:transform .2s ease; }
 .row.open .caret{ transform:rotate(90deg); }
 
@@ -662,7 +663,7 @@ function subline(b, withSail){
   var parts = [];
   if (b.sub) parts.push(esc(b.sub));
   if (b.tri) parts.push('<span class="tri">+ ' + esc(b.tri) + '</span>');
-  if (withSail && b.vela) parts.push('<span class="sail">' + esc(b.vela) + '</span>');
+  if (withSail && b.vela) parts.push('<span class="sail"><i>Vela nº</i> ' + esc(b.vela) + '</span>');
   return parts.length ? '<div class="p">' + parts.join(' <span class="tri">·</span> ') + '</div>' : '';
 }
 
@@ -825,7 +826,7 @@ function renderRaceView(d){
       '<div class="who"><div class="b">' + esc(boatName(o.b)) + '</div>' +
         subline(o.b, false) +
       '</div>' +
-      (o.b.vela ? '<div class="side"><div class="sail">' + esc(o.b.vela) + '</div></div>' : '') +
+      (o.b.vela ? '<div class="side"><div class="sail"><i>Vela nº</i> ' + esc(o.b.vela) + '</div></div>' : '') +
     '</div>';
   }).join('');
 
