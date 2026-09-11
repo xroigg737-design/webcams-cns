@@ -63,10 +63,7 @@ body{
 .wrap{ max-width:940px; margin:0 auto; padding:0 12px 40px; }
 
 /* ===== Pestanyes de classe ===== */
-.classes{
-  display:grid; grid-template-columns:repeat(2,1fr); gap:7px;
-  padding:12px 12px 4px; max-width:964px; margin:0 auto;
-}
+.classes{ display:grid; grid-template-columns:repeat(2,1fr); gap:7px; }
 .ctab{
   display:flex; align-items:center; justify-content:center; gap:6px;
   padding:8px 10px; border-radius:999px; cursor:pointer;
@@ -78,17 +75,57 @@ body{
 .ctab.on{ color:#0a1628; background:var(--accent); border-color:var(--accent); font-weight:800; }
 .ctab:not(.on):active{ background:var(--panel-2); }
 
-/* ===== Selector de vista ===== */
-.views{
-  display:flex; gap:0; margin:12px 0 14px; padding:3px;
-  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+/* ===== Talls (bandes) ===== */
+.band{ border-bottom:1px solid rgba(255,255,255,0.07); }
+.band-in{ max-width:964px; margin:0 auto; padding:12px; }
+.band-views{ background:linear-gradient(180deg, rgba(255,170,0,0.07), rgba(255,170,0,0) 100%); }
+.band-cats{ background:rgba(255,255,255,0.025); }
+.band-kpi{ background:rgba(0,0,0,0.28); box-shadow:inset 0 6px 14px -10px rgba(0,0,0,0.9); }
+.band-lab{
+  display:block; margin-bottom:8px;
+  font-size:0.58em; font-weight:800; letter-spacing:1.4px;
+  text-transform:uppercase; color:rgba(255,255,255,0.32);
 }
-.vtab{
-  flex:1; padding:9px 6px; border:none; border-radius:9px; cursor:pointer;
-  background:transparent; color:rgba(255,255,255,0.55);
-  font-size:0.76em; font-weight:700; font-family:inherit; transition:all .18s ease;
+
+/* ===== Selector de vista — botons daurats (estil landing) ===== */
+.switch{ display:flex; gap:9px; }
+.gbtn{
+  flex:1; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:12px 10px; border-radius:10px; cursor:pointer;
+  border:1px solid transparent;
+  background:linear-gradient(180deg, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.035) 100%);
+  color:rgba(255,255,255,0.55);
+  font-family:inherit; font-size:0.76em; font-weight:700; line-height:1.15;
+  text-align:center;
+  transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.vtab.on{ background:rgba(255,183,77,0.16); color:var(--accent); box-shadow:inset 0 0 0 1px rgba(255,183,77,0.3); }
+.gbtn:not(.on){ border-color:var(--line); }
+.gbtn .gi{ font-size:1.15em; line-height:1; }
+.gbtn.on{
+  background:linear-gradient(180deg, #d4920a 0%, #a06800 100%);
+  color:#fff; font-weight:800;
+  box-shadow:0 2px 8px rgba(160,104,0,0.35), inset 0 1px 0 rgba(255,255,255,0.16);
+}
+.gbtn.on:hover{
+  background:linear-gradient(180deg, #e8a420 0%, #b87800 100%);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(255,170,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.gbtn:not(.on):hover{ background:rgba(255,255,255,0.11); color:rgba(255,255,255,0.8); }
+.gbtn:active{ transform:translateY(1px); box-shadow:0 1px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(0,0,0,0.2); }
+
+/* ===== Tall de KPIs ===== */
+.kpis{ display:grid; grid-template-columns:repeat(4,1fr); }
+.kpi{ text-align:center; padding:2px 4px; border-left:1px solid rgba(255,255,255,0.07); }
+.kpi:first-child{ border-left:none; }
+.kpi .n{
+  font-size:1.35em; font-weight:900; color:var(--accent); line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.kpi .l{
+  margin-top:4px; font-size:0.52em; font-weight:700; line-height:1.25;
+  text-transform:uppercase; letter-spacing:0.8px; color:rgba(255,255,255,0.38);
+}
 
 /* ===== Xips d'informació ===== */
 .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
@@ -245,6 +282,9 @@ footer a{ color:rgba(255,183,77,0.7); }
 
 @media (min-width:640px){
   .classes{ grid-template-columns:repeat(4,1fr); }
+  .gbtn{ font-size:0.84em; padding:13px 14px; }
+  .kpi .n{ font-size:1.6em; }
+  .kpi .l{ font-size:0.58em; }
   .topbar h1{ font-size:1.2em; }
   .wrap{ padding:0 16px 48px; }
   .pod .nm{ font-size:0.9em; }
@@ -265,14 +305,28 @@ footer a{ color:rgba(255,183,77,0.7); }
   <button class="iconbtn" id="refresh" title="Actualitzar">&#10227;</button>
 </header>
 
-<nav class="classes" id="classTabs"></nav>
+<!-- Tall 1: quina vista -->
+<div class="band band-views">
+  <div class="band-in switch">
+    <button class="gbtn on" data-view="general"><span class="gi">&#127942;</span>Classificació general</button>
+    <button class="gbtn" data-view="cursa"><span class="gi">&#128197;</span>Resultats per cursa</button>
+  </div>
+</div>
+
+<!-- Tall 2: categories -->
+<div class="band band-cats">
+  <div class="band-in">
+    <span class="band-lab">Categoria</span>
+    <nav class="classes" id="classTabs"></nav>
+  </div>
+</div>
+
+<!-- Tall 3: dades de la temporada -->
+<div class="band band-kpi" id="kpiBand" hidden>
+  <div class="band-in"><div class="kpis" id="kpis"></div></div>
+</div>
 
 <div class="wrap">
-  <div class="views">
-    <button class="vtab on" data-view="general">Classificació general</button>
-    <button class="vtab" data-view="cursa">Resultats per cursa</button>
-  </div>
-
   <div id="loading" class="msg">
     <div class="spinner"></div>
     Carregant dades del full del club&hellip;
@@ -280,7 +334,6 @@ footer a{ color:rgba(255,183,77,0.7); }
   <div id="error" class="msg" hidden></div>
 
   <section id="viewGeneral" hidden>
-    <div class="chips" id="genChips"></div>
     <div class="podium" id="podium"></div>
     <input class="search" id="filter" type="search" placeholder="Cerca embarcació o patró&hellip;" autocomplete="off">
     <div class="list" id="genList"></div>
@@ -329,7 +382,9 @@ var state = { cls:0, view:'general', race:0, data:{}, open:null };
 function writeHash(){
   var h = CLASSES[state.cls].key + '/' + state.view +
           (state.view === 'cursa' ? '/' + (state.race + 1) : '');
-  if (location.hash.substring(1) !== h) history.replaceState(null, '', '#' + h);
+  try {
+    if (location.hash.substring(1) !== h) history.replaceState(null, '', '#' + h);
+  } catch (e) { /* si el navegador no deixa tocar l'historial, tant se val */ }
 }
 function readHash(){
   var p = decodeURIComponent(location.hash.substring(1)).split('/');
@@ -508,6 +563,7 @@ function load(force){
   $('error').hidden = true;
   $('viewGeneral').hidden = true;
   $('viewCursa').hidden = true;
+  $('kpiBand').hidden = true;
   $('refresh').classList.add('spin');
 
   var bust = force ? '&_=' + Date.now() : '';
@@ -595,33 +651,41 @@ function resultKind(v, race, dns){
 
 function render(){
   var d = state.data[CLASSES[state.cls].key];
-  document.querySelectorAll('.vtab').forEach(function(x){
-    x.classList.toggle('on', x.dataset.view === state.view);
-  });
-  writeHash();
+  var i, btns = document.querySelectorAll('.gbtn');
+  for (i = 0; i < btns.length; i++)
+    btns[i].classList.toggle('on', btns[i].getAttribute('data-view') === state.view);
+
   $('viewGeneral').hidden = (state.view !== 'general');
   $('viewCursa').hidden = (state.view !== 'cursa');
   if (!d){
+    $('kpiBand').hidden = true;
     $('error').hidden = false;
     $('error').textContent = 'Aquesta categoria no té dades disponibles.';
     $('viewGeneral').hidden = true; $('viewCursa').hidden = true;
     return;
   }
   $('error').hidden = true;
+  renderKpis(d);
   if (state.view === 'general') renderGeneral(d); else renderRaceView(d);
+  writeHash();
+}
+
+/* Tall de KPIs: sempre visible, sigui quina sigui la vista */
+function renderKpis(d){
+  var k = [
+    { n:d.boats.length, l:'embarcacions' },
+    { n:d.races.length, l:'proves fetes' }
+  ];
+  if (d.valides !== null) k.push({ n:d.valides, l:'proves vàlides' });
+  if (d.descartes !== null) k.push({ n:d.descartes, l:'descartes' });
+  $('kpis').style.gridTemplateColumns = 'repeat(' + k.length + ',1fr)';
+  $('kpis').innerHTML = k.map(function(x){
+    return '<div class="kpi"><div class="n">' + x.n + '</div><div class="l">' + x.l + '</div></div>';
+  }).join('');
+  $('kpiBand').hidden = false;
 }
 
 function renderGeneral(d){
-  var chips = [
-    { l:'embarcacions', v:d.boats.length },
-    { l:'proves fetes', v:d.races.length }
-  ];
-  if (d.valides !== null) chips.push({ l:'proves vàlides', v:d.valides });
-  if (d.descartes !== null) chips.push({ l:'descartes', v:d.descartes });
-  $('genChips').innerHTML = chips.map(function(c){
-    return '<span class="chip"><b>' + c.v + '</b>' + c.l + '</span>';
-  }).join('');
-
   var medals = ['&#129351;', '&#129352;', '&#129353;'];
   $('podium').innerHTML = d.boats.slice(0,3).map(function(b, i){
     return '<div class="pod p' + (i+1) + '">' +
@@ -760,7 +824,7 @@ $('classTabs').addEventListener('click', function(e){
   renderTabs(); render();
 });
 
-document.querySelectorAll('.vtab').forEach(function(b){
+document.querySelectorAll('.gbtn').forEach(function(b){
   b.addEventListener('click', function(){
     state.view = b.dataset.view;
     render();
