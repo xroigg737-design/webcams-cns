@@ -1,5 +1,5 @@
 // Service Worker — network-first: sempre intenta descarregar la versió nova
-const CACHE_NAME = 'avui-regu-v106';
+const CACHE_NAME = 'avui-regu-v107';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => {
@@ -11,16 +11,25 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+
+  // Les pàgines (index.html, regu.html…) les serveix GitHub Pages amb
+  // max-age=600, així que el navegador les podia tornar de la seva pròpia
+  // memòria durant 10 minuts i no véiem els canvis acabats de publicar.
+  // Amb cache:'reload' saltem aquesta memòria i preguntem sempre al servidor.
+  const isDoc = req.mode === 'navigate' || req.destination === 'document';
+
   e.respondWith(
-    fetch(e.request)
+    (isDoc ? fetch(req.url, { cache: 'reload', credentials: 'same-origin' }) : fetch(req))
       .then(res => {
         // Guardar còpia en cache per offline
-        if (res.ok && e.request.method === 'GET') {
+        if (res.ok) {
           const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+          caches.open(CACHE_NAME).then(c => c.put(req, clone));
         }
         return res;
       })
-      .catch(() => caches.match(e.request))  // Fallback a cache si offline
+      .catch(() => caches.match(req))  // Fallback a cache si offline
   );
 });
