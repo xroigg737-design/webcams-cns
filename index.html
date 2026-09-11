@@ -705,8 +705,6 @@
         .cur-hist-table tr:last-child td { border-bottom: none; }
         .cur-hist-table tbody tr.ara { background: rgba(0,191,165,0.14); }
         .cur-hist-table tbody tr.ara td { color: #fff; font-weight: 800; }
-        .mas-hist-table tbody tr.ara { background: rgba(66,165,245,0.14); }
-        .mas-hist-table .cur-hist-arrow { color: #42a5f5; }
         /* La capçalera de dia NO pot ser sticky: totes comparteixen el mateix
            contenidor, s'enganxarien a la mateixa alçada i se solaparien entre
            elles (i amb la capçalera de columnes), quedant illegibles. */
@@ -719,11 +717,6 @@
             letter-spacing: 0.7px;
             padding: 6px 9px;
             border-top: 1px solid rgba(0,191,165,0.35);
-        }
-        .mas-hist-table tr.cur-hist-dia td {
-            background: rgba(66,165,245,0.18);
-            color: #90caf9;
-            border-top-color: rgba(66,165,245,0.35);
         }
         .cur-hist-setmana td {
             background: rgba(0,191,165,0.10);
@@ -746,12 +739,6 @@
         }
         .cur-hist-setmana.collapsed .chevron { transform: rotate(0deg); }
         .cur-hist-setmana.expanded .chevron { transform: rotate(90deg); }
-        .mas-hist-table .cur-hist-setmana td {
-            background: rgba(66,165,245,0.10);
-            color: #90caf9;
-            border-top-color: rgba(66,165,245,0.30);
-        }
-        .mas-hist-table .cur-hist-setmana td:hover { background: rgba(66,165,245,0.18); }
         .cur-hist-h { color: #ffd740; font-weight: 700; }
         .cur-hist-v { color: #fff; font-weight: 800; }
         .cur-hist-d { color: #4dd0c4; font-weight: 700; }
@@ -1232,7 +1219,7 @@
         <img class="header-photo" src="img/verdi.jpg" alt="Patí català navegant" onclick="document.getElementById('photoLB').classList.add('active')">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v5.83</div>
+            <div class="subtitle">v5.84</div>
         </div>
     </div>
 </header>
@@ -1504,44 +1491,6 @@
                         <a href="https://www.wunderground.com/dashboard/pws/IVILAN45" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
                     </div>
                 </div>
-                <!-- El Masnou -->
-                <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:0.9em;">&#9973;</span>
-                        <span style="font-size:0.72em;font-weight:800;color:#42a5f5;letter-spacing:1px;text-transform:uppercase;">El Masnou</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-                        <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.75;">
-                                <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-                                <circle cx="50" cy="50" r="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-                                <g stroke="rgba(255,255,255,0.3)" stroke-width="0.8">
-                                    <line x1="50" y1="3" x2="50" y2="36"/><line x1="50" y1="64" x2="50" y2="97"/>
-                                    <line x1="3" y1="50" x2="36" y2="50"/><line x1="64" y1="50" x2="97" y2="50"/>
-                                </g>
-                                <text x="50" y="11" text-anchor="middle" font-size="11" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
-                            </svg>
-                            <div id="ms-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;">
-                                <div class="mini-pill" id="ms-pill"></div>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:4px;">
-                                <span id="ms-speed" style="font-size:1.3em;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;">--</span>
-                                <span style="font-size:0.55em;color:rgba(255,255,255,0.5);font-weight:700;">kn</span>
-                            </div>
-                            <div id="ms-dir" style="font-size:0.9em;font-weight:700;color:#8ab4d6;margin-top:1px;">--</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:4px;margin-top:2px;">
-                        <span style="font-size:0.48em;color:#8ab4d6;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Ratxa</span>
-                        <span id="ms-gust" style="font-size:0.8em;font-weight:900;color:#ff9a76;font-variant-numeric:tabular-nums;">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
-                        <span id="ms-time" style="font-size:0.5em;color:#ffd740;font-weight:700;">--</span>
-                        <a href="https://www.wunderground.com/dashboard/pws/IELMAS19" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
-                    </div>
-                </div>
                 <!-- Castelldefels -->
                 <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px;flex:1;min-width:140px;max-width:220px;">
                     <div style="display:flex;align-items:center;gap:6px;">
@@ -1683,77 +1632,6 @@
                     <div style="font-size:0.54em;color:rgba(255,255,255,0.38);line-height:1.5;">
                         Hora local &middot; <span id="cur-hist-abast">--</span>. Per comprovar-ho a la
                         costa: la fletxa indica
-                        <b style="color:rgba(255,255,255,0.6);">cap on va</b> el corrent.
-                    </div>
-                </div>
-
-                <!-- ========= EL MASNOU — mateixa font (radar HF ICATMAR) ========= -->
-                <div class="wg-sec-card cur-card" style="border-color:rgba(66,165,245,0.28);background:linear-gradient(145deg,rgba(66,165,245,0.08),rgba(255,255,255,0.03) 55%);">
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="font-size:1em;">&#9973;</span>
-                        <span style="font-size:0.8em;font-weight:800;color:#42a5f5;letter-spacing:1.2px;text-transform:uppercase;">Davant del Masnou</span>
-                        <span class="proves-badge" style="font-size:0.5em;">En proves...</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:14px;">
-                        <div style="position:relative;width:68px;height:68px;flex-shrink:0;">
-                            <svg viewBox="0 0 100 100" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.8;">
-                                <circle cx="50" cy="50" r="47" fill="rgba(66,165,245,0.05)" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
-                                <g stroke="rgba(255,255,255,0.3)" stroke-width="0.9">
-                                    <line x1="50" y1="4" x2="50" y2="28"/><line x1="50" y1="72" x2="50" y2="96"/>
-                                    <line x1="4" y1="50" x2="28" y2="50"/><line x1="72" y1="50" x2="96" y2="50"/>
-                                </g>
-                                <text x="50" y="13" text-anchor="middle" font-size="13" font-weight="800" fill="rgba(239,83,80,0.95)" font-family="system-ui,sans-serif">N</text>
-                            </svg>
-                            <div id="mas-arrow" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:transform 1s ease;opacity:0;">
-                                <svg viewBox="0 0 100 100" style="width:100%;height:100%;overflow:visible;">
-                                    <line x1="50" y1="74" x2="50" y2="30" stroke="#42a5f5" stroke-width="8" stroke-linecap="round"/>
-                                    <path d="M50 15 L63 39 L50 33 L37 39 Z" fill="#42a5f5"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:baseline;gap:5px;">
-                                <span class="cur-val" id="mas-speed" style="color:#42a5f5;">--</span>
-                                <span class="cur-unit">kn</span>
-                            </div>
-                            <div style="display:flex;align-items:baseline;gap:6px;margin-top:3px;">
-                                <span class="cur-toward">cap a</span>
-                                <span class="cur-dir-txt" id="mas-dir" style="color:#90caf9;">--</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="cur-meta" id="mas-meta">--</div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-                        <span id="mas-time" style="font-size:0.58em;color:#ffd740;font-weight:700;">--</span>
-                        <a href="https://www.icatmar.cat/observacions/" target="_blank" rel="noopener" style="font-size:0.56em;color:rgba(255,255,255,0.4);text-decoration:none;white-space:nowrap;">Visor ICATMAR &rarr;</a>
-                    </div>
-                </div>
-
-                <!-- HISTÒRIC HORARI — El Masnou -->
-                <div class="wg-sec-card cur-hist-card" style="border-color:rgba(66,165,245,0.28);background:linear-gradient(145deg,rgba(66,165,245,0.06),rgba(255,255,255,0.03) 55%);">
-                    <div class="cur-hist-head">
-                        <span style="font-size:1em;">&#128337;</span>
-                        <span style="font-size:0.8em;font-weight:800;color:#42a5f5;letter-spacing:1.2px;text-transform:uppercase;">Històric Masnou</span>
-                        <div class="cur-kpi" style="background:rgba(255,215,64,0.09);border-color:rgba(255,215,64,0.3);">
-                            <span class="cur-kpi-lab">Màx. últ. setmana</span>
-                            <span class="cur-kpi-body">
-                                <span class="cur-kpi-val" id="mas-max-val">--</span>
-                                <span class="cur-kpi-when" id="mas-max-when">--</span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="cur-hist-scroll">
-                        <table class="cur-hist-table mas-hist-table">
-                            <thead>
-                                <tr><th>Hora</th><th>Vel.</th><th>Cap a</th><th></th></tr>
-                            </thead>
-                            <tbody id="mas-hist-body">
-                                <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.35);padding:12px 0;">Carregant&hellip;</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style="font-size:0.54em;color:rgba(255,255,255,0.38);line-height:1.5;">
-                        Hora local &middot; <span id="mas-hist-abast">--</span>. La fletxa indica
                         <b style="color:rgba(255,255,255,0.6);">cap on va</b> el corrent.
                     </div>
                 </div>
@@ -2302,7 +2180,6 @@
     async function fetchNeighbours() {
         fetchStation('IVILAN45', 'vn');
         fetchStation('ICUBEL17', 'cb');
-        fetchStation('IELMAS19', 'ms');
         fetch17nudos();
         fetchAiguadolc();
     }
@@ -2637,115 +2514,6 @@
 
     fetchCurrentHistory();
     sondeja(fetchCurrentHistory, 15 * 60 * 1000);
-
-    /* ===== CORRENT SUPERFICIAL — EL MASNOU (mateixa font ICATMAR) ===== */
-    let masLastHour = null;
-    let masHasData = false;
-
-    function renderCurrentMasnou(c) {
-        const arrow = document.getElementById('mas-arrow');
-        const spd = document.getElementById('mas-speed');
-        const dir = document.getElementById('mas-dir');
-        const meta = document.getElementById('mas-meta');
-        const time = document.getElementById('mas-time');
-
-        if (spd) spd.textContent = c.spdKn.toFixed(2);
-        if (dir) dir.textContent = degToCompass(c.dirDeg) + ' ' + c.dirDeg + '°';
-        if (arrow) {
-            arrow.style.opacity = '1';
-            arrow.style.transform = 'rotate(' + c.dirDeg + 'deg)';
-        }
-        if (meta) {
-            meta.innerHTML =
-                '<b>Font:</b> radar HF de l\'ICATMAR, antena de <b>Port de Barcelona</b> ' +
-                '(41.350N 2.159E), amb Port Ginesta i Segur de Calafell<br>' +
-                '<b>Una mesura cada hora</b>, publicada uns 20 min després';
-        }
-        if (time && c.time) {
-            const hl = curHoraLocal(c.time);
-            if (hl) {
-                time.innerHTML = 'Mesura de les <span style="color:#ffd740;">' +
-                    hl.hora + '</span> <span style="color:rgba(255,255,255,0.45);' +
-                    'font-weight:600;">(' + hl.fa + ')</span>';
-            }
-        }
-    }
-
-    async function fetchCurrentsMasnou() {
-        try {
-            const r = await fetch(API + '/corrent-masnou');
-            if (r.ok) {
-                const c = await r.json();
-                if (c && c.convention === 'toward' && isFinite(c.spdKn)) {
-                    masLastHour = c.time ? c.time.substring(0, 13) : null;
-                    masHasData = true;
-                    renderCurrentMasnou(c);
-                    return;
-                }
-            }
-        } catch (e) { /* sense fallback de GeoJSON per al Masnou */ }
-
-        if (!masHasData) {
-            const spd = document.getElementById('mas-speed');
-            const dir = document.getElementById('mas-dir');
-            const meta = document.getElementById('mas-meta');
-            if (spd) spd.textContent = '--';
-            if (dir) dir.textContent = '--';
-            if (meta) meta.innerHTML = '<span style="color:#ffab40;">Sense dades recents del radar per al Masnou</span>';
-        }
-    }
-
-    fetchCurrentsMasnou();
-    sondeja(fetchCurrentsMasnou, 15 * 60 * 1000);
-
-    async function fetchCurrentHistoryMasnou() {
-        const body = document.getElementById('mas-hist-body');
-        if (!body) return;
-        try {
-            const r = await fetch(API + '/corrent-masnou-historic');
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            const hist = await r.json();
-            if (!Array.isArray(hist) || !hist.length) throw new Error('buit');
-
-            body.innerHTML = renderHistoricRows(hist, 'mas');
-
-            const abast = document.getElementById('mas-hist-abast');
-            if (abast) {
-                abast.textContent = hist.length + ' hores (' +
-                    Math.round(hist.length / 24) + ' dies)';
-            }
-
-            const limit = Date.now() - 7 * 24 * 3600 * 1000;
-            let max = null;
-            hist.forEach(function(e) {
-                if (new Date(e.t + ':00:00Z').getTime() < limit) return;
-                if (!max || e.s > max.s) max = e;
-            });
-            const mv = document.getElementById('mas-max-val');
-            const mw = document.getElementById('mas-max-when');
-            if (max) {
-                const d = new Date(max.t + ':00:00Z');
-                if (mv) mv.textContent = max.s.toFixed(2) + ' kn';
-                if (mw) {
-                    mw.textContent = d.toLocaleDateString('ca-ES', {
-                        weekday: 'short', day: 'numeric'
-                    }) + ', ' + d.toLocaleTimeString('ca-ES', {
-                        hour: '2-digit', minute: '2-digit'
-                    }) + ' · ' + degToCompass(max.d);
-                }
-            } else {
-                if (mv) mv.textContent = '--';
-                if (mw) mw.textContent = '--';
-            }
-        } catch (err) {
-            body.innerHTML = '<tr><td colspan="4" style="text-align:center;' +
-                'color:rgba(255,255,255,0.35);padding:12px 0;">' +
-                'Històric no disponible</td></tr>';
-        }
-    }
-
-    fetchCurrentHistoryMasnou();
-    sondeja(fetchCurrentHistoryMasnou, 15 * 60 * 1000);
 
 
     /* ===== WIND FLOW — estil Windy/cambecc earth: trails que s'esvaeixen ===== */
