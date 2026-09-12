@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.33</div>
+            <div class="subtitle">v6.34</div>
         </div>
     </div>
 </header>
@@ -2880,15 +2880,17 @@
         }
 
         var widgetObserver = null;
+        var widgetReady = false;
         function startWidgetTranslation() {
+            widgetReady = false;
+        }
+        function enableWidgetObserver() {
             if (widgetObserver) widgetObserver.disconnect();
+            widgetReady = true;
             widgetObserver = new MutationObserver(function(mutations) {
                 mutations.forEach(function(m) {
                     if (m.type === 'childList') {
-                        m.addedNodes.forEach(function(n) {
-                            translateWidgetNode(n);
-                            if (n.nodeType === 1) hideWidgetRows();
-                        });
+                        m.addedNodes.forEach(function(n) { translateWidgetNode(n); });
                     } else if (m.type === 'characterData' && m.target.nodeType === 3) {
                         translateWidgetNode(m.target);
                     }
@@ -2897,6 +2899,7 @@
             widgetObserver.observe(container, { childList: true, subtree: true, characterData: true });
         }
         function stopWidgetTranslation() {
+            widgetReady = false;
             if (widgetObserver) { widgetObserver.disconnect(); widgetObserver = null; }
         }
 
@@ -2924,22 +2927,7 @@
                 '#windyMapBody [class*="spotname"],' +
                 '#windyMapBody [class*="timezone"],' +
                 '#windyMapBody [id*="header"]' +
-                '{ display:none !important; }' +
-                '#windyMapBody [class*="field-name"],' +
-                '#windyMapBody [class*="row-name"],' +
-                '#windyMapBody [class*="rowName"],' +
-                '#windyMapBody [class*="fieldName"]' +
-                '{ color:#b0e0ff !important; font-weight:700 !important; min-width:70px !important; white-space:nowrap !important; }' +
-                '#windyMapBody [class*="chart-wind"],' +
-                '#windyMapBody [class*="compare-wind"],' +
-                '#windyMapBody [class*="windchart"],' +
-                '#windyMapBody .id-wind-speed' +
-                '{ min-height:140px !important; }' +
-                '#windyMapBody [class*="first-col"],' +
-                '#windyMapBody [class*="firstCol"],' +
-                '#windyMapBody td:first-child,' +
-                '#windyMapBody [class*="label-col"]' +
-                '{ min-width:75px !important; padding-right:8px !important; }';
+                '{ display:none !important; }';
             document.head.appendChild(widgetHideCSS);
         }
 
@@ -2993,10 +2981,18 @@
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             script.onload = function() {
-                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 800);
-                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 2000);
-                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 4000);
-                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 6000);
+                function applyAll() {
+                    translateWidgetNode(container);
+                    hideWidgetRows();
+                    relabelWidgetRows();
+                }
+                setTimeout(applyAll, 1500);
+                setTimeout(applyAll, 3000);
+                setTimeout(function() {
+                    applyAll();
+                    enableWidgetObserver();
+                }, 5000);
+                setTimeout(applyAll, 8000);
             };
             container.appendChild(script);
             if (subtitle) subtitle.textContent = cur.label + ' — Sitges';
