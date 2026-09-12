@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.30</div>
+            <div class="subtitle">v6.31</div>
         </div>
     </div>
 </header>
@@ -2848,11 +2848,8 @@
         function relabelWidgetRows() {
             var wBody = document.getElementById('windyMapBody');
             if (!wBody) return;
-            var els = wBody.querySelectorAll('[class*="row-name"], [class*="rowName"], [class*="field-name"], [class*="fieldName"], [class*="label"]');
-            els.forEach(function(el) {
-                var t = el.textContent.trim();
-                if (rowRelabels[t]) el.textContent = rowRelabels[t];
-            });
+            var allLabels = ['knots','nusos','knots*','nusos*','swell','onatge','wind','vent','hora','hour','time',
+                             'Vent (nusos)','Ratxa (nusos)','Onatge','Alçada ona (m)','Període (s)'];
             var walker = document.createTreeWalker(wBody, NodeFilter.SHOW_TEXT, null, false);
             var node;
             while (node = walker.nextNode()) {
@@ -2860,13 +2857,26 @@
                 if (!t) continue;
                 if (t === 'm' || t === 's') {
                     var p = node.parentElement;
-                    if (p && p.offsetWidth && p.offsetWidth < 120 && p.children.length === 0) {
+                    if (p && p.children.length === 0 && p.offsetWidth < 130) {
                         node.textContent = rowRelabels[t];
+                        styleLabel(p);
                     }
                 } else if (rowRelabels[t]) {
                     node.textContent = rowRelabels[t];
+                    styleLabel(node.parentElement);
+                } else if (allLabels.indexOf(t) !== -1) {
+                    styleLabel(node.parentElement);
                 }
             }
+        }
+        function styleLabel(el) {
+            if (!el) return;
+            el.style.color = '#b0e0ff';
+            el.style.fontWeight = '700';
+            el.style.whiteSpace = 'nowrap';
+            el.style.paddingRight = '10px';
+            el.style.minWidth = '70px';
+            el.style.fontSize = '0.78em';
         }
 
         var widgetObserver = null;
@@ -2901,7 +2911,6 @@
                 '#windyMapBody .id-fog,' +
                 '#windyMapBody .id-tides,' +
                 '#windyMapBody .id-moon-phase,' +
-                '#windyMapBody .id-breeze,' +
                 '#windyMapBody .windywidgetcompare-temp-row,' +
                 '#windyMapBody .windywidgetcompare-precip-row,' +
                 '#windyMapBody [class*="compare-temp"],' +
@@ -2915,14 +2924,29 @@
                 '#windyMapBody [class*="spotname"],' +
                 '#windyMapBody [class*="timezone"],' +
                 '#windyMapBody [id*="header"]' +
-                '{ display:none !important; }';
+                '{ display:none !important; }' +
+                '#windyMapBody [class*="field-name"],' +
+                '#windyMapBody [class*="row-name"],' +
+                '#windyMapBody [class*="rowName"],' +
+                '#windyMapBody [class*="fieldName"]' +
+                '{ color:#b0e0ff !important; font-weight:700 !important; min-width:70px !important; white-space:nowrap !important; }' +
+                '#windyMapBody [class*="chart-wind"],' +
+                '#windyMapBody [class*="compare-wind"],' +
+                '#windyMapBody [class*="windchart"],' +
+                '#windyMapBody .id-wind-speed' +
+                '{ min-height:140px !important; }' +
+                '#windyMapBody [class*="first-col"],' +
+                '#windyMapBody [class*="firstCol"],' +
+                '#windyMapBody td:first-child,' +
+                '#windyMapBody [class*="label-col"]' +
+                '{ min-width:75px !important; padding-right:8px !important; }';
             document.head.appendChild(widgetHideCSS);
         }
 
         function hideWidgetRows() {
             var selectors = [
                 '.id-air-temp', '.id-clouds', '.id-precipitation',
-                '.id-fog', '.id-tides', '.id-moon-phase', '.id-breeze',
+                '.id-fog', '.id-tides', '.id-moon-phase',
                 '[class*="compare-temp"]', '[class*="compare-precip"]',
                 '.windywidgetcompare-temp-row', '.windywidgetcompare-precip-row'
             ];
