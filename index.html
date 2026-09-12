@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.51</div>
+            <div class="subtitle">v6.52</div>
         </div>
     </div>
 </header>
@@ -3010,10 +3010,10 @@
             if (mmMap) { mmMap.remove(); mmMap = null; }
             mmMap = L.map('mm-map', { zoomControl: true, attributionControl: false })
                 .setView([41.233, 1.812], 13);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                maxZoom: 18,
-                subdomains: 'abcd'
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18
             }).addTo(mmMap);
+            mmMap.getContainer().querySelector('.leaflet-tile-pane').style.filter = 'invert(1) hue-rotate(180deg) brightness(0.7) contrast(1.3)';
 
             var models = [
                 { key: 'ecmwf_ifs025', name: 'ECMWF', color: '#ef5350' },
