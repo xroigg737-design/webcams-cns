@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.15</div>
+            <div class="subtitle">v6.16</div>
         </div>
     </div>
 </header>
@@ -1689,7 +1689,7 @@
                         <div class="windy-map-title">Mapa de previsió</div>
                     </div>
                     <div class="windy-map-tabs">
-                        <span class="windy-map-tab active" id="tabMapaWindy">Windy</span>
+                        <span class="windy-map-tab active" id="tabMapaWindy">Windy.app</span>
                         <span class="windy-map-tab" id="tabWindy">Detall</span>
                         <span class="windy-map-tab" id="tabWindyModels">Models</span>
                         <span class="windy-map-tab" id="tabWindguru">Windguru</span>
@@ -2704,22 +2704,23 @@
             container.style.height = '520px';
             container.style.minHeight = '';
             container.style.background = '#0b1f33';
-            var url = 'https://embed.windy.com/embed2.html'
-                + '?type=map&location=coordinates'
-                + '&lat=41.233&lon=1.812&detailLat=41.233&detailLon=1.812&zoom=11'
-                + '&level=surface&overlay=wind&product=ecmwf'
-                + '&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1'
-                + '&calendar=now&message=true';
-            var iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.title = 'Mapa de vent interactiu — Sitges';
-            iframe.loading = 'lazy';
-            iframe.allow = 'geolocation';
-            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-            container.appendChild(iframe);
+            var widgetDiv = document.createElement('div');
+            widgetDiv.setAttribute('data-windywidget', 'map');
+            widgetDiv.setAttribute('data-lat', '41.233');
+            widgetDiv.setAttribute('data-lng', '1.812');
+            widgetDiv.setAttribute('data-zoom', '11');
+            widgetDiv.setAttribute('data-type', 'wind');
+            widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
+            widgetDiv.setAttribute('data-width', '100%');
+            widgetDiv.setAttribute('data-height', '520');
+            container.appendChild(widgetDiv);
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://windy.app/widgets-code/map/windy_map_async.js';
+            container.appendChild(script);
             if (subtitle) subtitle.textContent = 'Mapa interactiu de vent — Sitges';
             if (caption) caption.textContent = 'Mapa amb vent, ratxes, onatge i més. Zoom i navega lliurement.';
-            if (source) source.textContent = 'Font: Windy.com';
+            if (source) source.textContent = 'Font: Windy.app';
         }
 
         var mmMap = null;
