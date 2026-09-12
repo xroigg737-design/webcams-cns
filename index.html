@@ -33,11 +33,12 @@
 
         /* Header - Foto Verdi de fons */
         header {
-            background: url('img/verdi-bg.jpg') center center / 100% auto no-repeat;
+            background: url('img/verdi-bg.jpg') center center / contain no-repeat;
             background-color: #0b1a3b;
             text-align: center;
             padding: 0 16px;
-            min-height: 220px;
+            aspect-ratio: 1400/720;
+            max-height: 55vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -50,9 +51,9 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(180deg,
-                rgba(10,22,40,0.45) 0%,
-                rgba(10,22,40,0.30) 50%,
-                rgba(10,22,40,0.55) 100%);
+                rgba(10,22,40,0.40) 0%,
+                rgba(10,22,40,0.25) 45%,
+                rgba(10,22,40,0.50) 100%);
             z-index: 0;
         }
         /* Ones animades a baix */
@@ -1054,7 +1055,7 @@
         }
         @media (max-width: 480px) {
             .windy-map-body { height: 350px; }
-            header { min-height: 180px; padding: 0 12px; }
+            header { max-height: 45vh; padding: 0 12px; }
             header h1 { font-size: 1.4em; letter-spacing: 2px; }
             .header-photo { width: 55px; height: 55px; }
             .header-content { gap: 14px; }
@@ -1170,7 +1171,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.05</div>
+            <div class="subtitle">v6.06</div>
         </div>
     </div>
 </header>
