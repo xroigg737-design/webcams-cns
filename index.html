@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.37</div>
+            <div class="subtitle">v6.38</div>
         </div>
     </div>
 </header>
@@ -2852,19 +2852,28 @@
         function widenWidgetLabels() {
             var wBody = document.getElementById('windyMapBody');
             if (!wBody) return;
-            var tables = wBody.querySelectorAll('table');
-            tables.forEach(function(tbl) {
-                var rows = tbl.querySelectorAll('tr');
-                rows.forEach(function(row) {
-                    var first = row.querySelector('td:first-child, th:first-child');
-                    if (first) {
-                        first.style.minWidth = '82px';
-                        first.style.width = '82px';
-                        first.style.paddingRight = '6px';
-                        first.style.whiteSpace = 'nowrap';
+            var labelTexts = ['hora','vent','Vent kn','Vent(Ratxa) kn','Ratxa kn','Onatge','Ona (m)','T. ona (s)',
+                              'time','wind','hour','knots','knots*','swell','nusos','nusos*'];
+            var walker = document.createTreeWalker(wBody, NodeFilter.SHOW_TEXT, null, false);
+            var node;
+            while (node = walker.nextNode()) {
+                var t = node.textContent.trim();
+                if (labelTexts.indexOf(t) === -1) continue;
+                var el = node.parentElement;
+                for (var i = 0; i < 3 && el && el !== wBody; i++) {
+                    var cs = window.getComputedStyle(el);
+                    if (cs.display === 'grid' || cs.display === 'flex' || cs.display === 'table-row') {
+                        var firstChild = el.children[0];
+                        if (firstChild) {
+                            firstChild.style.minWidth = '85px';
+                            firstChild.style.width = '85px';
+                            firstChild.style.flexShrink = '0';
+                        }
+                        break;
                     }
-                });
-            });
+                    el = el.parentElement;
+                }
+            }
         }
 
         function relabelWidgetRows() {
