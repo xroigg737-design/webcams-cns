@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.35</div>
+            <div class="subtitle">v6.36</div>
         </div>
     </div>
 </header>
@@ -2838,16 +2838,21 @@
             }
         }
 
-        var rowRelabels = {
-            'knots': 'Vent kn', 'nusos': 'Vent kn',
-            'knots*': 'Ratxa kn', 'nusos*': 'Ratxa kn',
-            'swell': 'Onatge', 'onatge': 'Onatge',
-            'm': 'Ona (m)', 's': 'T. ona (s)'
-        };
+        function getRowRelabels() {
+            var isCompare = currentModelId === 'compare';
+            return {
+                'knots': isCompare ? 'Vent(Ratxa) kn' : 'Vent kn',
+                'nusos': isCompare ? 'Vent(Ratxa) kn' : 'Vent kn',
+                'knots*': 'Ratxa kn', 'nusos*': 'Ratxa kn',
+                'swell': 'Onatge', 'onatge': 'Onatge',
+                'm': 'Ona (m)', 's': 'T. ona (s)'
+            };
+        }
 
         function relabelWidgetRows() {
             var wBody = document.getElementById('windyMapBody');
             if (!wBody) return;
+            var rowRelabels = getRowRelabels();
             var walker = document.createTreeWalker(wBody, NodeFilter.SHOW_TEXT, null, false);
             var node, labelsFound = [];
             while (node = walker.nextNode()) {
