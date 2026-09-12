@@ -1396,6 +1396,49 @@
             margin-top: 0.14em;
         }
         .ch-ic.cian { stroke: #8fe4ff; }
+        /* Targeta amb foto: mateixa estructura que el widget de Webcams
+           (miniatura a dalt, franja d'etiqueta a baix). */
+        .ch-slot.carta { display: block; padding: 0; }
+        .ch-th {
+            position: absolute;
+            left: 7%;
+            top: 5.5%;
+            width: 86%;
+            height: 63%;
+            object-fit: cover;
+            border-radius: 17% / 23%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.30);
+        }
+        .ch-rodona {
+            position: absolute;
+            left: 50%;
+            top: 41%;
+            width: 38%;
+            aspect-ratio: 1;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: rgba(18,44,66,0.45);
+            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+            box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ch-rodona svg { width: 62%; height: 62%; fill: none; stroke: #fff;
+            stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+        .ch-peu {
+            position: absolute;
+            left: 6%;
+            right: 6%;
+            bottom: 3%;
+            height: 25%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+        }
         @supports not (font-size: 1cqw) {
             .ch-spot.filled .ch-slot { font-size: 5.6vw; }
         }
@@ -1581,17 +1624,17 @@
                          alt="Cockpit del veler amb els indicadors d'Avui Regu">
                 </picture>
                 <button class="ch-spot filled" style="--x:8.8;--y:28.0;--w:25.4;--h:16.2"
-                        data-slot="veins" data-target="neighbours-section" aria-label="Vent clubs veïns">
-                    <span class="ch-slot" id="slot-veins"><svg class="ch-ic" viewBox="0 0 24 24" aria-hidden="true"><path class="ch-ic-fill" d="M21 6.5 14.2 3.1v6.8z"/><path d="M14.2 6.5H4.6"/><path d="M4.6 6.5 8.5 3.3"/><path d="M4.6 6.5 8.5 9.7"/><path d="M12 7v12.3"/><path d="M8.9 19.9h6.2"/></svg><span class="ch-rule"></span><span class="ch-tx">Vent<span class="ch-sub">Clubs Veïns</span></span></span></button>
+                        data-slot="veins" data-target="neighbours-section" aria-label="Vent veïns">
+                    <span class="ch-slot carta" id="slot-veins"><picture><source type="image/webp" srcset="img/w-veleta.webp"><img class="ch-th" src="img/w-veleta.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Vent veïns</span></span></span></button>
                 <button class="ch-spot filled" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9"
                         data-slot="corrent2" data-target="current-section" aria-label="Corrent superficial">
-                    <span class="ch-slot" id="slot-corrent2"><svg class="ch-ic cian" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.4 6.2q2.7-2.3 5.4 0t5.4 0 5.4 0"/><path d="M2.4 10.2q2.7-2.3 5.4 0t5.4 0 5.4 0"/><path d="M2.4 14.2q2.7-2.3 5.4 0t5.4 0 5.4 0"/><path d="M3.6 19.4h5.8"/><path d="M7.8 17.7 9.7 19.4 7.8 21.1"/><path d="M20.4 19.4h-5.8"/><path d="M16.2 17.7 14.3 19.4 16.2 21.1"/></svg><span class="ch-rule"></span><span class="ch-tx">Corrent<span class="ch-sub">superficial</span></span></span></button>
+                    <span class="ch-slot carta" id="slot-corrent2"><picture><source type="image/webp" srcset="img/w-corrent.webp"><img class="ch-th" src="img/w-corrent.jpg" alt="" loading="lazy"></picture><span class="ch-rodona"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 8.4q2.9-2.5 5.8 0t5.8 0 5.8 0"/><path d="M2.6 13.2q2.9-2.5 5.8 0t5.8 0 5.8 0"/><path d="M4.4 18.6h5.4"/><path d="M8.3 17 10 18.6 8.3 20.2"/><path d="M19.6 18.6h-5.4"/><path d="M15.7 17 14 18.6 15.7 20.2"/></svg></span><span class="ch-peu ch-fit"><span class="ch-tx">Corrent</span></span></span></button>
                 <button class="ch-spot" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8"
                         data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
                     <span class="ch-slot" id="slot-corrent"></span></button>
                 <button class="ch-spot filled peu" style="--x:8.8;--y:44.7;--w:25.0;--h:17.4"
                         data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
-                    <span class="ch-slot" id="slot-webcams"><span class="ch-tx">Webcams</span></span></button>
+                    <span class="ch-slot ch-fit" id="slot-webcams"><span class="ch-tx">Webcams</span></span></button>
                 <button class="ch-spot" style="--x:36.7;--y:44.7;--w:25.6;--h:17.5"
                         data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
                     <span class="ch-slot" id="slot-previsio"></span></button>
@@ -3899,9 +3942,7 @@ window.CockpitSlots = (function() {
         if (!el) return;
         var caixa = el.getBoundingClientRect();
         if (!caixa.width) return;
-        var sostre = el.classList.contains('ch-slot') && el.parentNode.classList.contains('peu')
-                     ? caixa.height * 0.52 : caixa.width * 0.30;
-        var mida = Math.min(caixa.width * 0.30, sostre);
+        var mida = Math.min(caixa.width * 0.30, caixa.height * 0.52);
         el.style.fontSize = mida + 'px';
         var volta = 0;
         while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
@@ -3911,7 +3952,7 @@ window.CockpitSlots = (function() {
         }
     }
     function ajustaTots() {
-        var slots = stage.querySelectorAll('.ch-spot.filled .ch-slot');
+        var slots = stage.querySelectorAll('.ch-fit');
         for (var i = 0; i < slots.length; i++) ajusta(slots[i]);
     }
     var foto = stage.querySelector('.ch-img');
