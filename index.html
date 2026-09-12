@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.25</div>
+            <div class="subtitle">v6.26</div>
         </div>
     </div>
 </header>
@@ -2680,53 +2680,152 @@
             tab.classList.add('active');
         }
 
-        var currentModel = 'compare';
         var MODELS = [
-            { id: 'compare',    label: 'TOTS',      desc: 'Comparar tots els models', icon: '⚡' },
-            { id: 'arome',      label: 'AROME',     desc: 'Alta resolució · Mediterrani', icon: '🎯' },
-            { id: 'ecmwf',      label: 'ECMWF',     desc: 'Europeu · referència global', icon: '🌍' },
-            { id: 'gfs27_long', label: 'GFS',        desc: 'Global · NOAA', icon: '🇺🇸' },
-            { id: 'iconeuro',   label: 'ICON-EU',    desc: 'Europeu · DWD', icon: '🇪🇺' },
-            { id: 'icon_d2',    label: 'ICON-D2',    desc: 'Alta resolució · DWD', icon: '🔬' },
-            { id: 'openskiron', label: 'Skiron',     desc: 'Mediterrani · Atenes', icon: '🏛️' },
-            { id: 'mfwam',      label: 'MFWAM',      desc: 'Onatge · Météo-France', icon: '🌊' }
+            { id: 'GFS27',  label: 'GFS',     desc: 'Global · NOAA',               color: '#ef5350' },
+            { id: 'ECMWF',  label: 'ECMWF',   desc: 'Europeu · referència global',  color: '#ffa726' },
+            { id: 'ICON13', label: 'ICON-13',  desc: 'Europeu · DWD 13km',           color: '#66bb6a' },
+            { id: 'ICON7',  label: 'ICON-7',   desc: 'Europeu · DWD 7km',            color: '#ab47bc' },
+            { id: 'AROME',  label: 'AROME',    desc: 'Alta resolució · Mediterrani',  color: '#42a5f5' },
+            { id: 'EXP3',   label: 'EXP3',     desc: 'Experimental · alta resolució', color: '#8bc34a' }
         ];
+        var selectedModels = {};
+        MODELS.forEach(function(m) { selectedModels[m.id] = true; });
+        var dropdownOpen = false;
+
         var selBar = document.getElementById('modelSelectorBar');
         var selInfo = document.getElementById('modelSelectorInfo');
 
+        function getSelectedCount() {
+            var c = 0; MODELS.forEach(function(m) { if (selectedModels[m.id]) c++; }); return c;
+        }
+        function allSelected() { return getSelectedCount() === MODELS.length; }
+
+        function getButtonLabel() {
+            var n = getSelectedCount();
+            if (n === 0 || n === MODELS.length) return 'Tots els models';
+            if (n === 1) { var s = ''; MODELS.forEach(function(m) { if (selectedModels[m.id]) s = m.label; }); return s; }
+            return n + ' models';
+        }
+
+        function applyModelFilter() {
+            container.querySelectorAll('[class*="compare"] [class*="label"], [class*="compare"] [class*="legend"], [class*="state"] span, [class*="labels"] div').forEach(function(el) {
+                var txt = el.textContent.trim().toUpperCase();
+                MODELS.forEach(function(m) {
+                    if (txt.indexOf(m.id) !== -1 || txt === m.label.toUpperCase()) {
+                        var row = el.closest('div[class]') || el;
+                        if (!selectedModels[m.id]) { row.style.opacity = '0'; row.style.pointerEvents = 'none'; }
+                        else { row.style.opacity = '1'; row.style.pointerEvents = ''; }
+                    }
+                });
+            });
+        }
+
         function renderModelSelector() {
             selBar.innerHTML = '';
-            selBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:12px 12px 6px;background:#0b1f33;justify-content:center;';
+            selBar.style.cssText = 'display:block;padding:10px 12px 0;background:#0b1f33;position:relative;';
+
+            var trigger = document.createElement('button');
+            trigger.id = 'modelDropdownTrigger';
+            trigger.style.cssText = 'width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;'
+                + 'background:linear-gradient(135deg,rgba(0,191,165,0.15),rgba(0,150,136,0.08));'
+                + 'border:1.5px solid rgba(0,230,200,0.3);border-radius:14px;color:#5ef0e6;cursor:pointer;'
+                + 'font-size:0.78em;font-weight:700;letter-spacing:0.3px;outline:none;-webkit-tap-highlight-color:transparent;'
+                + 'transition:all 0.2s;min-height:44px;';
+            var trigLabel = document.createElement('span');
+            trigLabel.style.cssText = 'display:flex;align-items:center;gap:8px;';
+            trigLabel.innerHTML = '<span style="font-size:1.1em;">&#9881;</span> ' + getButtonLabel();
+            var trigArrow = document.createElement('span');
+            trigArrow.textContent = dropdownOpen ? '▲' : '▼';
+            trigArrow.style.cssText = 'font-size:0.7em;opacity:0.6;transition:transform 0.2s;';
+            trigger.appendChild(trigLabel);
+            trigger.appendChild(trigArrow);
+
+            var dots = document.createElement('div');
+            dots.style.cssText = 'display:flex;gap:4px;margin-top:6px;justify-content:center;flex-wrap:wrap;padding-bottom:8px;';
             MODELS.forEach(function(m) {
-                var btn = document.createElement('button');
-                var isActive = m.id === currentModel;
-                btn.innerHTML = '<span style="font-size:1em;line-height:1;">' + m.icon + '</span> ' + m.label;
-                btn.title = m.desc;
-                btn.style.cssText = 'border:1.5px solid ' + (isActive ? '#00e6c8' : 'rgba(255,255,255,0.12)')
-                    + ';background:' + (isActive ? 'linear-gradient(135deg,rgba(0,191,165,0.3),rgba(0,150,136,0.15))' : 'rgba(255,255,255,0.03)')
-                    + ';color:' + (isActive ? '#5ef0e6' : 'rgba(255,255,255,0.5)')
-                    + ';font-size:0.72em;font-weight:700;letter-spacing:0.4px;padding:8px 14px;border-radius:24px;cursor:pointer;'
-                    + 'transition:all 0.25s ease;white-space:nowrap;outline:none;-webkit-tap-highlight-color:transparent;'
-                    + 'min-height:38px;display:inline-flex;align-items:center;gap:5px;'
-                    + (isActive ? 'box-shadow:0 0 12px rgba(0,191,165,0.25);' : '');
-                btn.addEventListener('touchstart', function() {}, {passive:true});
-                btn.addEventListener('mouseenter', function() {
-                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(0,191,165,0.5)'; btn.style.color = '#b2f5ea'; btn.style.background = 'rgba(0,191,165,0.08)'; }
-                });
-                btn.addEventListener('mouseleave', function() {
-                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(255,255,255,0.12)'; btn.style.color = 'rgba(255,255,255,0.5)'; btn.style.background = 'rgba(255,255,255,0.03)'; }
-                });
-                btn.addEventListener('click', function() { loadWindy(m.id); });
-                selBar.appendChild(btn);
+                var dot = document.createElement('span');
+                dot.style.cssText = 'width:10px;height:10px;border-radius:50%;transition:all 0.2s;'
+                    + 'background:' + (selectedModels[m.id] ? m.color : 'rgba(255,255,255,0.1)')
+                    + ';box-shadow:' + (selectedModels[m.id] ? '0 0 6px ' + m.color : 'none') + ';';
+                dot.title = m.label;
+                dots.appendChild(dot);
             });
-            var activeM = MODELS.find(function(m) { return m.id === currentModel; });
-            selInfo.style.cssText = 'display:block;padding:2px 12px 10px;font-size:0.65em;color:rgba(94,240,230,0.6);letter-spacing:0.3px;background:#0b1f33;text-align:center;';
-            selInfo.textContent = activeM ? activeM.icon + ' ' + activeM.label + ' — ' + activeM.desc : '';
+
+            var panel = document.createElement('div');
+            panel.style.cssText = 'display:' + (dropdownOpen ? 'block' : 'none')
+                + ';background:rgba(8,24,42,0.97);border:1px solid rgba(0,230,200,0.2);border-radius:14px;'
+                + 'margin-top:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);'
+                + 'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);';
+
+            var allRow = document.createElement('label');
+            allRow.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;'
+                + 'border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,191,165,0.06);'
+                + '-webkit-tap-highlight-color:transparent;';
+            var allCb = document.createElement('input');
+            allCb.type = 'checkbox';
+            allCb.checked = allSelected();
+            allCb.style.cssText = 'width:20px;height:20px;accent-color:#00bfa5;cursor:pointer;flex-shrink:0;';
+            var allTxt = document.createElement('span');
+            allTxt.style.cssText = 'font-size:0.8em;font-weight:800;color:#5ef0e6;letter-spacing:0.5px;';
+            allTxt.textContent = 'TOTS ELS MODELS';
+            allRow.appendChild(allCb);
+            allRow.appendChild(allTxt);
+            allCb.addEventListener('change', function() {
+                MODELS.forEach(function(m) { selectedModels[m.id] = allCb.checked; });
+                renderModelSelector();
+                applyModelFilter();
+            });
+            panel.appendChild(allRow);
+
+            MODELS.forEach(function(m) {
+                var row = document.createElement('label');
+                row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;'
+                    + 'border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;'
+                    + '-webkit-tap-highlight-color:transparent;';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.checked = !!selectedModels[m.id];
+                cb.style.cssText = 'width:20px;height:20px;accent-color:' + m.color + ';cursor:pointer;flex-shrink:0;';
+                var colorDot = document.createElement('span');
+                colorDot.style.cssText = 'width:12px;height:12px;border-radius:50%;background:' + m.color
+                    + ';box-shadow:0 0 6px ' + m.color + ';flex-shrink:0;';
+                var info = document.createElement('div');
+                info.style.cssText = 'display:flex;flex-direction:column;gap:1px;min-width:0;';
+                var name = document.createElement('span');
+                name.style.cssText = 'font-size:0.78em;font-weight:700;color:' + (selectedModels[m.id] ? '#fff' : 'rgba(255,255,255,0.35)') + ';';
+                name.textContent = m.label;
+                var desc = document.createElement('span');
+                desc.style.cssText = 'font-size:0.6em;color:rgba(255,255,255,0.3);';
+                desc.textContent = m.desc;
+                info.appendChild(name);
+                info.appendChild(desc);
+                row.appendChild(cb);
+                row.appendChild(colorDot);
+                row.appendChild(info);
+                cb.addEventListener('change', function() {
+                    selectedModels[m.id] = cb.checked;
+                    renderModelSelector();
+                    applyModelFilter();
+                });
+                panel.appendChild(row);
+            });
+
+            trigger.addEventListener('click', function() {
+                dropdownOpen = !dropdownOpen;
+                renderModelSelector();
+            });
+
+            selBar.appendChild(trigger);
+            selBar.appendChild(dots);
+            selBar.appendChild(panel);
+
+            selInfo.style.display = 'none';
         }
 
         function hideModelSelector() {
             selBar.style.display = 'none';
             selInfo.style.display = 'none';
+            dropdownOpen = false;
         }
 
         var widgetTranslations = {
@@ -2856,11 +2955,8 @@
             });
         }
 
-        function loadWindy(model) {
-            if (model) currentModel = model;
-            var isCompare = currentModel === 'compare';
-            var cookieModel = isCompare ? 'compare' : currentModel;
-            document.cookie = 'forecast_widget_units=0,0,0,0,0,' + cookieModel + ',0,0;path=/;max-age=31536000';
+        function loadWindy() {
+            document.cookie = 'forecast_widget_units=0,0,0,0,0,compare,0,0;path=/;max-age=31536000';
             renderModelSelector();
             injectWidgetCSS();
             container.innerHTML = '';
@@ -2873,17 +2969,20 @@
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
             widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,waves-direction,waves-height,waves-period');
-            if (!isCompare) widgetDiv.setAttribute('data-model', currentModel);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
             container.appendChild(widgetDiv);
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
-            script.onload = function() { setTimeout(hideWidgetRows, 500); setTimeout(hideWidgetRows, 1500); setTimeout(hideWidgetRows, 3000); };
+            script.onload = function() {
+                setTimeout(function() { hideWidgetRows(); applyModelFilter(); }, 500);
+                setTimeout(function() { hideWidgetRows(); applyModelFilter(); }, 1500);
+                setTimeout(function() { hideWidgetRows(); applyModelFilter(); }, 3000);
+            };
             container.appendChild(script);
-            var activeM = MODELS.find(function(m) { return m.id === currentModel; });
-            if (subtitle) subtitle.textContent = isCompare ? 'Comparatiu multi-model — Sitges' : activeM.label + ' — Sitges';
-            if (caption) caption.textContent = 'Vent (nusos), ratxes i onatge' + (isCompare ? ' — tots els models comparats.' : ' — model ' + activeM.label + '.');
+            var n = getSelectedCount();
+            if (subtitle) subtitle.textContent = (n === MODELS.length ? 'Comparatiu multi-model' : n + ' models') + ' — Sitges';
+            if (caption) caption.textContent = 'Vent (nusos), ratxes i onatge — selecciona quins models comparar.';
             if (source) source.textContent = 'Font: Windy.app';
         }
 
