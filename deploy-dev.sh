@@ -43,5 +43,6 @@ open(p, 'w').write(s)
 PY
 
 echo "Pujant a $REMOTE_DIR ..."
-rsync -az --info=stats1 -e "ssh -i $KEY" "$ST/" "$REMOTE:$REMOTE_DIR"
+# --chmod: la carpeta temporal és 700 i nginx necessita poder llegir-la
+rsync -az --chmod=D755,F644 --info=stats1 -e "ssh -i $KEY" "$ST/" "$REMOTE:$REMOTE_DIR"
 echo "Fet → https://i-xr.duckdns.org/avui-regu-dev/"
