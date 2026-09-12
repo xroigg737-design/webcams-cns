@@ -1323,6 +1323,30 @@
             font-size: 21cqw;
             -webkit-font-smoothing: antialiased;
         }
+        /* Icona de línia, del mateix estil que les dibuixades a la foto.
+           Va en em: si el text s'ha d'encongir, l'icona l'acompanya. */
+        .ch-ic {
+            flex: none;
+            width: 2.05em;
+            height: 2.05em;
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 1.55;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.97;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.45));
+        }
+        /* Filet fi de separació, per donar aire i ordre */
+        .ch-rule {
+            flex: none;
+            width: 34%;
+            height: 1px;
+            margin: 0.16em 0 0.24em;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+        }
+        .ch-ic-fill { fill: #ffffff; stroke: none; }
+        .ch-tx { display: block; letter-spacing: -0.015em; }
         @supports not (font-size: 1cqw) {
             .ch-spot.filled .ch-slot { font-size: 5.6vw; }
         }
@@ -1509,7 +1533,7 @@
                 </picture>
                 <button class="ch-spot filled" style="--x:8.8;--y:28.0;--w:25.4;--h:16.2"
                         data-slot="veins" data-target="neighbours-section" aria-label="Vent Club Veïns">
-                    <span class="ch-slot" id="slot-veins">Vent Club Veïns</span></button>
+                    <span class="ch-slot" id="slot-veins"><svg class="ch-ic" viewBox="0 0 24 24" aria-hidden="true"><path class="ch-ic-fill" d="M21 6.5 14.2 3.1v6.8z"/><path d="M14.2 6.5H4.6"/><path d="M4.6 6.5 8.5 3.3"/><path d="M4.6 6.5 8.5 9.7"/><path d="M12 7v12.3"/><path d="M8.9 19.9h6.2"/></svg><span class="ch-rule"></span><span class="ch-tx">Vent Club Veïns</span></span></button>
                 <button class="ch-spot" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9"
                         data-slot="w2" data-target="neighbours-section" aria-label="Pendent">
                     <span class="ch-slot" id="slot-w2"></span></button>
