@@ -1386,6 +1386,16 @@
         .ch-map .punt { fill: #7fe3ff; stroke: none; }
         .ch-map .casa { fill: #ffd36a; stroke: none; }
         .ch-tx { display: block; letter-spacing: -0.015em; }
+        /* Segona línia, més petita: manté la paraula principal ben gran */
+        .ch-sub {
+            display: block;
+            font-size: 0.58em;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            opacity: 0.9;
+            margin-top: 0.14em;
+        }
+        .ch-ic.cian { stroke: #8fe4ff; }
         @supports not (font-size: 1cqw) {
             .ch-spot.filled .ch-slot { font-size: 5.6vw; }
         }
@@ -1571,11 +1581,11 @@
                          alt="Cockpit del veler amb els indicadors d'Avui Regu">
                 </picture>
                 <button class="ch-spot filled" style="--x:8.8;--y:28.0;--w:25.4;--h:16.2"
-                        data-slot="veins" data-target="neighbours-section" aria-label="Vent Club Veïns">
-                    <span class="ch-slot" id="slot-veins"><svg class="ch-ic" viewBox="0 0 24 24" aria-hidden="true"><path class="ch-ic-fill" d="M21 6.5 14.2 3.1v6.8z"/><path d="M14.2 6.5H4.6"/><path d="M4.6 6.5 8.5 3.3"/><path d="M4.6 6.5 8.5 9.7"/><path d="M12 7v12.3"/><path d="M8.9 19.9h6.2"/></svg><span class="ch-rule"></span><span class="ch-tx">Vent Club Veïns</span></span></button>
+                        data-slot="veins" data-target="neighbours-section" aria-label="Vent clubs veïns">
+                    <span class="ch-slot" id="slot-veins"><svg class="ch-ic" viewBox="0 0 24 24" aria-hidden="true"><path class="ch-ic-fill" d="M21 6.5 14.2 3.1v6.8z"/><path d="M14.2 6.5H4.6"/><path d="M4.6 6.5 8.5 3.3"/><path d="M4.6 6.5 8.5 9.7"/><path d="M12 7v12.3"/><path d="M8.9 19.9h6.2"/></svg><span class="ch-rule"></span><span class="ch-tx">Vent<span class="ch-sub">Clubs Veïns</span></span></span></button>
                 <button class="ch-spot filled" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9"
-                        data-slot="w2" data-target="neighbours-section" aria-label="Vent clubs veïns">
-                    <span class="ch-slot" id="slot-w2"><svg class="ch-map" viewBox="0 0 26 15" aria-hidden="true"><defs><linearGradient id="terraG" x1="17" y1="11.5" x2="3" y2="0.5" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0.22"/><stop offset="0.55" stop-color="#fff" stop-opacity="0.07"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path class="terra" d="M1 13.6C3.9 12.5 5.6 11.4 7.4 10.2 10 8.5 11.2 7.9 13 7.1 15.2 6.1 16.4 5.4 17.6 4.7 19.2 3.8 20.4 3.3 21.8 2.9L25.2 2 25.2 0 0 0 0 13.8Z"/><path class="costa" d="M1 13.6C3.9 12.5 5.6 11.4 7.4 10.2 10 8.5 11.2 7.9 13 7.1 15.2 6.1 16.4 5.4 17.6 4.7 19.2 3.8 20.4 3.3 21.8 2.9L25.2 2"/><circle class="punt" cx="13" cy="7.1" r="1.15"/><circle class="punt" cx="17.6" cy="4.7" r="1.15"/><circle class="punt" cx="21.8" cy="2.9" r="1.15"/><circle class="casa" cx="7.4" cy="10.2" r="1.75"/></svg><span class="ch-rule"></span><span class="ch-tx">Vent clubs veïns</span></span></button>
+                        data-slot="corrent2" data-target="current-section" aria-label="Corrent superficial">
+                    <span class="ch-slot" id="slot-corrent2"><svg class="ch-ic cian" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.4 6.2q2.7-2.3 5.4 0t5.4 0 5.4 0"/><path d="M2.4 10.2q2.7-2.3 5.4 0t5.4 0 5.4 0"/><path d="M2.4 14.2q2.7-2.3 5.4 0t5.4 0 5.4 0"/><path d="M3.6 19.4h5.8"/><path d="M7.8 17.7 9.7 19.4 7.8 21.1"/><path d="M20.4 19.4h-5.8"/><path d="M16.2 17.7 14.3 19.4 16.2 21.1"/></svg><span class="ch-rule"></span><span class="ch-tx">Corrent<span class="ch-sub">superficial</span></span></span></button>
                 <button class="ch-spot" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8"
                         data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
                     <span class="ch-slot" id="slot-corrent"></span></button>
