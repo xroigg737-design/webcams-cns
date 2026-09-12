@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.17</div>
+            <div class="subtitle">v6.18</div>
         </div>
     </div>
 </header>
@@ -1696,6 +1696,8 @@
                         <span class="windy-map-tab" id="tabPressio">Pressió</span>
                     </div>
                 </div>
+                <div id="modelSelectorBar" style="display:none;padding:10px 12px 4px;background:#0b1f33;"></div>
+                <div id="modelSelectorInfo" style="display:none;padding:0 12px 8px;font-size:0.62em;color:rgba(255,255,255,0.4);letter-spacing:0.3px;background:#0b1f33;"></div>
                 <div class="windy-map-body" id="windyMapBody">
                     <!-- Contingut carregat per JS -->
                 </div>
@@ -2688,17 +2690,14 @@
             { id: 'openskiron', label: 'Skiron',    desc: 'Mediterrani · Atenes' },
             { id: 'mfwam',      label: 'MFWAM',     desc: 'Onatge · Météo-France' }
         ];
+        var selBar = document.getElementById('modelSelectorBar');
+        var selInfo = document.getElementById('modelSelectorInfo');
 
-        function loadWindy(model) {
-            if (model) currentModel = model;
-            document.cookie = 'forecast_widget_units=0,0,0,0,0,0,0,0;path=/;max-age=31536000';
-            container.innerHTML = '';
-            container.style.height = 'auto';
-            container.style.minHeight = '400px';
-            container.style.background = '#0b1f33';
-
-            var selBar = document.createElement('div');
-            selBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 8px;background:#0b1f33;';
+        function renderModelSelector() {
+            selBar.innerHTML = '';
+            selBar.style.display = 'flex';
+            selBar.style.flexWrap = 'wrap';
+            selBar.style.gap = '6px';
             MODELS.forEach(function(m) {
                 var btn = document.createElement('button');
                 btn.textContent = m.label;
@@ -2717,36 +2716,43 @@
                 btn.addEventListener('click', function() { loadWindy(m.id); });
                 selBar.appendChild(btn);
             });
-            container.appendChild(selBar);
-
             var activeM = MODELS.find(function(m) { return m.id === currentModel; });
-            var infoLine = document.createElement('div');
-            infoLine.style.cssText = 'padding:0 12px 6px;font-size:0.62em;color:rgba(255,255,255,0.4);letter-spacing:0.3px;background:#0b1f33;';
-            infoLine.textContent = activeM ? 'Model: ' + activeM.label + ' — ' + activeM.desc : '';
-            container.appendChild(infoLine);
+            selInfo.style.display = 'block';
+            selInfo.textContent = activeM ? 'Model: ' + activeM.label + ' — ' + activeM.desc : '';
+        }
 
-            var widgetWrap = document.createElement('div');
-            widgetWrap.style.cssText = 'background:#fff;min-height:350px;';
+        function hideModelSelector() {
+            selBar.style.display = 'none';
+            selInfo.style.display = 'none';
+        }
+
+        function loadWindy(model) {
+            if (model) currentModel = model;
+            document.cookie = 'forecast_widget_units=0,0,0,0,0,0,0,0;path=/;max-age=31536000';
+            container.innerHTML = '';
+            container.style.height = 'auto';
+            container.style.minHeight = '400px';
+            container.style.background = '#fff';
+            renderModelSelector();
             var widgetDiv = document.createElement('div');
             widgetDiv.setAttribute('data-windywidget', 'forecast');
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
             widgetDiv.setAttribute('data-model', currentModel);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
-            widgetWrap.appendChild(widgetDiv);
-            container.appendChild(widgetWrap);
-
+            container.appendChild(widgetDiv);
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             container.appendChild(script);
-
+            var activeM = MODELS.find(function(m) { return m.id === currentModel; });
             if (subtitle) subtitle.textContent = 'Previsió costera — ' + (activeM ? activeM.label : 'Sitges');
             if (caption) caption.textContent = 'Previsió de vent, ratxes, onatge i temperatura per Sitges (en knots).';
             if (source) source.textContent = 'Font: Windy.app';
         }
 
         function loadMapaWindy() {
+            hideModelSelector();
             container.innerHTML = '';
             container.style.height = '520px';
             container.style.minHeight = '';
@@ -2776,6 +2782,7 @@
         var mmData = null;
 
         function loadMultimodel() {
+            hideModelSelector();
             container.innerHTML = '<div id="mm-map" style="width:100%;height:350px;"></div>'
                 + '<div id="mm-slider-wrap" style="padding:6px 12px;display:flex;align-items:center;gap:8px;">'
                 + '<span id="mm-hour" style="color:#ffd740;font-weight:700;font-size:0.75em;min-width:40px;">--:--</span>'
@@ -2899,6 +2906,7 @@
 
         var wgCounter = 0;
         function loadWindguru() {
+            hideModelSelector();
             container.innerHTML = '';
             container.style.background = '#f5f5f5';
             container.style.height = 'auto';
@@ -2936,6 +2944,7 @@
         }
 
         function loadPressio() {
+            hideModelSelector();
             container.innerHTML = '';
             container.style.height = '520px';
             container.style.minHeight = '';
