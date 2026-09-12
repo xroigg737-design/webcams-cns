@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.24</div>
+            <div class="subtitle">v6.25</div>
         </div>
     </div>
 </header>
@@ -2680,45 +2680,48 @@
             tab.classList.add('active');
         }
 
-        var currentModel = 'arome';
+        var currentModel = 'compare';
         var MODELS = [
-            { id: 'arome',      label: 'AROME',    desc: 'Alta resolució · Mediterrani' },
-            { id: 'ecmwf',      label: 'ECMWF',    desc: 'Europeu · referència global' },
-            { id: 'gfs27_long', label: 'GFS',       desc: 'Global · NOAA' },
-            { id: 'iconeuro',   label: 'ICON-EU',   desc: 'Europeu · DWD' },
-            { id: 'icon_d2',    label: 'ICON-D2',   desc: 'Alta resolució · DWD' },
-            { id: 'openskiron', label: 'Skiron',    desc: 'Mediterrani · Atenes' },
-            { id: 'mfwam',      label: 'MFWAM',     desc: 'Onatge · Météo-France' }
+            { id: 'compare',    label: 'TOTS',      desc: 'Comparar tots els models', icon: '⚡' },
+            { id: 'arome',      label: 'AROME',     desc: 'Alta resolució · Mediterrani', icon: '🎯' },
+            { id: 'ecmwf',      label: 'ECMWF',     desc: 'Europeu · referència global', icon: '🌍' },
+            { id: 'gfs27_long', label: 'GFS',        desc: 'Global · NOAA', icon: '🇺🇸' },
+            { id: 'iconeuro',   label: 'ICON-EU',    desc: 'Europeu · DWD', icon: '🇪🇺' },
+            { id: 'icon_d2',    label: 'ICON-D2',    desc: 'Alta resolució · DWD', icon: '🔬' },
+            { id: 'openskiron', label: 'Skiron',     desc: 'Mediterrani · Atenes', icon: '🏛️' },
+            { id: 'mfwam',      label: 'MFWAM',      desc: 'Onatge · Météo-France', icon: '🌊' }
         ];
         var selBar = document.getElementById('modelSelectorBar');
         var selInfo = document.getElementById('modelSelectorInfo');
 
         function renderModelSelector() {
             selBar.innerHTML = '';
-            selBar.style.display = 'flex';
-            selBar.style.flexWrap = 'wrap';
-            selBar.style.gap = '6px';
+            selBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:12px 12px 6px;background:#0b1f33;justify-content:center;';
             MODELS.forEach(function(m) {
                 var btn = document.createElement('button');
-                btn.textContent = m.label;
-                btn.title = m.desc;
                 var isActive = m.id === currentModel;
-                btn.style.cssText = 'border:1px solid ' + (isActive ? '#00bfa5' : 'rgba(255,255,255,0.15)')
-                    + ';background:' + (isActive ? 'rgba(0,191,165,0.2)' : 'rgba(255,255,255,0.04)')
-                    + ';color:' + (isActive ? '#5ef0e6' : 'rgba(255,255,255,0.55)')
-                    + ';font-size:0.68em;font-weight:700;letter-spacing:0.5px;padding:5px 10px;border-radius:20px;cursor:pointer;transition:all 0.2s;white-space:nowrap;';
+                btn.innerHTML = '<span style="font-size:1em;line-height:1;">' + m.icon + '</span> ' + m.label;
+                btn.title = m.desc;
+                btn.style.cssText = 'border:1.5px solid ' + (isActive ? '#00e6c8' : 'rgba(255,255,255,0.12)')
+                    + ';background:' + (isActive ? 'linear-gradient(135deg,rgba(0,191,165,0.3),rgba(0,150,136,0.15))' : 'rgba(255,255,255,0.03)')
+                    + ';color:' + (isActive ? '#5ef0e6' : 'rgba(255,255,255,0.5)')
+                    + ';font-size:0.72em;font-weight:700;letter-spacing:0.4px;padding:8px 14px;border-radius:24px;cursor:pointer;'
+                    + 'transition:all 0.25s ease;white-space:nowrap;outline:none;-webkit-tap-highlight-color:transparent;'
+                    + 'min-height:38px;display:inline-flex;align-items:center;gap:5px;'
+                    + (isActive ? 'box-shadow:0 0 12px rgba(0,191,165,0.25);' : '');
+                btn.addEventListener('touchstart', function() {}, {passive:true});
                 btn.addEventListener('mouseenter', function() {
-                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(0,191,165,0.5)'; btn.style.color = '#b2f5ea'; }
+                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(0,191,165,0.5)'; btn.style.color = '#b2f5ea'; btn.style.background = 'rgba(0,191,165,0.08)'; }
                 });
                 btn.addEventListener('mouseleave', function() {
-                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(255,255,255,0.15)'; btn.style.color = 'rgba(255,255,255,0.55)'; }
+                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(255,255,255,0.12)'; btn.style.color = 'rgba(255,255,255,0.5)'; btn.style.background = 'rgba(255,255,255,0.03)'; }
                 });
                 btn.addEventListener('click', function() { loadWindy(m.id); });
                 selBar.appendChild(btn);
             });
             var activeM = MODELS.find(function(m) { return m.id === currentModel; });
-            selInfo.style.display = 'block';
-            selInfo.textContent = activeM ? 'Model: ' + activeM.label + ' — ' + activeM.desc : '';
+            selInfo.style.cssText = 'display:block;padding:2px 12px 10px;font-size:0.65em;color:rgba(94,240,230,0.6);letter-spacing:0.3px;background:#0b1f33;text-align:center;';
+            selInfo.textContent = activeM ? activeM.icon + ' ' + activeM.label + ' — ' + activeM.desc : '';
         }
 
         function hideModelSelector() {
@@ -2853,9 +2856,12 @@
             });
         }
 
-        function loadWindy() {
-            document.cookie = 'forecast_widget_units=0,0,0,0,0,compare,0,0;path=/;max-age=31536000';
-            hideModelSelector();
+        function loadWindy(model) {
+            if (model) currentModel = model;
+            var isCompare = currentModel === 'compare';
+            var cookieModel = isCompare ? 'compare' : currentModel;
+            document.cookie = 'forecast_widget_units=0,0,0,0,0,' + cookieModel + ',0,0;path=/;max-age=31536000';
+            renderModelSelector();
             injectWidgetCSS();
             container.innerHTML = '';
             container.style.height = 'auto';
@@ -2867,6 +2873,7 @@
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
             widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,waves-direction,waves-height,waves-period');
+            if (!isCompare) widgetDiv.setAttribute('data-model', currentModel);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
             container.appendChild(widgetDiv);
             var script = document.createElement('script');
@@ -2874,8 +2881,9 @@
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             script.onload = function() { setTimeout(hideWidgetRows, 500); setTimeout(hideWidgetRows, 1500); setTimeout(hideWidgetRows, 3000); };
             container.appendChild(script);
-            if (subtitle) subtitle.textContent = 'Comparatiu multi-model — Sitges';
-            if (caption) caption.textContent = 'Vent (nusos), ratxes i onatge — tots els models comparats.';
+            var activeM = MODELS.find(function(m) { return m.id === currentModel; });
+            if (subtitle) subtitle.textContent = isCompare ? 'Comparatiu multi-model — Sitges' : activeM.label + ' — Sitges';
+            if (caption) caption.textContent = 'Vent (nusos), ratxes i onatge' + (isCompare ? ' — tots els models comparats.' : ' — model ' + activeM.label + '.');
             if (source) source.textContent = 'Font: Windy.app';
         }
 
