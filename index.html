@@ -1281,18 +1281,62 @@
             box-shadow: 0 0 0 2px rgba(255,255,255,0.6), 0 8px 24px rgba(0,0,0,0.35);
         }
         .ch-spot:active { transform: scale(0.985); background: rgba(255,255,255,0.18); }
-        /* Contenidor per al contingut en directe de cada indicador.
-           Ara és buit a propòsit: s'omple des de JS amb CockpitSlots.set(). */
+        /* Contingut dels indicadors.
+           El plafó reprodueix el mateix vidre blau de la targeta pintada
+           (colors presos de la pròpia foto) per tapar-ne el dibuix sense
+           canviar-ne l'aspecte. El text va en blanc, i la mida es calcula
+           en proporció al widget (cqw) amb un ajust per JS que la baixa si
+           no hi cabés: cap lletra pot sortir de la forma. */
+        .ch-spot { container-type: size; }
         .ch-slot {
-            width: 100%;
-            padding: 0 6%;
-            line-height: 1.15;
-            text-align: center;
-            color: #fff;
-            font-weight: 800;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 1px 6px rgba(0,0,0,0.55);
             pointer-events: none;
+            font-variant-numeric: tabular-nums;
+        }
+        .ch-spot.filled .ch-slot {
+            position: absolute;
+            inset: 3.2%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 11% 8%;
+            overflow: hidden;
+            border-radius: 21%;
+            /* Vidre: el desenfocat esborra el dibuix de sota sense
+               enfosquir la targeta ni perdre'n la transparència. */
+            -webkit-backdrop-filter: blur(16px) saturate(125%);
+            backdrop-filter: blur(16px) saturate(125%);
+            background: linear-gradient(168deg,
+                rgba(76,116,146,0.62) 0%,
+                rgba(52,85,110,0.70) 55%,
+                rgba(38,65,88,0.74) 100%);
+            box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.30),
+                        inset 0 0 0 1px rgba(255,255,255,0.14),
+                        0 4px 14px rgba(0,0,0,0.22);
+            color: #fff;
+            font-weight: 700;
+            line-height: 1.08;
+            letter-spacing: 0.005em;
+            text-align: center;
+            text-wrap: balance;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+            font-size: 21cqw;
+            -webkit-font-smoothing: antialiased;
+        }
+        @supports not (font-size: 1cqw) {
+            .ch-spot.filled .ch-slot { font-size: 5.6vw; }
+        }
+        @supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
+            .ch-spot.filled .ch-slot {
+                background: linear-gradient(168deg, #4a7290 0%, #34556e 55%, #294159 100%);
+            }
+        }
+        /* Ressaltat de la secció en obrir-la des d'un indicador */
+        .ck-flash { animation: ckFlash 1.9s ease; }
+        @keyframes ckFlash {
+            0%   { box-shadow: 0 0 0 0 rgba(102,187,106,0); }
+            15%  { box-shadow: 0 0 0 3px rgba(102,187,106,0.65); }
+            100% { box-shadow: 0 0 0 0 rgba(102,187,106,0); }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -1463,12 +1507,12 @@
                          width="941" height="1672" fetchpriority="high"
                          alt="Cockpit del veler amb els indicadors d'Avui Regu">
                 </picture>
-                <button class="ch-spot" style="--x:8.8;--y:28.0;--w:25.4;--h:16.2"
-                        data-slot="vent" data-target="wind-map-section" aria-label="Vent actual">
-                    <span class="ch-slot" id="slot-vent"></span></button>
+                <button class="ch-spot filled" style="--x:8.8;--y:28.0;--w:25.4;--h:16.2"
+                        data-slot="veins" data-target="neighbours-section" aria-label="Vent Club Veïns">
+                    <span class="ch-slot" id="slot-veins">Vent Club Veïns</span></button>
                 <button class="ch-spot" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9"
-                        data-slot="veins" data-target="neighbours-section" aria-label="Vent clubs veïns">
-                    <span class="ch-slot" id="slot-veins"></span></button>
+                        data-slot="w2" data-target="neighbours-section" aria-label="Pendent">
+                    <span class="ch-slot" id="slot-w2"></span></button>
                 <button class="ch-spot" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8"
                         data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
                     <span class="ch-slot" id="slot-corrent"></span></button>
@@ -3765,17 +3809,53 @@ window.CockpitSlots = (function() {
         var el = document.getElementById(id);
         if (!el) return;
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.classList.remove('ck-flash');
+        void el.offsetWidth;
+        el.classList.add('ck-flash');
+        setTimeout(function() { el.classList.remove('ck-flash'); }, 2000);
     }
     stage.addEventListener('click', function(e) {
         var b = e.target.closest('.ch-spot');
         if (b && b.dataset.target) anar(b.dataset.target);
     });
 
+    /* La lletra va en proporció al widget. Si un text no hi cabés —paraula
+       llarga, tipografia del sistema, pantalla petita— la reduïm fins que
+       hi entri. Cap lletra pot sortir de la forma del widget. */
+    function ajusta(el) {
+        if (!el) return;
+        var caixa = el.getBoundingClientRect();
+        if (!caixa.width) return;
+        var mida = caixa.width * 0.30;
+        el.style.fontSize = mida + 'px';
+        var volta = 0;
+        while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
+               && mida > 7 && volta++ < 70) {
+            mida *= 0.95;
+            el.style.fontSize = mida + 'px';
+        }
+    }
+    function ajustaTots() {
+        var slots = stage.querySelectorAll('.ch-spot.filled .ch-slot');
+        for (var i = 0; i < slots.length; i++) ajusta(slots[i]);
+    }
+    var foto = stage.querySelector('.ch-img');
+    if (foto && !foto.complete) foto.addEventListener('load', ajustaTots);
+    ajustaTots();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaTots);
+    window.addEventListener('resize', function() {
+        clearTimeout(window.__ckAjust);
+        window.__ckAjust = setTimeout(ajustaTots, 150);
+    });
+
     return {
         /* CockpitSlots.set('vent', '<b>12 kn</b>') */
         set: function(slot, html) {
             var el = document.getElementById('slot-' + slot);
-            if (el) el.innerHTML = html;
+            if (!el) return;
+            el.innerHTML = html;
+            el.parentNode.classList.add('filled');
+            ajusta(el);
         },
         /* Valors en directe que ja tenim a la pàgina, a punt de fer servir.
            Retorna, p. ex.: { vent:'0.9', veins:'5.2', corrent:'0.13', temp:'24.1' } */
