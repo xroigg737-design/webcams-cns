@@ -1233,11 +1233,20 @@
             .cockpit-hero { margin: 10px -10px 4px; }
         }
         .ch-stage {
+            --zoom: 1;                       /* 1 = foto sencera, >1 = més alta */
             position: relative;
-            width: 100%;
-            max-width: 1672px;
-            margin: 0 auto;
+            width: calc(100% * var(--zoom));
+            max-width: calc(1672px * var(--zoom));
+            margin-left: calc((100% - 100% * var(--zoom)) / 2);
             line-height: 0;
+        }
+        /* En mòbil la foto és massa baixa (16:9). La fem créixer un 12%:
+           guanya alçada i només es menja el marge lateral buit, cap indicador. */
+        @media (max-width: 700px) {
+            .ch-stage { --zoom: 1.12; }
+        }
+        @media (min-width: 701px) and (max-width: 1000px) {
+            .ch-stage { --zoom: 1.06; }
         }
         .ch-img {
             display: block;
@@ -1441,8 +1450,8 @@
         <section class="cockpit-hero" id="cockpit-hero">
             <div class="ch-stage">
                 <img class="ch-img" src="img/cockpit3-sm.jpg"
-                     srcset="img/cockpit3-sm.jpg 900w, img/cockpit3.jpg 1672w"
-                     sizes="100vw" width="1672" height="941"
+                     srcset="img/cockpit3-sm.jpg 900w, img/cockpit3-md.jpg 1300w, img/cockpit3.jpg 1672w"
+                     sizes="(max-width: 700px) 112vw, 100vw" width="1672" height="941"
                      alt="Cockpit del veler amb els indicadors d'Avui Regu">
                 <button class="ch-spot" style="--x:7.6;--y:32.0;--w:12.1;--h:28.5"
                         data-slot="vent" data-target="wind-map-section" aria-label="Vent actual">
