@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.16</div>
+            <div class="subtitle">v6.17</div>
         </div>
     </div>
 </header>
@@ -2678,23 +2678,70 @@
             tab.classList.add('active');
         }
 
-        function loadWindy() {
+        var currentModel = 'arome';
+        var MODELS = [
+            { id: 'arome',      label: 'AROME',    desc: 'Alta resolució · Mediterrani' },
+            { id: 'ecmwf',      label: 'ECMWF',    desc: 'Europeu · referència global' },
+            { id: 'gfs27_long', label: 'GFS',       desc: 'Global · NOAA' },
+            { id: 'iconeuro',   label: 'ICON-EU',   desc: 'Europeu · DWD' },
+            { id: 'icon_d2',    label: 'ICON-D2',   desc: 'Alta resolució · DWD' },
+            { id: 'openskiron', label: 'Skiron',    desc: 'Mediterrani · Atenes' },
+            { id: 'mfwam',      label: 'MFWAM',     desc: 'Onatge · Météo-France' }
+        ];
+
+        function loadWindy(model) {
+            if (model) currentModel = model;
             document.cookie = 'forecast_widget_units=0,0,0,0,0,0,0,0;path=/;max-age=31536000';
             container.innerHTML = '';
             container.style.height = 'auto';
             container.style.minHeight = '400px';
-            container.style.background = '#fff';
+            container.style.background = '#0b1f33';
+
+            var selBar = document.createElement('div');
+            selBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 8px;background:#0b1f33;';
+            MODELS.forEach(function(m) {
+                var btn = document.createElement('button');
+                btn.textContent = m.label;
+                btn.title = m.desc;
+                var isActive = m.id === currentModel;
+                btn.style.cssText = 'border:1px solid ' + (isActive ? '#00bfa5' : 'rgba(255,255,255,0.15)')
+                    + ';background:' + (isActive ? 'rgba(0,191,165,0.2)' : 'rgba(255,255,255,0.04)')
+                    + ';color:' + (isActive ? '#5ef0e6' : 'rgba(255,255,255,0.55)')
+                    + ';font-size:0.68em;font-weight:700;letter-spacing:0.5px;padding:5px 10px;border-radius:20px;cursor:pointer;transition:all 0.2s;white-space:nowrap;';
+                btn.addEventListener('mouseenter', function() {
+                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(0,191,165,0.5)'; btn.style.color = '#b2f5ea'; }
+                });
+                btn.addEventListener('mouseleave', function() {
+                    if (m.id !== currentModel) { btn.style.borderColor = 'rgba(255,255,255,0.15)'; btn.style.color = 'rgba(255,255,255,0.55)'; }
+                });
+                btn.addEventListener('click', function() { loadWindy(m.id); });
+                selBar.appendChild(btn);
+            });
+            container.appendChild(selBar);
+
+            var activeM = MODELS.find(function(m) { return m.id === currentModel; });
+            var infoLine = document.createElement('div');
+            infoLine.style.cssText = 'padding:0 12px 6px;font-size:0.62em;color:rgba(255,255,255,0.4);letter-spacing:0.3px;background:#0b1f33;';
+            infoLine.textContent = activeM ? 'Model: ' + activeM.label + ' — ' + activeM.desc : '';
+            container.appendChild(infoLine);
+
+            var widgetWrap = document.createElement('div');
+            widgetWrap.style.cssText = 'background:#fff;min-height:350px;';
             var widgetDiv = document.createElement('div');
             widgetDiv.setAttribute('data-windywidget', 'forecast');
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
+            widgetDiv.setAttribute('data-model', currentModel);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
-            container.appendChild(widgetDiv);
+            widgetWrap.appendChild(widgetDiv);
+            container.appendChild(widgetWrap);
+
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             container.appendChild(script);
-            if (subtitle) subtitle.textContent = 'Previsió costera 10 dies — Sitges';
+
+            if (subtitle) subtitle.textContent = 'Previsió costera — ' + (activeM ? activeM.label : 'Sitges');
             if (caption) caption.textContent = 'Previsió de vent, ratxes, onatge i temperatura per Sitges (en knots).';
             if (source) source.textContent = 'Font: Windy.app';
         }
