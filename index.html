@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.53</div>
+            <div class="subtitle">v6.54</div>
         </div>
     </div>
 </header>
@@ -3008,8 +3008,14 @@
                 +   '<div id="mm-time-display" style="text-align:center;padding:4px 0 6px;">'
                 +     '<span id="mm-hour" style="color:#ffd740;font-weight:800;font-size:1.1em;letter-spacing:0.5px;">--:--</span>'
                 +   '</div>'
-                +   '<div id="mm-days" style="display:flex;gap:4px;overflow-x:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;"></div>'
-                +   '<div id="mm-hours" style="display:grid;grid-template-columns:repeat(8,1fr);gap:3px;padding:4px 0;"></div>'
+                +   '<div style="display:flex;align-items:center;gap:8px;padding:0 0 6px;">'
+                +     '<span style="color:rgba(255,255,255,0.45);font-size:0.7em;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;min-width:32px;">Dia</span>'
+                +     '<div id="mm-days" style="display:flex;gap:4px;overflow-x:auto;flex:1;-webkit-overflow-scrolling:touch;"></div>'
+                +   '</div>'
+                +   '<div style="display:flex;align-items:start;gap:8px;padding:4px 0;">'
+                +     '<span style="color:rgba(255,255,255,0.45);font-size:0.7em;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;min-width:32px;padding-top:6px;">Hora</span>'
+                +     '<div id="mm-hours" style="display:grid;grid-template-columns:repeat(8,1fr);gap:3px;flex:1;"></div>'
+                +   '</div>'
                 +   '<div style="display:flex;align-items:center;gap:8px;padding:4px 0 2px;">'
                 +     '<button id="mm-play" style="background:#1a3a52;border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:5px 12px;font-size:0.8em;font-weight:700;cursor:pointer;min-width:44px;">&#9654;</button>'
                 +     '<button id="mm-now" style="background:#00bfa5;border:none;color:#fff;border-radius:6px;padding:5px 12px;font-size:0.75em;font-weight:700;cursor:pointer;letter-spacing:0.5px;">ARA</button>'
