@@ -1226,6 +1226,11 @@
             position: relative;
             background: #06121f;
             overflow: hidden;
+            margin: 10px -14px 4px;      /* de vora a vora de la columna */
+            border-radius: 0;
+        }
+        @media (max-width: 768px) {
+            .cockpit-hero { margin: 10px -10px 4px; }
         }
         .ch-stage {
             position: relative;
@@ -1291,34 +1296,6 @@
     </div>
 </header>
 
-
-<!-- ================= COCKPIT (portada) ================= -->
-<section class="cockpit-hero" id="cockpit-hero">
-    <div class="ch-stage">
-        <img class="ch-img" src="img/cockpit3-sm.jpg"
-             srcset="img/cockpit3-sm.jpg 900w, img/cockpit3.jpg 1672w"
-             sizes="100vw" width="1672" height="941"
-             alt="Cockpit del veler amb els indicadors d'Avui Regu">
-        <button class="ch-spot" style="--x:7.6;--y:32.0;--w:12.1;--h:28.5"
-                data-slot="vent" data-target="wind-map-section" aria-label="Vent actual">
-            <span class="ch-slot" id="slot-vent"></span></button>
-        <button class="ch-spot" style="--x:22.1;--y:30.0;--w:12.5;--h:24.0"
-                data-slot="veins" data-target="neighbours-section" aria-label="Vent clubs veïns">
-            <span class="ch-slot" id="slot-veins"></span></button>
-        <button class="ch-spot" style="--x:37.0;--y:28.5;--w:12.5;--h:24.5"
-                data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
-            <span class="ch-slot" id="slot-corrent"></span></button>
-        <button class="ch-spot" style="--x:51.5;--y:29.6;--w:11.7;--h:23.5"
-                data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
-            <span class="ch-slot" id="slot-webcams"></span></button>
-        <button class="ch-spot" style="--x:65.6;--y:30.1;--w:12.8;--h:24.2"
-                data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
-            <span class="ch-slot" id="slot-previsio"></span></button>
-        <button class="ch-spot" style="--x:80.1;--y:32.8;--w:12.6;--h:27.7"
-                data-slot="regates" data-target="regates-section" aria-label="Regates">
-            <span class="ch-slot" id="slot-regates"></span></button>
-    </div>
-</section>
 
 <div class="layout">
 
@@ -1457,6 +1434,34 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- ================= COCKPIT (portada) ================= -->
+        <section class="cockpit-hero" id="cockpit-hero">
+            <div class="ch-stage">
+                <img class="ch-img" src="img/cockpit3-sm.jpg"
+                     srcset="img/cockpit3-sm.jpg 900w, img/cockpit3.jpg 1672w"
+                     sizes="100vw" width="1672" height="941"
+                     alt="Cockpit del veler amb els indicadors d'Avui Regu">
+                <button class="ch-spot" style="--x:7.6;--y:32.0;--w:12.1;--h:28.5"
+                        data-slot="vent" data-target="wind-map-section" aria-label="Vent actual">
+                    <span class="ch-slot" id="slot-vent"></span></button>
+                <button class="ch-spot" style="--x:22.1;--y:30.0;--w:12.5;--h:24.0"
+                        data-slot="veins" data-target="neighbours-section" aria-label="Vent clubs veïns">
+                    <span class="ch-slot" id="slot-veins"></span></button>
+                <button class="ch-spot" style="--x:37.0;--y:28.5;--w:12.5;--h:24.5"
+                        data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
+                    <span class="ch-slot" id="slot-corrent"></span></button>
+                <button class="ch-spot" style="--x:51.5;--y:29.6;--w:11.7;--h:23.5"
+                        data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
+                    <span class="ch-slot" id="slot-webcams"></span></button>
+                <button class="ch-spot" style="--x:65.6;--y:30.1;--w:12.8;--h:24.2"
+                        data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
+                    <span class="ch-slot" id="slot-previsio"></span></button>
+                <button class="ch-spot" style="--x:80.1;--y:32.8;--w:12.6;--h:27.7"
+                        data-slot="regates" data-target="regates-section" aria-label="Regates">
+                    <span class="ch-slot" id="slot-regates"></span></button>
             </div>
         </section>
 
