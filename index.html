@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.52</div>
+            <div class="subtitle">v6.53</div>
         </div>
     </div>
 </header>
@@ -2994,15 +2994,29 @@
         var mmHourIdx = 0;
         var mmData = null;
 
+        var mmPlayTimer = null;
+        var mmModelsRef = null;
+        var mmDayMap = [];     // [{label, indices:[]}]
+        var mmSelectedDay = 0;
+
         function loadMultimodel() {
             stopWidgetTranslation();
             hideModelSelector();
+            if (mmPlayTimer) { clearInterval(mmPlayTimer); mmPlayTimer = null; }
             container.innerHTML = '<div id="mm-map" style="width:100%;height:350px;"></div>'
-                + '<div id="mm-slider-wrap" style="padding:6px 12px;display:flex;align-items:center;gap:8px;">'
-                + '<span id="mm-hour" style="color:#ffd740;font-weight:700;font-size:0.75em;min-width:40px;">--:--</span>'
-                + '<input id="mm-slider" type="range" min="0" max="23" value="0" style="flex:1;accent-color:#66bb6a;">'
+                + '<div id="mm-controls" style="padding:8px 10px 0;">'
+                +   '<div id="mm-time-display" style="text-align:center;padding:4px 0 6px;">'
+                +     '<span id="mm-hour" style="color:#ffd740;font-weight:800;font-size:1.1em;letter-spacing:0.5px;">--:--</span>'
+                +   '</div>'
+                +   '<div id="mm-days" style="display:flex;gap:4px;overflow-x:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;"></div>'
+                +   '<div id="mm-hours" style="display:grid;grid-template-columns:repeat(8,1fr);gap:3px;padding:4px 0;"></div>'
+                +   '<div style="display:flex;align-items:center;gap:8px;padding:4px 0 2px;">'
+                +     '<button id="mm-play" style="background:#1a3a52;border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:5px 12px;font-size:0.8em;font-weight:700;cursor:pointer;min-width:44px;">&#9654;</button>'
+                +     '<button id="mm-now" style="background:#00bfa5;border:none;color:#fff;border-radius:6px;padding:5px 12px;font-size:0.75em;font-weight:700;cursor:pointer;letter-spacing:0.5px;">ARA</button>'
+                +     '<div style="flex:1;"></div>'
+                +   '</div>'
                 + '</div>'
-                + '<div id="mm-legend" style="padding:8px 12px 10px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;"></div>';
+                + '<div id="mm-legend" style="padding:6px 12px 10px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;"></div>';
             container.style.height = 'auto';
             container.style.minHeight = '400px';
             container.style.background = '#0b1f33';
@@ -3024,8 +3038,8 @@
                 { key: 'gem_seamless', name: 'GEM', color: '#ce93d8' },
                 { key: 'jma_seamless', name: 'JMA', color: '#ff8a65' }
             ];
+            mmModelsRef = models;
 
-            // Llegenda
             var legendEl = document.getElementById('mm-legend');
             models.forEach(function(m) {
                 legendEl.innerHTML += '<span style="display:flex;align-items:center;gap:6px;">'
@@ -3035,14 +3049,54 @@
 
             fetch(API + '/multimodel').then(function(r) { return r.json(); }).then(function(d) {
                 mmData = d;
-                var slider = document.getElementById('mm-slider');
-                slider.max = d.hourly.time.length - 1;
-                slider.value = 0;
+                var times = d.hourly.time;
+                var today = new Date();
+                today.setHours(0,0,0,0);
+                var dayNames = ['Dg','Dl','Dm','Dc','Dj','Dv','Ds'];
+
+                mmDayMap = [];
+                var lastDate = '';
+                times.forEach(function(t, i) {
+                    var dateStr = t.split('T')[0];
+                    if (dateStr !== lastDate) {
+                        var parts = dateStr.split('-');
+                        var dt = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+                        var diff = Math.round((dt - today) / 86400000);
+                        var lbl;
+                        if (diff === 0) lbl = 'Avui';
+                        else if (diff === 1) lbl = 'Demà';
+                        else lbl = dayNames[dt.getDay()] + ' ' + dt.getDate();
+                        mmDayMap.push({ label: lbl, date: dateStr, indices: [] });
+                        lastDate = dateStr;
+                    }
+                    mmDayMap[mmDayMap.length - 1].indices.push(i);
+                });
+
+                mmSelectedDay = 0;
                 mmHourIdx = 0;
-                drawModelArrows(models, 0);
-                slider.addEventListener('input', function() {
-                    mmHourIdx = parseInt(this.value);
-                    drawModelArrows(models, mmHourIdx);
+
+                // Posicionar a l'hora actual
+                var nowStr = new Date().toISOString().substring(0, 13);
+                for (var ni = 0; ni < times.length; ni++) {
+                    if (times[ni].substring(0, 13) >= nowStr) {
+                        mmHourIdx = ni;
+                        for (var di = 0; di < mmDayMap.length; di++) {
+                            if (mmDayMap[di].indices.indexOf(ni) !== -1) {
+                                mmSelectedDay = di;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                mmRenderDays();
+                mmRenderHours();
+                drawModelArrows(models, mmHourIdx);
+
+                document.getElementById('mm-play').addEventListener('click', mmTogglePlay);
+                document.getElementById('mm-now').addEventListener('click', function() {
+                    mmGoToNow();
                 });
             }).catch(function() {
                 container.innerHTML = '<div style="color:#ff5252;text-align:center;padding:40px;">Error carregant models</div>';
@@ -3051,6 +3105,120 @@
             if (subtitle) subtitle.textContent = 'Comparació multi-model — Sitges';
             if (caption) caption.textContent = 'Models solapats (ECMWF, GFS, ICON) centrats a Sitges.';
             if (source) source.textContent = 'Font: Open-Meteo';
+        }
+
+        function mmRenderDays() {
+            var wrap = document.getElementById('mm-days');
+            if (!wrap) return;
+            wrap.innerHTML = '';
+            mmDayMap.forEach(function(day, di) {
+                var btn = document.createElement('button');
+                btn.textContent = day.label;
+                btn.style.cssText = 'border:none;border-radius:6px;padding:6px 10px;font-size:0.72em;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.15s,color 0.15s;';
+                if (di === mmSelectedDay) {
+                    btn.style.background = '#00bfa5';
+                    btn.style.color = '#fff';
+                } else {
+                    btn.style.background = '#1a3a52';
+                    btn.style.color = 'rgba(255,255,255,0.6)';
+                }
+                btn.addEventListener('click', function() {
+                    mmSelectedDay = di;
+                    mmHourIdx = mmDayMap[di].indices[0];
+                    mmRenderDays();
+                    mmRenderHours();
+                    drawModelArrows(mmModelsRef, mmHourIdx);
+                });
+                wrap.appendChild(btn);
+            });
+        }
+
+        function mmRenderHours() {
+            var wrap = document.getElementById('mm-hours');
+            if (!wrap || !mmDayMap[mmSelectedDay]) return;
+            wrap.innerHTML = '';
+            var day = mmDayMap[mmSelectedDay];
+            var nowHour = new Date().getHours();
+            var isToday = mmSelectedDay === 0 && mmDayMap[0] && mmDayMap[0].label === 'Avui';
+
+            day.indices.forEach(function(globalIdx) {
+                var t = mmData.hourly.time[globalIdx] || '';
+                var hh = parseInt(t.split('T')[1] || '0');
+                var btn = document.createElement('button');
+                btn.textContent = String(hh).padStart(2, '0');
+                btn.style.cssText = 'border:none;border-radius:5px;padding:7px 0;font-size:0.75em;font-weight:700;cursor:pointer;transition:background 0.12s,color 0.12s;position:relative;';
+
+                if (globalIdx === mmHourIdx) {
+                    btn.style.background = '#ffd740';
+                    btn.style.color = '#0b1f33';
+                } else if (isToday && hh < nowHour) {
+                    btn.style.background = 'rgba(255,255,255,0.04)';
+                    btn.style.color = 'rgba(255,255,255,0.25)';
+                } else {
+                    btn.style.background = '#1a3a52';
+                    btn.style.color = 'rgba(255,255,255,0.7)';
+                }
+
+                if (isToday && hh === nowHour) {
+                    btn.style.boxShadow = 'inset 0 0 0 1.5px #00bfa5';
+                }
+
+                btn.addEventListener('click', function() {
+                    mmHourIdx = globalIdx;
+                    mmRenderHours();
+                    drawModelArrows(mmModelsRef, mmHourIdx);
+                });
+                wrap.appendChild(btn);
+            });
+        }
+
+        function mmTogglePlay() {
+            var btn = document.getElementById('mm-play');
+            if (mmPlayTimer) {
+                clearInterval(mmPlayTimer);
+                mmPlayTimer = null;
+                if (btn) btn.innerHTML = '&#9654;';
+                return;
+            }
+            if (btn) btn.innerHTML = '&#9646;&#9646;';
+            mmPlayTimer = setInterval(function() {
+                if (!mmData) return;
+                var maxIdx = mmData.hourly.time.length - 1;
+                mmHourIdx++;
+                if (mmHourIdx > maxIdx) mmHourIdx = 0;
+                for (var di = 0; di < mmDayMap.length; di++) {
+                    if (mmDayMap[di].indices.indexOf(mmHourIdx) !== -1) {
+                        if (di !== mmSelectedDay) {
+                            mmSelectedDay = di;
+                            mmRenderDays();
+                        }
+                        break;
+                    }
+                }
+                mmRenderHours();
+                drawModelArrows(mmModelsRef, mmHourIdx);
+            }, 800);
+        }
+
+        function mmGoToNow() {
+            if (!mmData) return;
+            var times = mmData.hourly.time;
+            var nowStr = new Date().toISOString().substring(0, 13);
+            for (var i = 0; i < times.length; i++) {
+                if (times[i].substring(0, 13) >= nowStr) {
+                    mmHourIdx = i;
+                    for (var di = 0; di < mmDayMap.length; di++) {
+                        if (mmDayMap[di].indices.indexOf(i) !== -1) {
+                            mmSelectedDay = di;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            mmRenderDays();
+            mmRenderHours();
+            drawModelArrows(mmModelsRef, mmHourIdx);
         }
 
         function drawModelArrows(models, idx) {
