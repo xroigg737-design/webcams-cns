@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.46</div>
+            <div class="subtitle">v6.47</div>
         </div>
     </div>
 </header>
@@ -2870,6 +2870,12 @@
                 if (!el) return;
                 el.style.color = '#8ec8e8';
                 el.style.fontWeight = '600';
+                var txt = el.textContent.trim();
+                if (txt === 'onatge' || txt === 'Onatge') {
+                    var row = el.closest('tr') || el.closest('div[class]') || el.parentElement;
+                    if (row) row.style.paddingTop = '8px';
+                    el.style.paddingTop = '8px';
+                }
             });
         }
 
