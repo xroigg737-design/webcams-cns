@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.27</div>
+            <div class="subtitle">v6.28</div>
         </div>
     </div>
 </header>
@@ -2681,126 +2681,89 @@
         }
 
         var MODELS = [
-            { id: 'GFS27',  cookieId: 'gfs27_long', label: 'GFS',     desc: 'Global · NOAA',               color: '#ef5350' },
-            { id: 'ECMWF',  cookieId: 'ecmwf',      label: 'ECMWF',   desc: 'Europeu · referència global',  color: '#ffa726' },
-            { id: 'ICON13', cookieId: 'iconeuro',    label: 'ICON-13', desc: 'Europeu · DWD 13km',           color: '#66bb6a' },
-            { id: 'ICON7',  cookieId: 'icon_d2',     label: 'ICON-7',  desc: 'Europeu · DWD 7km',            color: '#ab47bc' },
+            { id: 'compare',cookieId: 'compare',    label: 'Tots els models', desc: 'Compara GFS, ECMWF, AROME, ICON i més', color: '#00bfa5' },
             { id: 'AROME',  cookieId: 'arome',       label: 'AROME',   desc: 'Alta resolució · Mediterrani',  color: '#42a5f5' },
-            { id: 'EXP3',   cookieId: 'lew',         label: 'EXP3',    desc: 'Experimental · alta resolució', color: '#8bc34a' }
+            { id: 'ECMWF',  cookieId: 'ecmwf',       label: 'ECMWF',   desc: 'Europeu · referència global',   color: '#ffa726' },
+            { id: 'GFS27',  cookieId: 'gfs27_long',  label: 'GFS',     desc: 'Global · NOAA',                 color: '#ef5350' },
+            { id: 'ICON13', cookieId: 'iconeuro',     label: 'ICON-13', desc: 'Europeu · DWD 13km',            color: '#66bb6a' },
+            { id: 'ICON7',  cookieId: 'icon_d2',      label: 'ICON-7',  desc: 'Europeu · DWD 7km',             color: '#ab47bc' },
+            { id: 'EXP3',   cookieId: 'lew',          label: 'EXP3',    desc: 'Experimental · alta resolució',  color: '#8bc34a' }
         ];
-        var selectedModels = {};
-        MODELS.forEach(function(m) { selectedModels[m.id] = true; });
+        var currentModelId = 'compare';
         var dropdownOpen = false;
 
         var selBar = document.getElementById('modelSelectorBar');
         var selInfo = document.getElementById('modelSelectorInfo');
 
-        function getSelectedCount() {
-            var c = 0; MODELS.forEach(function(m) { if (selectedModels[m.id]) c++; }); return c;
-        }
-        function allSelected() { return getSelectedCount() === MODELS.length; }
-        function getSelectedModels() { return MODELS.filter(function(m) { return selectedModels[m.id]; }); }
-
-        function getButtonLabel() {
-            var sel = getSelectedModels();
-            if (sel.length === 0 || sel.length === MODELS.length) return 'Tots els models';
-            if (sel.length === 1) return sel[0].label;
-            return sel.map(function(m) { return m.label; }).join(', ');
-        }
-
-        function getCookieModel() {
-            var sel = getSelectedModels();
-            if (sel.length === 0 || sel.length === MODELS.length) return 'compare';
-            if (sel.length === 1) return sel[0].cookieId;
-            return 'compare';
-        }
+        function getCurrentModel() { return MODELS.find(function(m) { return m.id === currentModelId; }) || MODELS[0]; }
 
         function renderModelSelector() {
             selBar.innerHTML = '';
-            selBar.style.cssText = 'display:block;padding:10px 12px 0;background:#0b1f33;position:relative;';
+            selBar.style.cssText = 'display:block;padding:10px 12px 6px;background:#0b1f33;position:relative;';
+            var cur = getCurrentModel();
 
             var trigger = document.createElement('button');
-            trigger.id = 'modelDropdownTrigger';
-            trigger.style.cssText = 'width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;'
+            trigger.style.cssText = 'width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 16px;'
                 + 'background:linear-gradient(135deg,rgba(0,191,165,0.15),rgba(0,150,136,0.08));'
                 + 'border:1.5px solid rgba(0,230,200,0.3);border-radius:14px;color:#5ef0e6;cursor:pointer;'
                 + 'font-size:0.78em;font-weight:700;letter-spacing:0.3px;outline:none;-webkit-tap-highlight-color:transparent;'
-                + 'transition:all 0.2s;min-height:44px;';
-            var trigLabel = document.createElement('span');
-            trigLabel.style.cssText = 'display:flex;align-items:center;gap:8px;';
-            trigLabel.innerHTML = '<span style="font-size:1.1em;">&#9881;</span> ' + getButtonLabel();
+                + 'transition:all 0.2s;min-height:46px;';
+            var trigLeft = document.createElement('span');
+            trigLeft.style.cssText = 'display:flex;align-items:center;gap:10px;';
+            var dot = document.createElement('span');
+            dot.style.cssText = 'width:12px;height:12px;border-radius:50%;background:' + cur.color + ';box-shadow:0 0 8px ' + cur.color + ';flex-shrink:0;';
+            trigLeft.appendChild(dot);
+            var trigTxt = document.createElement('span');
+            trigTxt.textContent = cur.label;
+            trigLeft.appendChild(trigTxt);
+            var trigDesc = document.createElement('span');
+            trigDesc.style.cssText = 'font-size:0.8em;font-weight:400;color:rgba(255,255,255,0.35);margin-left:6px;';
+            trigDesc.textContent = cur.desc;
+            trigLeft.appendChild(trigDesc);
             var trigArrow = document.createElement('span');
             trigArrow.textContent = dropdownOpen ? '▲' : '▼';
-            trigArrow.style.cssText = 'font-size:0.7em;opacity:0.6;transition:transform 0.2s;';
-            trigger.appendChild(trigLabel);
+            trigArrow.style.cssText = 'font-size:0.7em;opacity:0.5;';
+            trigger.appendChild(trigLeft);
             trigger.appendChild(trigArrow);
-
-            var dots = document.createElement('div');
-            dots.style.cssText = 'display:flex;gap:4px;margin-top:6px;justify-content:center;flex-wrap:wrap;padding-bottom:8px;';
-            MODELS.forEach(function(m) {
-                var dot = document.createElement('span');
-                dot.style.cssText = 'width:10px;height:10px;border-radius:50%;transition:all 0.2s;'
-                    + 'background:' + (selectedModels[m.id] ? m.color : 'rgba(255,255,255,0.1)')
-                    + ';box-shadow:' + (selectedModels[m.id] ? '0 0 6px ' + m.color : 'none') + ';';
-                dot.title = m.label;
-                dots.appendChild(dot);
-            });
 
             var panel = document.createElement('div');
             panel.style.cssText = 'display:' + (dropdownOpen ? 'block' : 'none')
-                + ';background:rgba(8,24,42,0.97);border:1px solid rgba(0,230,200,0.2);border-radius:14px;'
-                + 'margin-top:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);'
-                + 'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);';
-
-            var allRow = document.createElement('label');
-            allRow.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;'
-                + 'border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,191,165,0.06);'
-                + '-webkit-tap-highlight-color:transparent;';
-            var allCb = document.createElement('input');
-            allCb.type = 'checkbox';
-            allCb.checked = allSelected();
-            allCb.style.cssText = 'width:20px;height:20px;accent-color:#00bfa5;cursor:pointer;flex-shrink:0;';
-            var allTxt = document.createElement('span');
-            allTxt.style.cssText = 'font-size:0.8em;font-weight:800;color:#5ef0e6;letter-spacing:0.5px;';
-            allTxt.textContent = 'TOTS ELS MODELS';
-            allRow.appendChild(allCb);
-            allRow.appendChild(allTxt);
-            allCb.addEventListener('change', function() {
-                MODELS.forEach(function(m) { selectedModels[m.id] = allCb.checked; });
-                if (!allCb.checked) { selectedModels[MODELS[0].id] = true; }
-                dropdownOpen = false;
-                loadWindy();
-            });
-            panel.appendChild(allRow);
+                + ';background:rgba(8,24,42,0.98);border:1px solid rgba(0,230,200,0.2);border-radius:14px;'
+                + 'margin-top:8px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);'
+                + 'backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);max-height:70vh;overflow-y:auto;';
 
             MODELS.forEach(function(m) {
-                var row = document.createElement('label');
-                row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;'
-                    + 'border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;'
-                    + '-webkit-tap-highlight-color:transparent;';
-                var cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.checked = !!selectedModels[m.id];
-                cb.style.cssText = 'width:20px;height:20px;accent-color:' + m.color + ';cursor:pointer;flex-shrink:0;';
-                var colorDot = document.createElement('span');
-                colorDot.style.cssText = 'width:12px;height:12px;border-radius:50%;background:' + m.color
-                    + ';box-shadow:0 0 6px ' + m.color + ';flex-shrink:0;';
-                var info = document.createElement('div');
-                info.style.cssText = 'display:flex;flex-direction:column;gap:1px;min-width:0;';
-                var name = document.createElement('span');
-                name.style.cssText = 'font-size:0.78em;font-weight:700;color:' + (selectedModels[m.id] ? '#fff' : 'rgba(255,255,255,0.35)') + ';';
-                name.textContent = m.label;
-                var desc = document.createElement('span');
-                desc.style.cssText = 'font-size:0.6em;color:rgba(255,255,255,0.3);';
-                desc.textContent = m.desc;
-                info.appendChild(name);
-                info.appendChild(desc);
-                row.appendChild(cb);
-                row.appendChild(colorDot);
-                row.appendChild(info);
-                cb.addEventListener('change', function() {
-                    selectedModels[m.id] = cb.checked;
-                    if (getSelectedCount() === 0) { selectedModels[m.id] = true; return; }
+                var isActive = m.id === currentModelId;
+                var row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;'
+                    + 'border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;'
+                    + '-webkit-tap-highlight-color:transparent;'
+                    + (isActive ? 'background:rgba(0,191,165,0.1);' : '')
+                    + (m.id === 'compare' ? 'border-bottom:1.5px solid rgba(0,191,165,0.15);' : '');
+                var mDot = document.createElement('span');
+                mDot.style.cssText = 'width:14px;height:14px;border-radius:50%;flex-shrink:0;transition:all 0.2s;'
+                    + 'background:' + m.color + ';box-shadow:0 0 8px ' + m.color + ';'
+                    + 'border:2px solid ' + (isActive ? '#fff' : 'transparent') + ';';
+                var mInfo = document.createElement('div');
+                mInfo.style.cssText = 'display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;';
+                var mName = document.createElement('span');
+                mName.style.cssText = 'font-size:0.82em;font-weight:' + (isActive ? '800' : '600') + ';color:' + (isActive ? '#5ef0e6' : '#fff') + ';';
+                mName.textContent = m.label;
+                var mDesc = document.createElement('span');
+                mDesc.style.cssText = 'font-size:0.62em;color:rgba(255,255,255,0.35);';
+                mDesc.textContent = m.desc;
+                mInfo.appendChild(mName);
+                mInfo.appendChild(mDesc);
+                if (isActive) {
+                    var check = document.createElement('span');
+                    check.textContent = '✓';
+                    check.style.cssText = 'color:#00e6c8;font-size:1.1em;font-weight:900;flex-shrink:0;';
+                    row.appendChild(mDot); row.appendChild(mInfo); row.appendChild(check);
+                } else {
+                    row.appendChild(mDot); row.appendChild(mInfo);
+                }
+                row.addEventListener('click', function() {
+                    currentModelId = m.id;
                     dropdownOpen = false;
                     loadWindy();
                 });
@@ -2813,9 +2776,7 @@
             });
 
             selBar.appendChild(trigger);
-            selBar.appendChild(dots);
             selBar.appendChild(panel);
-
             selInfo.style.display = 'none';
         }
 
@@ -2953,9 +2914,9 @@
         }
 
         function loadWindy() {
-            var cookieModel = getCookieModel();
-            var sel = getSelectedModels();
-            document.cookie = 'forecast_widget_units=0,0,0,0,0,' + cookieModel + ',0,0;path=/;max-age=31536000';
+            var cur = getCurrentModel();
+            var cookieVal = cur.cookieId;
+            document.cookie = 'forecast_widget_units=0,0,0,0,0,' + cookieVal + ',0,0;path=/;max-age=31536000';
             renderModelSelector();
             injectWidgetCSS();
             container.innerHTML = '';
@@ -2968,7 +2929,7 @@
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
             widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,waves-direction,waves-height,waves-period');
-            if (sel.length === 1) widgetDiv.setAttribute('data-model', sel[0].cookieId);
+            if (cur.id !== 'compare') widgetDiv.setAttribute('data-model', cur.cookieId);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
             container.appendChild(widgetDiv);
             var script = document.createElement('script');
@@ -2980,9 +2941,10 @@
                 setTimeout(hideWidgetRows, 3000);
             };
             container.appendChild(script);
-            var label = sel.length === MODELS.length ? 'Tots els models' : sel.map(function(m) { return m.label; }).join(', ');
-            if (subtitle) subtitle.textContent = label + ' — Sitges';
-            if (caption) caption.textContent = 'Vent (nusos), ratxes i onatge — selecciona quins models comparar.';
+            if (subtitle) subtitle.textContent = cur.label + ' — Sitges';
+            if (caption) caption.textContent = cur.id === 'compare'
+                ? 'Vent (nusos), ratxes i onatge — comparativa de tots els models.'
+                : 'Vent (nusos), ratxes i onatge — model ' + cur.label + '.';
             if (source) source.textContent = 'Font: Windy.app';
         }
 
