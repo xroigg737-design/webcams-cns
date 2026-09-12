@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.34</div>
+            <div class="subtitle">v6.35</div>
         </div>
     </div>
 </header>
@@ -2839,44 +2839,35 @@
         }
 
         var rowRelabels = {
-            'knots': 'Vent (nusos)', 'nusos': 'Vent (nusos)',
-            'knots*': 'Ratxa (nusos)', 'nusos*': 'Ratxa (nusos)',
+            'knots': 'Vent kn', 'nusos': 'Vent kn',
+            'knots*': 'Ratxa kn', 'nusos*': 'Ratxa kn',
             'swell': 'Onatge', 'onatge': 'Onatge',
-            'm': 'Alçada ona (m)', 's': 'Període (s)'
+            'm': 'Ona (m)', 's': 'T. ona (s)'
         };
 
         function relabelWidgetRows() {
             var wBody = document.getElementById('windyMapBody');
             if (!wBody) return;
-            var allLabels = ['knots','nusos','knots*','nusos*','swell','onatge','wind','vent','hora','hour','time',
-                             'Vent (nusos)','Ratxa (nusos)','Onatge','Alçada ona (m)','Període (s)'];
             var walker = document.createTreeWalker(wBody, NodeFilter.SHOW_TEXT, null, false);
-            var node;
+            var node, labelsFound = [];
             while (node = walker.nextNode()) {
                 var t = node.textContent.trim();
                 if (!t) continue;
-                if (t === 'm' || t === 's') {
-                    var p = node.parentElement;
-                    if (p && p.children.length === 0 && p.offsetWidth < 130) {
-                        node.textContent = rowRelabels[t];
-                        styleLabel(p);
-                    }
+                if ((t === 'm' || t === 's') && node.parentElement && node.parentElement.children.length === 0) {
+                    node.textContent = rowRelabels[t];
+                    labelsFound.push(node.parentElement);
                 } else if (rowRelabels[t]) {
                     node.textContent = rowRelabels[t];
-                    styleLabel(node.parentElement);
-                } else if (allLabels.indexOf(t) !== -1) {
-                    styleLabel(node.parentElement);
+                    labelsFound.push(node.parentElement);
                 }
             }
-        }
-        function styleLabel(el) {
-            if (!el) return;
-            el.style.color = '#b0e0ff';
-            el.style.fontWeight = '700';
-            el.style.whiteSpace = 'nowrap';
-            el.style.paddingRight = '10px';
-            el.style.minWidth = '70px';
-            el.style.fontSize = '0.78em';
+            labelsFound.forEach(function(el) {
+                if (!el) return;
+                el.style.color = '#8ec8e8';
+                el.style.fontWeight = '600';
+                el.style.fontSize = '11px';
+                el.style.lineHeight = '1.2';
+            });
         }
 
         var widgetObserver = null;
