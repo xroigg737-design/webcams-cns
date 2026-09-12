@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.12</div>
+            <div class="subtitle">v6.13</div>
         </div>
     </div>
 </header>
@@ -1689,7 +1689,7 @@
                         <div class="windy-map-title">Mapa de previsió</div>
                     </div>
                     <div class="windy-map-tabs">
-                        <span class="windy-map-tab active" id="tabWindy">Windy</span>
+                        <span class="windy-map-tab active" id="tabWindy">Windy.app</span>
                         <span class="windy-map-tab" id="tabWindyModels">Models</span>
                         <span class="windy-map-tab" id="tabWindguru">Windguru</span>
                         <span class="windy-map-tab" id="tabPressio">Pressió</span>
@@ -2678,27 +2678,22 @@
 
         function loadWindy() {
             container.innerHTML = '';
-            var url = 'https://embed.windy.com/embed2.html'
-                + '?type=map&location=coordinates'
-                + '&lat=' + WINDY_CONFIG.lat
-                + '&lon=' + WINDY_CONFIG.lon
-                + '&zoom=' + WINDY_CONFIG.zoom
-                + '&overlay=' + WINDY_CONFIG.overlay
-                + '&metricWind=' + WINDY_CONFIG.metricWind
-                + '&marker=true&detail=true'
-                + '&detailLat=' + WINDY_CONFIG.lat
-                + '&detailLon=' + WINDY_CONFIG.lon
-                + '&product=ecmwf&pressure=true&calendar=now';
-            var iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.title = 'Forecast Windy — Costa del Garraf';
-            iframe.loading = 'lazy';
-            iframe.allow = 'geolocation';
-            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-            container.appendChild(iframe);
-            if (subtitle) subtitle.textContent = 'Mapa interactiu amb previsió detallada';
-            if (caption) caption.textContent = 'Mapa interactiu amb previsió de vent, pluja, ratxes i més.';
-            if (source) source.textContent = 'Font: Windy';
+            container.style.height = 'auto';
+            container.style.minHeight = '400px';
+            container.style.background = '#fff';
+            var widgetDiv = document.createElement('div');
+            widgetDiv.setAttribute('data-windywidget', 'forecast');
+            widgetDiv.setAttribute('data-thememode', 'dark');
+            widgetDiv.setAttribute('data-spotid', '30007');
+            widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
+            container.appendChild(widgetDiv);
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
+            container.appendChild(script);
+            if (subtitle) subtitle.textContent = 'Previsió costera 10 dies — Sitges';
+            if (caption) caption.textContent = 'Previsió de vent, ratxes, onatge i temperatura per Sitges.';
+            if (source) source.textContent = 'Font: Windy.app';
         }
 
         var mmMap = null;
@@ -2893,9 +2888,6 @@
         tabWindy.addEventListener('click', function() {
             if (tabWindy.classList.contains('active')) return;
             setActiveTab(tabWindy);
-            container.style.height = '520px';
-            container.style.minHeight = '';
-            container.style.background = '#0b1f33';
             loadWindy();
         });
 
