@@ -24,6 +24,7 @@
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: #0a1628;
@@ -1259,6 +1260,8 @@
         }
         .ch-spot {
             position: absolute;
+            overflow: hidden;                 /* retalla el contingut a la forma */
+            border-radius: 23% / 20%;         /* mateix arrodoniment que la targeta */
             left: calc(var(--x) * 1%);
             top: calc(var(--y) * 1%);
             width: calc(var(--w) * 1%);
@@ -1267,7 +1270,6 @@
             padding: 0;
             border: 0;
             background: transparent;
-            border-radius: clamp(9px, 1.7vw, 26px);
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
             display: flex;
@@ -1294,14 +1296,14 @@
         }
         .ch-spot.filled .ch-slot {
             position: absolute;
-            inset: 3.2%;
+            inset: 4%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 11% 8%;
             overflow: hidden;
-            border-radius: 21%;
+            border-radius: 21% / 18%;
             /* Vidre: el desenfocat esborra el dibuix de sota sense
                enfosquir la targeta ni perdre'n la transparència. */
             -webkit-backdrop-filter: blur(16px) saturate(125%);
@@ -3906,6 +3908,16 @@ window.CockpitSlots = (function() {
     if (foto && !foto.complete) foto.addEventListener('load', ajustaTots);
     ajustaTots();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaTots);
+    /* Quan la foto acaba de carregar, l'escenari canvia d'alçada: si no
+       ho recalculem, al mòbil el text queda amb la mida d'abans i surt
+       de la forma. Amb ResizeObserver ho agafem sempre. */
+    if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function() { ajustaTots(); });
+        ro.observe(stage.querySelector('.ch-stage') || stage);
+    }
+    window.addEventListener('orientationchange', function() { setTimeout(ajustaTots, 250); });
+    setTimeout(ajustaTots, 600);
+    setTimeout(ajustaTots, 1800);   /* xarxa lenta: la foto pot arribar tard */
     window.addEventListener('resize', function() {
         clearTimeout(window.__ckAjust);
         window.__ckAjust = setTimeout(ajustaTots, 150);
