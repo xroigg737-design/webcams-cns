@@ -1277,45 +1277,18 @@
             box-shadow: 0 0 0 2px rgba(255,255,255,0.6), 0 8px 24px rgba(0,0,0,0.35);
         }
         .ch-spot:active { transform: scale(0.985); background: rgba(255,255,255,0.18); }
-        /* Contingut de cada indicador. Va dins d'un plafó blanc que segueix
-           la forma del widget pintat, per llegir-se bé fins i tot al mòbil.
-           La mida de lletra es mesura en cqw (% de l'amplada del widget), i
-           un ajust per JS la baixa si algun text no hi cabés. */
-        .ch-spot { container-type: size; }
+        /* Contenidor per al contingut en directe de cada indicador.
+           Ara és buit a propòsit: s'omple des de JS amb CockpitSlots.set(). */
         .ch-slot {
-            pointer-events: none;
-            font-variant-numeric: tabular-nums;
-        }
-        .ch-spot.filled .ch-slot {
-            position: absolute;
-            inset: 3.5%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.08em;
-            padding: 5%;
-            overflow: hidden;
-            border-radius: 19%;
-            background: linear-gradient(180deg, #ffffff 0%, #ffffff 62%, #eef3f9 100%);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.28), inset 0 0 0 1.5px rgba(255,255,255,0.9);
-            color: #0b2236;
-            font-weight: 900;
-            line-height: 1.02;
-            letter-spacing: -0.02em;
+            width: 100%;
+            padding: 0 6%;
+            line-height: 1.15;
             text-align: center;
-            text-wrap: balance;
-            font-size: 26cqw;
-        }
-        @supports not (font-size: 1cqw) {
-            .ch-spot.filled .ch-slot { font-size: 3.4vw; }
-        }
-        /* Ressaltat de la secció en obrir-la des d'un indicador */
-        .ck-flash { animation: ckFlash 1.9s ease; }
-        @keyframes ckFlash {
-            0%   { box-shadow: 0 0 0 0 rgba(102,187,106,0); }
-            15%  { box-shadow: 0 0 0 3px rgba(102,187,106,0.65); }
-            100% { box-shadow: 0 0 0 0 rgba(102,187,106,0); }
+            color: #fff;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.55);
+            pointer-events: none;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -1480,12 +1453,12 @@
                      srcset="img/cockpit3-sm.jpg 900w, img/cockpit3-md.jpg 1300w, img/cockpit3.jpg 1672w"
                      sizes="(max-width: 700px) 112vw, 100vw" width="1672" height="941"
                      alt="Cockpit del veler amb els indicadors d'Avui Regu">
-                <button class="ch-spot filled" style="--x:7.6;--y:32.0;--w:12.1;--h:28.5"
-                        data-slot="veins" data-target="neighbours-section" aria-label="Vent veïns">
-                    <span class="ch-slot" id="slot-veins">Vent veïns</span></button>
+                <button class="ch-spot" style="--x:7.6;--y:32.0;--w:12.1;--h:28.5"
+                        data-slot="vent" data-target="wind-map-section" aria-label="Vent actual">
+                    <span class="ch-slot" id="slot-vent"></span></button>
                 <button class="ch-spot" style="--x:22.1;--y:30.0;--w:12.5;--h:24.0"
-                        data-slot="w2" data-target="neighbours-section" aria-label="Pendent">
-                    <span class="ch-slot" id="slot-w2"></span></button>
+                        data-slot="veins" data-target="neighbours-section" aria-label="Vent clubs veïns">
+                    <span class="ch-slot" id="slot-veins"></span></button>
                 <button class="ch-spot" style="--x:37.0;--y:28.5;--w:12.5;--h:24.5"
                         data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
                     <span class="ch-slot" id="slot-corrent"></span></button>
@@ -3782,52 +3755,17 @@ window.CockpitSlots = (function() {
         var el = document.getElementById(id);
         if (!el) return;
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        el.classList.remove('ck-flash');
-        void el.offsetWidth;
-        el.classList.add('ck-flash');
-        setTimeout(function() { el.classList.remove('ck-flash'); }, 2000);
     }
     stage.addEventListener('click', function(e) {
         var b = e.target.closest('.ch-spot');
         if (b && b.dataset.target) anar(b.dataset.target);
     });
 
-    /* La lletra va en cqw (proporcional al widget). Si algun text no hi
-       cabés — paraula llarga, tipografia del sistema, mòbil petit — la
-       baixem fins que hi entri. Cap lletra pot sortir de la forma. */
-    function ajusta(el) {
-        if (!el || !el.offsetWidth) return;
-        var w = el.parentNode.clientWidth;
-        if (!w) return;
-        var mida = w * 0.28;                       // punt de partida, ben gran
-        el.style.fontSize = mida + 'px';
-        var guarda = 0;
-        while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
-               && mida > 7 && guarda++ < 60) {
-            mida *= 0.94;
-            el.style.fontSize = mida + 'px';
-        }
-    }
-    function ajustaTots() {
-        var slots = stage.querySelectorAll('.ch-spot.filled .ch-slot');
-        for (var i = 0; i < slots.length; i++) ajusta(slots[i]);
-    }
-    var img = stage.querySelector('.ch-img');
-    if (img) { if (img.complete) ajustaTots(); else img.addEventListener('load', ajustaTots); }
-    ajustaTots();
-    window.addEventListener('resize', function() {
-        clearTimeout(window.__ckAjust);
-        window.__ckAjust = setTimeout(ajustaTots, 150);
-    });
-
     return {
         /* CockpitSlots.set('vent', '<b>12 kn</b>') */
         set: function(slot, html) {
             var el = document.getElementById('slot-' + slot);
-            if (!el) return;
-            el.innerHTML = html;
-            el.parentNode.classList.add('filled');
-            ajusta(el);
+            if (el) el.innerHTML = html;
         },
         /* Valors en directe que ja tenim a la pàgina, a punt de fer servir.
            Retorna, p. ex.: { vent:'0.9', veins:'5.2', corrent:'0.13', temp:'24.1' } */
