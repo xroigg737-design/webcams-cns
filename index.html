@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.26</div>
+            <div class="subtitle">v6.27</div>
         </div>
     </div>
 </header>
@@ -2681,12 +2681,12 @@
         }
 
         var MODELS = [
-            { id: 'GFS27',  label: 'GFS',     desc: 'Global · NOAA',               color: '#ef5350' },
-            { id: 'ECMWF',  label: 'ECMWF',   desc: 'Europeu · referència global',  color: '#ffa726' },
-            { id: 'ICON13', label: 'ICON-13',  desc: 'Europeu · DWD 13km',           color: '#66bb6a' },
-            { id: 'ICON7',  label: 'ICON-7',   desc: 'Europeu · DWD 7km',            color: '#ab47bc' },
-            { id: 'AROME',  label: 'AROME',    desc: 'Alta resolució · Mediterrani',  color: '#42a5f5' },
-            { id: 'EXP3',   label: 'EXP3',     desc: 'Experimental · alta resolució', color: '#8bc34a' }
+            { id: 'GFS27',  cookieId: 'gfs27_long', label: 'GFS',     desc: 'Global · NOAA',               color: '#ef5350' },
+            { id: 'ECMWF',  cookieId: 'ecmwf',      label: 'ECMWF',   desc: 'Europeu · referència global',  color: '#ffa726' },
+            { id: 'ICON13', cookieId: 'iconeuro',    label: 'ICON-13', desc: 'Europeu · DWD 13km',           color: '#66bb6a' },
+            { id: 'ICON7',  cookieId: 'icon_d2',     label: 'ICON-7',  desc: 'Europeu · DWD 7km',            color: '#ab47bc' },
+            { id: 'AROME',  cookieId: 'arome',       label: 'AROME',   desc: 'Alta resolució · Mediterrani',  color: '#42a5f5' },
+            { id: 'EXP3',   cookieId: 'lew',         label: 'EXP3',    desc: 'Experimental · alta resolució', color: '#8bc34a' }
         ];
         var selectedModels = {};
         MODELS.forEach(function(m) { selectedModels[m.id] = true; });
@@ -2699,25 +2699,20 @@
             var c = 0; MODELS.forEach(function(m) { if (selectedModels[m.id]) c++; }); return c;
         }
         function allSelected() { return getSelectedCount() === MODELS.length; }
+        function getSelectedModels() { return MODELS.filter(function(m) { return selectedModels[m.id]; }); }
 
         function getButtonLabel() {
-            var n = getSelectedCount();
-            if (n === 0 || n === MODELS.length) return 'Tots els models';
-            if (n === 1) { var s = ''; MODELS.forEach(function(m) { if (selectedModels[m.id]) s = m.label; }); return s; }
-            return n + ' models';
+            var sel = getSelectedModels();
+            if (sel.length === 0 || sel.length === MODELS.length) return 'Tots els models';
+            if (sel.length === 1) return sel[0].label;
+            return sel.map(function(m) { return m.label; }).join(', ');
         }
 
-        function applyModelFilter() {
-            container.querySelectorAll('[class*="compare"] [class*="label"], [class*="compare"] [class*="legend"], [class*="state"] span, [class*="labels"] div').forEach(function(el) {
-                var txt = el.textContent.trim().toUpperCase();
-                MODELS.forEach(function(m) {
-                    if (txt.indexOf(m.id) !== -1 || txt === m.label.toUpperCase()) {
-                        var row = el.closest('div[class]') || el;
-                        if (!selectedModels[m.id]) { row.style.opacity = '0'; row.style.pointerEvents = 'none'; }
-                        else { row.style.opacity = '1'; row.style.pointerEvents = ''; }
-                    }
-                });
-            });
+        function getCookieModel() {
+            var sel = getSelectedModels();
+            if (sel.length === 0 || sel.length === MODELS.length) return 'compare';
+            if (sel.length === 1) return sel[0].cookieId;
+            return 'compare';
         }
 
         function renderModelSelector() {
@@ -2772,8 +2767,9 @@
             allRow.appendChild(allTxt);
             allCb.addEventListener('change', function() {
                 MODELS.forEach(function(m) { selectedModels[m.id] = allCb.checked; });
-                renderModelSelector();
-                applyModelFilter();
+                if (!allCb.checked) { selectedModels[MODELS[0].id] = true; }
+                dropdownOpen = false;
+                loadWindy();
             });
             panel.appendChild(allRow);
 
@@ -2804,8 +2800,9 @@
                 row.appendChild(info);
                 cb.addEventListener('change', function() {
                     selectedModels[m.id] = cb.checked;
-                    renderModelSelector();
-                    applyModelFilter();
+                    if (getSelectedCount() === 0) { selectedModels[m.id] = true; return; }
+                    dropdownOpen = false;
+                    loadWindy();
                 });
                 panel.appendChild(row);
             });
@@ -2956,7 +2953,9 @@
         }
 
         function loadWindy() {
-            document.cookie = 'forecast_widget_units=0,0,0,0,0,compare,0,0;path=/;max-age=31536000';
+            var cookieModel = getCookieModel();
+            var sel = getSelectedModels();
+            document.cookie = 'forecast_widget_units=0,0,0,0,0,' + cookieModel + ',0,0;path=/;max-age=31536000';
             renderModelSelector();
             injectWidgetCSS();
             container.innerHTML = '';
@@ -2969,19 +2968,20 @@
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
             widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,waves-direction,waves-height,waves-period');
+            if (sel.length === 1) widgetDiv.setAttribute('data-model', sel[0].cookieId);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
             container.appendChild(widgetDiv);
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             script.onload = function() {
-                setTimeout(function() { hideWidgetRows(); applyModelFilter(); }, 500);
-                setTimeout(function() { hideWidgetRows(); applyModelFilter(); }, 1500);
-                setTimeout(function() { hideWidgetRows(); applyModelFilter(); }, 3000);
+                setTimeout(hideWidgetRows, 500);
+                setTimeout(hideWidgetRows, 1500);
+                setTimeout(hideWidgetRows, 3000);
             };
             container.appendChild(script);
-            var n = getSelectedCount();
-            if (subtitle) subtitle.textContent = (n === MODELS.length ? 'Comparatiu multi-model' : n + ' models') + ' — Sitges';
+            var label = sel.length === MODELS.length ? 'Tots els models' : sel.map(function(m) { return m.label; }).join(', ');
+            if (subtitle) subtitle.textContent = label + ' — Sitges';
             if (caption) caption.textContent = 'Vent (nusos), ratxes i onatge — selecciona quins models comparar.';
             if (source) source.textContent = 'Font: Windy.app';
         }
