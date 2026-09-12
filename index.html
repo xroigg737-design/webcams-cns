@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.21</div>
+            <div class="subtitle">v6.22</div>
         </div>
     </div>
 </header>
@@ -2782,7 +2782,10 @@
             widgetObserver = new MutationObserver(function(mutations) {
                 mutations.forEach(function(m) {
                     if (m.type === 'childList') {
-                        m.addedNodes.forEach(function(n) { translateWidgetNode(n); });
+                        m.addedNodes.forEach(function(n) {
+                            translateWidgetNode(n);
+                            if (n.nodeType === 1) hideWidgetRows();
+                        });
                     } else if (m.type === 'characterData' && m.target.nodeType === 3) {
                         translateWidgetNode(m.target);
                     }
@@ -2794,9 +2797,41 @@
             if (widgetObserver) { widgetObserver.disconnect(); widgetObserver = null; }
         }
 
+        var widgetHideCSS = null;
+        function injectWidgetCSS() {
+            if (widgetHideCSS) return;
+            widgetHideCSS = document.createElement('style');
+            widgetHideCSS.textContent =
+                '#windyMapBody .id-air-temp,' +
+                '#windyMapBody .id-clouds,' +
+                '#windyMapBody .id-precipitation,' +
+                '#windyMapBody .id-fog,' +
+                '#windyMapBody .id-tides,' +
+                '#windyMapBody .id-moon-phase,' +
+                '#windyMapBody .id-breeze,' +
+                '#windyMapBody [class*="chart-temp"],' +
+                '#windyMapBody [class*="chart-precip"],' +
+                '#windyMapBody [class*="chart-cloud"]' +
+                '{ display:none !important; }';
+            document.head.appendChild(widgetHideCSS);
+        }
+
+        function hideWidgetRows() {
+            var selectors = [
+                '.id-air-temp', '.id-clouds', '.id-precipitation',
+                '.id-fog', '.id-tides', '.id-moon-phase', '.id-breeze'
+            ];
+            selectors.forEach(function(sel) {
+                container.querySelectorAll(sel).forEach(function(el) {
+                    el.style.display = 'none';
+                });
+            });
+        }
+
         function loadWindy() {
             document.cookie = 'forecast_widget_units=0,0,0,0,0,compare,0,0;path=/;max-age=31536000';
             hideModelSelector();
+            injectWidgetCSS();
             container.innerHTML = '';
             container.style.height = 'auto';
             container.style.minHeight = '400px';
@@ -2806,15 +2841,16 @@
             widgetDiv.setAttribute('data-windywidget', 'forecast');
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
-            widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,clouds,fog,waves-direction,waves-height,waves-period,tides');
+            widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,waves-direction,waves-height,waves-period');
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
             container.appendChild(widgetDiv);
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
+            script.onload = function() { setTimeout(hideWidgetRows, 500); setTimeout(hideWidgetRows, 1500); setTimeout(hideWidgetRows, 3000); };
             container.appendChild(script);
             if (subtitle) subtitle.textContent = 'Comparatiu multi-model — Sitges';
-            if (caption) caption.textContent = 'Graella i gràfic comparatiu de tots els models (GFS, ECMWF, AROME, ICON...) en nusos.';
+            if (caption) caption.textContent = 'Vent (nusos), ratxes i onatge — tots els models comparats.';
             if (source) source.textContent = 'Font: Windy.app';
         }
 
