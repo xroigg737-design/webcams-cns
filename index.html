@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.50</div>
+            <div class="subtitle">v6.51</div>
         </div>
     </div>
 </header>
@@ -3077,7 +3077,7 @@
                 var gustR = gust != null ? Math.round(gust * 10) / 10 : '--';
                 var dirS = degToCompass(dir);
                 var len = 0.005 + spd * 0.002;
-                var rad = (dir) * Math.PI / 180;
+                var rad = (dir + 180) * Math.PI / 180;
                 var endLat = center[0] + len * Math.cos(rad);
                 var endLon = center[1] + len * Math.sin(rad);
 
