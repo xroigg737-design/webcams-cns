@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.32</div>
+            <div class="subtitle">v6.33</div>
         </div>
     </div>
 </header>
@@ -2887,7 +2887,7 @@
                     if (m.type === 'childList') {
                         m.addedNodes.forEach(function(n) {
                             translateWidgetNode(n);
-                            if (n.nodeType === 1) { hideWidgetRows(); relabelWidgetRows(); }
+                            if (n.nodeType === 1) hideWidgetRows();
                         });
                     } else if (m.type === 'characterData' && m.target.nodeType === 3) {
                         translateWidgetNode(m.target);
@@ -2993,9 +2993,10 @@
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             script.onload = function() {
-                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 500);
-                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 1500);
-                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 3000);
+                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 800);
+                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 2000);
+                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 4000);
+                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 6000);
             };
             container.appendChild(script);
             if (subtitle) subtitle.textContent = cur.label + ' — Sitges';
