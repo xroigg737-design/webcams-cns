@@ -1214,97 +1214,67 @@
         }
 
         /* ============================================================
-           COCKPIT — escena del veler amb indicadors clicables
-           L'escena és una foto (img/cockpit-scene*.jpg) i els indicadors
-           són HTML real: dades en directe, mides de dit i responsius.
+           COCKPIT — imatge sencera del veler com a portada
+           La foto (img/cockpit3*.jpg) es veu completa en entrar a l'app.
+           A sobre hi ha 6 zones actives, una per cada indicador pintat:
+           són botons reals, ja clicables, i tenen un contenidor buit
+           (.ch-slot) preparat per rebre el contingut en directe.
+           Les mides van en % de la imatge: escalen soles a qualsevol
+           pantalla i sempre queden damunt de la targeta correcta.
            ============================================================ */
-        .cockpit-scene {
+        .cockpit-hero {
             position: relative;
-            margin: 6px 10px 2px;
-            border-radius: 16px;
+            background: #06121f;
             overflow: hidden;
-            padding: 30px 12px 18px;
-            background: #0c2033;
-            box-shadow: 0 8px 22px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.08);
         }
-        /* Foto del cockpit, lleugerament desenfocada: dona profunditat i
-           deixa que els indicadors es llegeixin sempre. */
-        .cockpit-scene::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url('img/cockpit-scene-sm.jpg');
-            background-size: cover;
-            background-position: center 45%;
-            filter: blur(2px) saturate(1.08);
-            transform: scale(1.08);
-        }
-        .cockpit-scene::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(4,16,28,0.22), rgba(4,16,28,0.52));
-        }
-        @media (min-width: 760px) {
-            .cockpit-scene { padding: 34px 18px 30px; }
-            .cockpit-scene::before { background-image: url('img/cockpit-scene.jpg'); }
-        }
-        .cockpit-grid {
+        .ch-stage {
             position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            width: 100%;
+            max-width: 1672px;
+            margin: 0 auto;
+            line-height: 0;
         }
-        @media (min-width: 560px) { .cockpit-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; } }
-        @media (min-width: 1024px) { .cockpit-grid { grid-template-columns: repeat(6, 1fr); gap: 12px; } }
-        .ck {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 5px;
-            min-height: 118px;
-            padding: 12px 8px 10px;
-            border: 1px solid rgba(255,255,255,0.34);
-            border-radius: 20px;
-            background: rgba(10,30,50,0.40);
-            -webkit-backdrop-filter: blur(11px) saturate(140%);
-            backdrop-filter: blur(11px) saturate(140%);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.28);
-            color: #fff;
-            text-align: center;
+        .ch-img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .ch-spot {
+            position: absolute;
+            left: calc(var(--x) * 1%);
+            top: calc(var(--y) * 1%);
+            width: calc(var(--w) * 1%);
+            height: calc(var(--h) * 1%);
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            border-radius: clamp(9px, 1.7vw, 26px);
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
         }
-        @supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
-            .ck { background: rgba(8,26,44,0.78); }
+        .ch-spot:hover, .ch-spot:focus-visible {
+            outline: none;
+            background: rgba(255,255,255,0.10);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.6), 0 8px 24px rgba(0,0,0,0.35);
         }
-        .ck:hover { background: rgba(16,44,70,0.52); border-color: rgba(255,255,255,0.5); }
-        .ck:active { transform: scale(0.97); }
-        .ck:focus-visible { outline: 2px solid #4fc3f7; outline-offset: 3px; }
-        .ck-ico { width: 26px; height: 26px; flex-shrink: 0; opacity: 0.95; }
-        .ck-ico svg { width: 100%; height: 100%; stroke: #fff; fill: none;
-            stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-        .ck-val {
-            font-size: 1.05rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.3px;
-            font-variant-numeric: tabular-nums; min-height: 1.05em;
-            text-shadow: 0 1px 7px rgba(0,0,0,0.65);
-        }
-        .ck-val small { font-size: 0.6em; font-weight: 700; opacity: 0.85; margin-left: 2px; }
-        .ck-title { font-size: 0.72rem; font-weight: 700; line-height: 1.15; text-shadow: 0 1px 5px rgba(0,0,0,0.75); }
-        .ck-hint { font-size: 0.56rem; color: rgba(255,255,255,0.72); text-shadow: 0 1px 3px rgba(0,0,0,0.75); }
-        @media (max-width: 360px) {
-            .ck { min-height: 108px; padding: 10px 6px 8px; }
-            .ck-title { font-size: 0.68rem; }
-        }
-        .ck-flash { animation: ckFlash 1.8s ease; }
-        @keyframes ckFlash {
-            0%   { box-shadow: 0 0 0 0 rgba(79,195,247,0); }
-            15%  { box-shadow: 0 0 0 3px rgba(79,195,247,0.6); }
-            100% { box-shadow: 0 0 0 0 rgba(79,195,247,0); }
+        .ch-spot:active { transform: scale(0.985); background: rgba(255,255,255,0.18); }
+        /* Contenidor per al contingut en directe de cada indicador.
+           Ara és buit a propòsit: s'omple des de JS amb CockpitSlots.set(). */
+        .ch-slot {
+            width: 100%;
+            padding: 0 6%;
+            line-height: 1.15;
+            text-align: center;
+            color: #fff;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.55);
+            pointer-events: none;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -1321,6 +1291,34 @@
     </div>
 </header>
 
+
+<!-- ================= COCKPIT (portada) ================= -->
+<section class="cockpit-hero" id="cockpit-hero">
+    <div class="ch-stage">
+        <img class="ch-img" src="img/cockpit3-sm.jpg"
+             srcset="img/cockpit3-sm.jpg 900w, img/cockpit3.jpg 1672w"
+             sizes="100vw" width="1672" height="941"
+             alt="Cockpit del veler amb els indicadors d'Avui Regu">
+        <button class="ch-spot" style="--x:7.6;--y:32.0;--w:12.1;--h:28.5"
+                data-slot="vent" data-target="wind-map-section" aria-label="Vent actual">
+            <span class="ch-slot" id="slot-vent"></span></button>
+        <button class="ch-spot" style="--x:22.1;--y:30.0;--w:12.5;--h:24.0"
+                data-slot="veins" data-target="neighbours-section" aria-label="Vent clubs veïns">
+            <span class="ch-slot" id="slot-veins"></span></button>
+        <button class="ch-spot" style="--x:37.0;--y:28.5;--w:12.5;--h:24.5"
+                data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
+            <span class="ch-slot" id="slot-corrent"></span></button>
+        <button class="ch-spot" style="--x:51.5;--y:29.6;--w:11.7;--h:23.5"
+                data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
+            <span class="ch-slot" id="slot-webcams"></span></button>
+        <button class="ch-spot" style="--x:65.6;--y:30.1;--w:12.8;--h:24.2"
+                data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
+            <span class="ch-slot" id="slot-previsio"></span></button>
+        <button class="ch-spot" style="--x:80.1;--y:32.8;--w:12.6;--h:27.7"
+                data-slot="regates" data-target="regates-section" aria-label="Regates">
+            <span class="ch-slot" id="slot-regates"></span></button>
+    </div>
+</section>
 
 <div class="layout">
 
@@ -1459,19 +1457,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- COCKPIT — indicadors clicables sobre l'escena del veler -->
-        <section class="category" id="cockpit-section">
-            <div class="category-header">
-                <span class="category-icon">&#9784;</span>
-                <span class="category-title title-nautica">Cockpit</span>
-                <span class="proves-badge">En proves...</span>
-            </div>
-            <hr class="category-line line-nautica">
-            <div class="cockpit-scene">
-                <div class="cockpit-grid" id="cockpitGrid"></div>
             </div>
         </section>
 
@@ -3742,97 +3727,52 @@ document.getElementById('videoOverlay').addEventListener('click', function(e) {
 
 <script>
 /* ============================================================
-   COCKPIT — indicadors clicables
-   Cada indicador llegeix el valor que ja mostra la secció
-   corresponent (no fa cap petició nova) i hi porta en tocar-lo.
+   COCKPIT (portada) — zones actives sobre la imatge
+   Cada zona ja porta a la seva secció. El contingut en directe de
+   dins de cada indicador s'omple amb CockpitSlots.set(id, html):
+   queda preparat, però de moment no es pinta res (la imatge ja
+   porta els seus valors dibuixats).
    ============================================================ */
-(function() {
-    var ICO = {
-        vent:   '<path d="M3 8.5h10.5a2.8 2.8 0 1 0-2.8-2.8"/><path d="M3 13.5h14a2.8 2.8 0 1 1-2.8 2.8"/><path d="M3 18.5h7.5"/>',
-        veins:  '<path d="M9 3.2 3.4 5.6v15.2L9 18.4l6 2.4 5.6-2.4V3.2L15 5.6 9 3.2z"/><path d="M9 3.2v15.2M15 5.6v15.2"/>',
-        corrent:'<path d="M3 8c2.7-2 5.3 2 8 0s5.3-2 8 0"/><path d="M3 13c2.7-2 5.3 2 8 0s5.3-2 8 0"/><path d="M6.5 18.5h4M13.5 18.5h4"/>',
-        webcams:'<rect x="2.6" y="6.6" width="12.8" height="10.8" rx="2.6"/><path d="M15.4 11l6-3.4v8.8l-6-3.4z"/>',
-        previsio:'<circle cx="12" cy="12" r="4"/><path d="M12 2.4V5M12 19v2.6M2.4 12H5M19 12h2.6M5.2 5.2l1.8 1.8M17 17l1.8 1.8M18.8 5.2 17 7M7 17l-1.8 1.8"/>',
-        regates:'<path d="M11.6 3.4v12.2M11.6 15.6H4.2l7.4-12.2z"/><path d="M13.6 15.6V7.2l6.2 8.4h-6.2z"/><path d="M2.6 19.4c1.6 1.3 3.2 1.3 4.8 0s3.2-1.3 4.8 0 3.2 1.3 4.8 0 3.2-1.3 4.4 0"/>'
-    };
-    var CARDS = [
-        { id:'vent',     title:'Vent actual',        target:'wind-map-section' },
-        { id:'veins',    title:'Vent clubs veïns',   target:'neighbours-section' },
-        { id:'corrent',  title:'Corrent superficial',target:'current-section' },
-        { id:'webcams',  title:'Webcams',            target:'webcams-section' },
-        { id:'previsio', title:'Previsió',           target:'meteo-section' },
-        { id:'regates',  title:'Regates',            target:'regates-section' }
-    ];
-
-    var grid = document.getElementById('cockpitGrid');
-    if (!grid) return;
-
-    grid.innerHTML = CARDS.map(function(c) {
-        return '<div class="ck" role="button" tabindex="0" data-target="' + c.target + '" aria-label="' + c.title + '">'
-             +   '<span class="ck-ico"><svg viewBox="0 0 24 24">' + ICO[c.id] + '</svg></span>'
-             +   '<span class="ck-val" id="ck-' + c.id + '">--</span>'
-             +   '<span class="ck-title">' + c.title + '</span>'
-             +   '<span class="ck-hint">Toca per detall</span>'
-             + '</div>';
-    }).join('');
+window.CockpitSlots = (function() {
+    var stage = document.getElementById('cockpit-hero');
+    if (!stage) return { set: function() {} };
 
     function anar(id) {
         var el = document.getElementById(id);
         if (!el) return;
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        el.classList.remove('ck-flash');
-        void el.offsetWidth;
-        el.classList.add('ck-flash');
-        setTimeout(function() { el.classList.remove('ck-flash'); }, 1900);
     }
-    grid.addEventListener('click', function(e) {
-        var c = e.target.closest('.ck');
-        if (c) anar(c.dataset.target);
-    });
-    grid.addEventListener('keydown', function(e) {
-        if (e.key !== 'Enter' && e.key !== ' ') return;
-        var c = e.target.closest('.ck');
-        if (c) { e.preventDefault(); anar(c.dataset.target); }
+    stage.addEventListener('click', function(e) {
+        var b = e.target.closest('.ch-spot');
+        if (b && b.dataset.target) anar(b.dataset.target);
     });
 
-    /* Valors: es llegeixen del DOM que ja actualitzen els sondejos existents */
-    function txt(id) {
-        var el = document.getElementById(id);
-        if (!el) return null;
-        var t = (el.textContent || '').trim();
-        return (t && t !== '--' && t !== '-- kn') ? t : null;
-    }
-    function num(id) {
-        var t = txt(id);
-        if (!t) return null;
-        var n = parseFloat(t.replace(',', '.'));
-        return isNaN(n) ? null : n;
-    }
-    function posa(id, valor, unitat) {
-        var el = document.getElementById('ck-' + id);
-        if (!el) return;
-        el.innerHTML = valor === null ? '--' : (valor + (unitat ? '<small>' + unitat + '</small>' : ''));
-    }
-    function refresca() {
-        posa('vent', txt('wind-pill-val'), ' kn');
-
-        var veins = ['aq-speed', 'cb-speed', 'vn-speed', 'cd-speed']
-            .map(num).filter(function(v) { return v !== null; });
-        posa('veins', veins.length ? Math.max.apply(null, veins) : null, ' kn');
-
-        var cur = txt('cur-speed');
-        posa('corrent', cur, ' kn');
-
-        posa('webcams', '3', ' cams');
-
-        var temp = txt('wm-temp') || txt('wm-temp-m');
-        posa('previsio', temp ? temp.replace('°C', '').trim() : null, '°C');
-
-        posa('regates', 'Veure', '');
-    }
-    refresca();
-    setInterval(function() { if (!document.hidden) refresca(); }, 5000);
-    document.addEventListener('visibilitychange', function() { if (!document.hidden) refresca(); });
+    return {
+        /* CockpitSlots.set('vent', '<b>12 kn</b>') */
+        set: function(slot, html) {
+            var el = document.getElementById('slot-' + slot);
+            if (el) el.innerHTML = html;
+        },
+        /* Valors en directe que ja tenim a la pàgina, a punt de fer servir.
+           Retorna, p. ex.: { vent:'0.9', veins:'5.2', corrent:'0.13', temp:'24.1' } */
+        dades: function() {
+            function t(id) {
+                var el = document.getElementById(id);
+                if (!el) return null;
+                var v = (el.textContent || '').trim();
+                return (v && v !== '--') ? v : null;
+            }
+            function n(id) { var v = t(id); v = v && parseFloat(v.replace(',', '.')); return isNaN(v) ? null : v; }
+            var veins = ['aq-speed', 'cb-speed', 'vn-speed', 'cd-speed'].map(n)
+                        .filter(function(v) { return v !== null; });
+            return {
+                vent:    t('wind-pill-val'),
+                veins:   veins.length ? Math.max.apply(null, veins) : null,
+                corrent: t('cur-speed'),
+                temp:    t('wm-temp') || t('wm-temp-m')
+            };
+        }
+    };
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
