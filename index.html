@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.18</div>
+            <div class="subtitle">v6.19</div>
         </div>
     </div>
 </header>
@@ -1690,7 +1690,7 @@
                     </div>
                     <div class="windy-map-tabs">
                         <span class="windy-map-tab active" id="tabMapaWindy">Windy.app</span>
-                        <span class="windy-map-tab" id="tabWindy">Detall</span>
+                        <span class="windy-map-tab" id="tabWindy">Comparar</span>
                         <span class="windy-map-tab" id="tabWindyModels">Models</span>
                         <span class="windy-map-tab" id="tabWindguru">Windguru</span>
                         <span class="windy-map-tab" id="tabPressio">Pressió</span>
@@ -2726,28 +2726,25 @@
             selInfo.style.display = 'none';
         }
 
-        function loadWindy(model) {
-            if (model) currentModel = model;
-            document.cookie = 'forecast_widget_units=0,0,0,0,0,0,0,0;path=/;max-age=31536000';
+        function loadWindy() {
+            document.cookie = 'forecast_widget_units=0,0,0,0,0,compare,0,0;path=/;max-age=31536000';
+            hideModelSelector();
             container.innerHTML = '';
             container.style.height = 'auto';
             container.style.minHeight = '400px';
             container.style.background = '#fff';
-            renderModelSelector();
             var widgetDiv = document.createElement('div');
             widgetDiv.setAttribute('data-windywidget', 'forecast');
             widgetDiv.setAttribute('data-thememode', 'dark');
             widgetDiv.setAttribute('data-spotid', '30007');
-            widgetDiv.setAttribute('data-model', currentModel);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
             container.appendChild(widgetDiv);
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             container.appendChild(script);
-            var activeM = MODELS.find(function(m) { return m.id === currentModel; });
-            if (subtitle) subtitle.textContent = 'Previsió costera — ' + (activeM ? activeM.label : 'Sitges');
-            if (caption) caption.textContent = 'Previsió de vent, ratxes, onatge i temperatura per Sitges (en knots).';
+            if (subtitle) subtitle.textContent = 'Comparatiu multi-model — Sitges';
+            if (caption) caption.textContent = 'Graella i gràfic comparatiu de tots els models (GFS, ECMWF, AROME, ICON...) en knots.';
             if (source) source.textContent = 'Font: Windy.app';
         }
 
