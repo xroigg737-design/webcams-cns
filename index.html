@@ -1346,6 +1346,26 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
         }
         .ch-ic-fill { fill: #ffffff; stroke: none; }
+        /* Variant "peu": només substitueix la franja de text de la targeta
+           i deixa a la vista la imatge pintada de la foto. */
+        .ch-spot.peu .ch-slot {
+            inset: auto;
+            left: 5%;
+            right: 5%;
+            top: 71.5%;            /* just sota la icona pintada */
+            bottom: 3%;
+            padding: 1% 6%;
+            border-radius: 0.34em;
+            /* To exacte de la franja d'etiquetes de la targeta, perquè el
+               plafó no es noti; el desenfocat esborra el text de sota. */
+            background: linear-gradient(180deg,
+                rgba(73,90,104,0.90) 0%,
+                rgba(80,98,113,0.92) 70%,
+                rgba(86,106,121,0.92) 100%);
+            -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+            box-shadow: none;
+        }
         /* Mini-mapa vectorial: ocupa menys que el dibuixat a la foto i
            deixa espai per al text, mantenint-se nítid a qualsevol mida. */
         .ch-map {
@@ -1557,9 +1577,9 @@
                 <button class="ch-spot" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8"
                         data-slot="corrent" data-target="current-section" aria-label="Corrent superficial">
                     <span class="ch-slot" id="slot-corrent"></span></button>
-                <button class="ch-spot" style="--x:8.8;--y:44.7;--w:25.0;--h:17.4"
+                <button class="ch-spot filled peu" style="--x:8.8;--y:44.7;--w:25.0;--h:17.4"
                         data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
-                    <span class="ch-slot" id="slot-webcams"></span></button>
+                    <span class="ch-slot" id="slot-webcams"><span class="ch-tx">Webcams</span></span></button>
                 <button class="ch-spot" style="--x:36.7;--y:44.7;--w:25.6;--h:17.5"
                         data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
                     <span class="ch-slot" id="slot-previsio"></span></button>
