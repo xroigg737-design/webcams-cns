@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.38</div>
+            <div class="subtitle">v6.39</div>
         </div>
     </div>
 </header>
@@ -2841,39 +2841,12 @@
         function getRowRelabels() {
             var isCompare = currentModelId === 'compare';
             return {
-                'knots': isCompare ? 'Vent(Ratxa) kn' : 'Vent kn',
-                'nusos': isCompare ? 'Vent(Ratxa) kn' : 'Vent kn',
-                'knots*': 'Ratxa kn', 'nusos*': 'Ratxa kn',
-                'swell': 'Onatge', 'onatge': 'Onatge',
-                'm': 'Ona (m)', 's': 'T. ona (s)'
+                'knots': isCompare ? 'vnt(r)' : 'nusos',
+                'nusos': isCompare ? 'vnt(r)' : 'nusos',
+                'knots*': 'ratxa', 'nusos*': 'ratxa',
+                'swell': 'onatge', 'onatge': 'onatge',
+                'm': 'alt(m)', 's': 'per(s)'
             };
-        }
-
-        function widenWidgetLabels() {
-            var wBody = document.getElementById('windyMapBody');
-            if (!wBody) return;
-            var labelTexts = ['hora','vent','Vent kn','Vent(Ratxa) kn','Ratxa kn','Onatge','Ona (m)','T. ona (s)',
-                              'time','wind','hour','knots','knots*','swell','nusos','nusos*'];
-            var walker = document.createTreeWalker(wBody, NodeFilter.SHOW_TEXT, null, false);
-            var node;
-            while (node = walker.nextNode()) {
-                var t = node.textContent.trim();
-                if (labelTexts.indexOf(t) === -1) continue;
-                var el = node.parentElement;
-                for (var i = 0; i < 3 && el && el !== wBody; i++) {
-                    var cs = window.getComputedStyle(el);
-                    if (cs.display === 'grid' || cs.display === 'flex' || cs.display === 'table-row') {
-                        var firstChild = el.children[0];
-                        if (firstChild) {
-                            firstChild.style.minWidth = '85px';
-                            firstChild.style.width = '85px';
-                            firstChild.style.flexShrink = '0';
-                        }
-                        break;
-                    }
-                    el = el.parentElement;
-                }
-            }
         }
 
         function relabelWidgetRows() {
@@ -2897,15 +2870,6 @@
                 if (!el) return;
                 el.style.color = '#8ec8e8';
                 el.style.fontWeight = '600';
-                el.style.fontSize = '11px';
-                el.style.lineHeight = '1.2';
-                el.style.minWidth = '80px';
-                el.style.width = '80px';
-                el.style.paddingRight = '6px';
-                el.style.boxSizing = 'border-box';
-                if (el.parentElement) {
-                    el.parentElement.style.minWidth = '80px';
-                }
             });
         }
 
@@ -3015,7 +2979,6 @@
                     translateWidgetNode(container);
                     hideWidgetRows();
                     relabelWidgetRows();
-                    widenWidgetLabels();
                 }
                 setTimeout(applyAll, 1500);
                 setTimeout(applyAll, 3000);
