@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.29</div>
+            <div class="subtitle">v6.30</div>
         </div>
     </div>
 </header>
@@ -2838,6 +2838,37 @@
             }
         }
 
+        var rowRelabels = {
+            'knots': 'Vent (nusos)', 'nusos': 'Vent (nusos)',
+            'knots*': 'Ratxa (nusos)', 'nusos*': 'Ratxa (nusos)',
+            'swell': 'Onatge', 'onatge': 'Onatge',
+            'm': 'Alçada ona (m)', 's': 'Període (s)'
+        };
+
+        function relabelWidgetRows() {
+            var wBody = document.getElementById('windyMapBody');
+            if (!wBody) return;
+            var els = wBody.querySelectorAll('[class*="row-name"], [class*="rowName"], [class*="field-name"], [class*="fieldName"], [class*="label"]');
+            els.forEach(function(el) {
+                var t = el.textContent.trim();
+                if (rowRelabels[t]) el.textContent = rowRelabels[t];
+            });
+            var walker = document.createTreeWalker(wBody, NodeFilter.SHOW_TEXT, null, false);
+            var node;
+            while (node = walker.nextNode()) {
+                var t = node.textContent.trim();
+                if (!t) continue;
+                if (t === 'm' || t === 's') {
+                    var p = node.parentElement;
+                    if (p && p.offsetWidth && p.offsetWidth < 120 && p.children.length === 0) {
+                        node.textContent = rowRelabels[t];
+                    }
+                } else if (rowRelabels[t]) {
+                    node.textContent = rowRelabels[t];
+                }
+            }
+        }
+
         var widgetObserver = null;
         function startWidgetTranslation() {
             if (widgetObserver) widgetObserver.disconnect();
@@ -2846,7 +2877,7 @@
                     if (m.type === 'childList') {
                         m.addedNodes.forEach(function(n) {
                             translateWidgetNode(n);
-                            if (n.nodeType === 1) hideWidgetRows();
+                            if (n.nodeType === 1) { hideWidgetRows(); relabelWidgetRows(); }
                         });
                     } else if (m.type === 'characterData' && m.target.nodeType === 3) {
                         translateWidgetNode(m.target);
@@ -2938,9 +2969,9 @@
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             script.onload = function() {
-                setTimeout(hideWidgetRows, 500);
-                setTimeout(hideWidgetRows, 1500);
-                setTimeout(hideWidgetRows, 3000);
+                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 500);
+                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 1500);
+                setTimeout(function(){ hideWidgetRows(); relabelWidgetRows(); }, 3000);
             };
             container.appendChild(script);
             if (subtitle) subtitle.textContent = cur.label + ' — Sitges';
