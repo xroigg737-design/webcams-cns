@@ -36,8 +36,10 @@ if a != -1:
     s = s[:a] + "    <!-- Service worker desactivat en l'entorn de desenvolupament -->\n" + s[b:]
 # Marca DEV visible
 import re
+import datetime
+segell = datetime.datetime.now().strftime('%H:%M')
 s = re.sub(r'<div class="subtitle">(v[0-9.]+)</div>',
-           r'<div class="subtitle">\1 &middot; <span style="color:#ffd740;font-weight:800;letter-spacing:2px;">DEV</span></div>', s)
+           r'<div class="subtitle">\1 &middot; <span style="color:#ffd740;font-weight:800;letter-spacing:2px;">DEV ' + segell + '</span></div>', s)
 s = s.replace('<title>Avui Regu ? - Sitges</title>', '<title>Avui Regu ? - Sitges [DEV]</title>')
 open(p, 'w').write(s)
 PY

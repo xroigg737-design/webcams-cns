@@ -1354,7 +1354,7 @@
             right: 5%;
             top: 71.5%;            /* just sota la icona pintada */
             bottom: 3%;
-            padding: 1% 13%;       /* marge perquè el text respiri */
+            padding: 1% 11%;       /* marge perquè el text respiri */
             border-radius: 0.34em;
             /* To exacte de la franja d'etiquetes de la targeta, perquè el
                plafó no es noti; el desenfocat esborra el text de sota. */
@@ -3887,7 +3887,9 @@ window.CockpitSlots = (function() {
         if (!el) return;
         var caixa = el.getBoundingClientRect();
         if (!caixa.width) return;
-        var mida = caixa.width * 0.30;
+        var sostre = el.classList.contains('ch-slot') && el.parentNode.classList.contains('peu')
+                     ? caixa.height * 0.52 : caixa.width * 0.30;
+        var mida = Math.min(caixa.width * 0.30, sostre);
         el.style.fontSize = mida + 'px';
         var volta = 0;
         while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
