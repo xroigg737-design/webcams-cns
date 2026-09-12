@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.43</div>
+            <div class="subtitle">v6.44</div>
         </div>
     </div>
 </header>
@@ -2873,28 +2873,10 @@
             });
         }
 
-        var widgetObserver = null;
-        var widgetReady = false;
-        function startWidgetTranslation() {
-            widgetReady = false;
-        }
-        function enableWidgetObserver() {
-            if (widgetObserver) widgetObserver.disconnect();
-            widgetReady = true;
-            widgetObserver = new MutationObserver(function(mutations) {
-                mutations.forEach(function(m) {
-                    if (m.type === 'childList') {
-                        m.addedNodes.forEach(function(n) { translateWidgetNode(n); });
-                    } else if (m.type === 'characterData' && m.target.nodeType === 3) {
-                        translateWidgetNode(m.target);
-                    }
-                });
-            });
-            widgetObserver.observe(container, { childList: true, subtree: true, characterData: true });
-        }
+        var widgetTranslationTimer = null;
+        function startWidgetTranslation() {}
         function stopWidgetTranslation() {
-            widgetReady = false;
-            if (widgetObserver) { widgetObserver.disconnect(); widgetObserver = null; }
+            if (widgetTranslationTimer) { clearInterval(widgetTranslationTimer); widgetTranslationTimer = null; }
         }
 
         var widgetHideCSS = null;
@@ -2986,11 +2968,14 @@
                 }
                 setTimeout(applyAll, 1500);
                 setTimeout(applyAll, 3000);
+                setTimeout(applyAll, 5000);
                 setTimeout(function() {
                     applyAll();
-                    enableWidgetObserver();
-                }, 5000);
-                setTimeout(applyAll, 8000);
+                    widgetTranslationTimer = setInterval(function() {
+                        translateWidgetNode(container);
+                        relabelWidgetRows();
+                    }, 10000);
+                }, 8000);
             };
             container.appendChild(script);
             if (subtitle) subtitle.textContent = cur.label + ' — Sitges';
