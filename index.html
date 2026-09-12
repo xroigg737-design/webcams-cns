@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.19</div>
+            <div class="subtitle">v6.20</div>
         </div>
     </div>
 </header>
@@ -2726,6 +2726,74 @@
             selInfo.style.display = 'none';
         }
 
+        var widgetTranslations = {
+            'TODAY': 'AVUI', 'TOMORROW': 'DEMÀ', 'YESTERDAY': 'AHIR',
+            'Today': 'Avui', 'Tomorrow': 'Demà', 'Yesterday': 'Ahir',
+            'MON': 'DL', 'TUE': 'DM', 'WED': 'DC', 'THU': 'DJ', 'FRI': 'DV', 'SAT': 'DS', 'SUN': 'DG',
+            'Mon': 'Dl', 'Tue': 'Dm', 'Wed': 'Dc', 'Thu': 'Dj', 'Fri': 'Dv', 'Sat': 'Ds', 'Sun': 'Dg',
+            'Monday': 'Dilluns', 'Tuesday': 'Dimarts', 'Wednesday': 'Dimecres',
+            'Thursday': 'Dijous', 'Friday': 'Divendres', 'Saturday': 'Dissabte', 'Sunday': 'Diumenge',
+            'JAN': 'GEN', 'FEB': 'FEB', 'MAR': 'MAR', 'APR': 'ABR', 'MAY': 'MAI', 'JUN': 'JUN',
+            'JUL': 'JUL', 'AUG': 'AGO', 'SEP': 'SET', 'OCT': 'OCT', 'NOV': 'NOV', 'DEC': 'DES',
+            'Jan': 'Gen', 'Feb': 'Feb', 'Mar': 'Mar', 'Apr': 'Abr', 'May': 'Mai', 'Jun': 'Jun',
+            'Jul': 'Jul', 'Aug': 'Ago', 'Sep': 'Set', 'Oct': 'Oct', 'Nov': 'Nov', 'Dec': 'Des',
+            'knots': 'nusos', 'Knots': 'Nusos', 'KNOTS': 'NUSOS',
+            'wind': 'vent', 'Wind': 'Vent', 'WIND': 'VENT',
+            'breeze': 'brisa', 'Breeze': 'Brisa',
+            'clouds': 'núvols', 'Clouds': 'Núvols',
+            'fog': 'boira', 'Fog': 'Boira',
+            'swell': 'onatge', 'Swell': 'Onatge',
+            'tide': 'marea', 'Tide': 'Marea',
+            'time': 'hora', 'Time': 'Hora',
+            'now': 'ara', 'Now': 'Ara',
+            'updated': 'actualitzat', 'Updated': 'Actualitzat',
+            'hours ago': 'hores enrere', 'hour ago': 'hora enrere',
+            'minutes ago': 'minuts enrere', 'minute ago': 'minut enrere',
+            'COMPARE': 'COMPARAR', 'Compare': 'Comparar',
+            'No data here': 'Sense dades', 'showing': 'mostrant',
+            'rain': 'pluja', 'Rain': 'Pluja',
+            'temp': 'temp', 'Temp': 'Temp',
+            'pressure': 'pressió', 'Pressure': 'Pressió',
+            'humidity': 'humitat', 'Humidity': 'Humitat',
+            'gust': 'ratxa', 'Gust': 'Ratxa', 'gusts': 'ratxes', 'Gusts': 'Ratxes'
+        };
+        var trKeys = Object.keys(widgetTranslations).sort(function(a, b) { return b.length - a.length; });
+
+        function translateWidgetNode(node) {
+            if (node.nodeType === 3) {
+                var txt = node.textContent;
+                var changed = false;
+                for (var i = 0; i < trKeys.length; i++) {
+                    var k = trKeys[i];
+                    if (txt.indexOf(k) !== -1) {
+                        txt = txt.split(k).join(widgetTranslations[k]);
+                        changed = true;
+                    }
+                }
+                if (changed) node.textContent = txt;
+            } else if (node.nodeType === 1 && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+                for (var c = node.firstChild; c; c = c.nextSibling) translateWidgetNode(c);
+            }
+        }
+
+        var widgetObserver = null;
+        function startWidgetTranslation() {
+            if (widgetObserver) widgetObserver.disconnect();
+            widgetObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(m) {
+                    if (m.type === 'childList') {
+                        m.addedNodes.forEach(function(n) { translateWidgetNode(n); });
+                    } else if (m.type === 'characterData' && m.target.nodeType === 3) {
+                        translateWidgetNode(m.target);
+                    }
+                });
+            });
+            widgetObserver.observe(container, { childList: true, subtree: true, characterData: true });
+        }
+        function stopWidgetTranslation() {
+            if (widgetObserver) { widgetObserver.disconnect(); widgetObserver = null; }
+        }
+
         function loadWindy() {
             document.cookie = 'forecast_widget_units=0,0,0,0,0,compare,0,0;path=/;max-age=31536000';
             hideModelSelector();
@@ -2733,6 +2801,7 @@
             container.style.height = 'auto';
             container.style.minHeight = '400px';
             container.style.background = '#fff';
+            startWidgetTranslation();
             var widgetDiv = document.createElement('div');
             widgetDiv.setAttribute('data-windywidget', 'forecast');
             widgetDiv.setAttribute('data-thememode', 'dark');
@@ -2744,11 +2813,12 @@
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
             container.appendChild(script);
             if (subtitle) subtitle.textContent = 'Comparatiu multi-model — Sitges';
-            if (caption) caption.textContent = 'Graella i gràfic comparatiu de tots els models (GFS, ECMWF, AROME, ICON...) en knots.';
+            if (caption) caption.textContent = 'Graella i gràfic comparatiu de tots els models (GFS, ECMWF, AROME, ICON...) en nusos.';
             if (source) source.textContent = 'Font: Windy.app';
         }
 
         function loadMapaWindy() {
+            stopWidgetTranslation();
             hideModelSelector();
             container.innerHTML = '';
             container.style.height = '520px';
@@ -2779,6 +2849,7 @@
         var mmData = null;
 
         function loadMultimodel() {
+            stopWidgetTranslation();
             hideModelSelector();
             container.innerHTML = '<div id="mm-map" style="width:100%;height:350px;"></div>'
                 + '<div id="mm-slider-wrap" style="padding:6px 12px;display:flex;align-items:center;gap:8px;">'
@@ -2903,6 +2974,7 @@
 
         var wgCounter = 0;
         function loadWindguru() {
+            stopWidgetTranslation();
             hideModelSelector();
             container.innerHTML = '';
             container.style.background = '#f5f5f5';
@@ -2941,6 +3013,7 @@
         }
 
         function loadPressio() {
+            stopWidgetTranslation();
             hideModelSelector();
             container.innerHTML = '';
             container.style.height = '520px';
