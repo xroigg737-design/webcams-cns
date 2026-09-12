@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.28</div>
+            <div class="subtitle">v6.29</div>
         </div>
     </div>
 </header>
@@ -2741,13 +2741,15 @@
                     + (isActive ? 'background:rgba(0,191,165,0.1);' : '')
                     + (m.id === 'compare' ? 'border-bottom:1.5px solid rgba(0,191,165,0.15);' : '');
                 var mDot = document.createElement('span');
-                mDot.style.cssText = 'width:14px;height:14px;border-radius:50%;flex-shrink:0;transition:all 0.2s;'
-                    + 'background:' + m.color + ';box-shadow:0 0 8px ' + m.color + ';'
-                    + 'border:2px solid ' + (isActive ? '#fff' : 'transparent') + ';';
+                mDot.style.cssText = 'width:16px;height:16px;border-radius:50%;flex-shrink:0;transition:all 0.2s;'
+                    + 'border:2px solid ' + m.color + ';'
+                    + (isActive
+                        ? 'background:' + m.color + ';box-shadow:0 0 8px ' + m.color + ';'
+                        : 'background:transparent;');
                 var mInfo = document.createElement('div');
                 mInfo.style.cssText = 'display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;';
                 var mName = document.createElement('span');
-                mName.style.cssText = 'font-size:0.82em;font-weight:' + (isActive ? '800' : '600') + ';color:' + (isActive ? '#5ef0e6' : '#fff') + ';';
+                mName.style.cssText = 'font-size:0.82em;font-weight:' + (isActive ? '800' : '500') + ';color:' + (isActive ? '#5ef0e6' : 'rgba(255,255,255,0.55)') + ';';
                 mName.textContent = m.label;
                 var mDesc = document.createElement('span');
                 mDesc.style.cssText = 'font-size:0.62em;color:rgba(255,255,255,0.35);';
