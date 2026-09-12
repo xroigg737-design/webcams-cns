@@ -1222,7 +1222,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.39</div>
+            <div class="subtitle">v6.40</div>
         </div>
     </div>
 </header>
@@ -2920,7 +2920,11 @@
                 '#windyMapBody [class*="curwind"],' +
                 '#windyMapBody [class*="spotname"],' +
                 '#windyMapBody [class*="timezone"],' +
-                '#windyMapBody [id*="header"]' +
+                '#windyMapBody [id*="header"],' +
+                '#windyMapBody [class*="setting"],' +
+                '#windyMapBody [class*="gear"],' +
+                '#windyMapBody [class*="config"],' +
+                '#windyMapBody [class*="cog"]' +
                 '{ display:none !important; }';
             document.head.appendChild(widgetHideCSS);
         }
@@ -2947,7 +2951,7 @@
                     }
                 }
             });
-            container.querySelectorAll('[class*="widget-header"],[class*="headerText"],[class*="curwind"],[class*="spotname"]').forEach(function(el) {
+            container.querySelectorAll('[class*="widget-header"],[class*="headerText"],[class*="curwind"],[class*="spotname"],[class*="setting"],[class*="gear"],[class*="config"],[class*="cog"]').forEach(function(el) {
                 el.style.display = 'none';
             });
         }
