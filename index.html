@@ -1454,8 +1454,12 @@
             gap: 10px;
             padding: 10px 12px 14px;
         }
+        .previ-matriu .previ-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+        .previ-matriu .previ-card:last-child:nth-child(odd) img { height: 84px; }
         @media (min-width: 700px) {
-            .previ-matriu { grid-template-columns: repeat(4, 1fr); }
+            .previ-matriu { grid-template-columns: repeat(5, 1fr); }
+            .previ-matriu .previ-card:last-child:nth-child(odd) { grid-column: auto; }
+            .previ-matriu .previ-card:last-child:nth-child(odd) img { height: 128px; }
         }
         .previ-card {
             position: relative;
@@ -2041,6 +2045,8 @@
                     <img src="img/previ-models.jpg" alt="" loading="lazy"><span>Models</span></button>
                 <button class="previ-card" type="button" data-tab="tabWindguru">
                     <img src="img/previ-windguru.jpg" alt="" loading="lazy"><span>Windguru</span></button>
+                <button class="previ-card" type="button" data-tab="tabPressio">
+                    <img src="img/previ-pressio.jpg" alt="" loading="lazy"><span>Pressió</span></button>
             </div>
             <button class="previ-tornar" type="button" id="previTornar" hidden>&#8249; Totes les opcions</button>
 
