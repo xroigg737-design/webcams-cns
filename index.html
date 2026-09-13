@@ -1635,9 +1635,9 @@
                 <button class="ch-spot filled peu" style="--x:8.8;--y:44.7;--w:25.0;--h:17.4"
                         data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
                     <span class="ch-slot ch-fit" id="slot-webcams"><span class="ch-tx">Webcams</span></span></button>
-                <button class="ch-spot" style="--x:36.7;--y:44.7;--w:25.6;--h:17.5"
+                <button class="ch-spot filled" style="--x:36.7;--y:44.7;--w:25.6;--h:17.5;--peu-b:3.7%"
                         data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
-                    <span class="ch-slot" id="slot-previsio"></span></button>
+                    <span class="ch-slot carta" id="slot-previsio"><picture><source type="image/webp" srcset="img/w-previ.webp"><img class="ch-th" src="img/w-previ.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Previsió</span></span></span></button>
                 <button class="ch-spot" style="--x:64.8;--y:44.7;--w:25.8;--h:17.3"
                         data-slot="regates" data-target="regates-section" aria-label="Regates">
                     <span class="ch-slot" id="slot-regates"></span></button>
@@ -3939,9 +3939,9 @@ window.CockpitSlots = (function() {
        llarga, tipografia del sistema, pantalla petita— la reduïm fins que
        hi entri. Cap lletra pot sortir de la forma del widget. */
     function ajusta(el) {
-        if (!el) return;
+        if (!el) return 0;
         var caixa = el.getBoundingClientRect();
-        if (!caixa.width) return;
+        if (!caixa.width) return 0;
         var mida = Math.min(caixa.width * 0.30, caixa.height * 0.52);
         el.style.fontSize = mida + 'px';
         var volta = 0;
@@ -3950,10 +3950,20 @@ window.CockpitSlots = (function() {
             mida *= 0.95;
             el.style.fontSize = mida + 'px';
         }
+        return mida;
     }
+    /* Totes les etiquetes comparteixen mida: agafem la més gran que hi
+       càpiga a totes, així cap widget no crida més que un altre. */
     function ajustaTots() {
         var slots = stage.querySelectorAll('.ch-fit');
-        for (var i = 0; i < slots.length; i++) ajusta(slots[i]);
+        if (!slots.length) return;
+        var minima = Infinity;
+        for (var i = 0; i < slots.length; i++) {
+            var m = ajusta(slots[i]);
+            if (m > 0 && m < minima) minima = m;
+        }
+        if (minima === Infinity) return;
+        for (var j = 0; j < slots.length; j++) slots[j].style.fontSize = minima + 'px';
     }
     var foto = stage.querySelector('.ch-img');
     if (foto && !foto.complete) foto.addEventListener('load', ajustaTots);
