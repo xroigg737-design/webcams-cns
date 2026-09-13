@@ -1565,7 +1565,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.56</div>
+            <div class="subtitle">v6.57</div>
         </div>
     </div>
 </header>
@@ -4113,25 +4113,40 @@ window.CockpitSlots = (function() {
         if (actiu) actiu.classList.remove('actiu');
     }
 
+    /* El botó del final torna a la pantalla d'on venim: si hi hem arribat
+       des d'una tria (Corrent & Pressió), hi torna; si no, plega i ensenya
+       el cockpit. S'actualitza cada cop que s'obre la secció. */
     function posaTancador(sec) {
-        if (sec.querySelector('.tanca-seccio')) return;
-        var b = document.createElement('button');
-        b.className = 'tanca-seccio';
-        b.type = 'button';
-        b.innerHTML = '\u25B2 Tancar';
-        b.addEventListener('click', function() {
-            plega();
-            document.getElementById('cockpit-hero').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-        sec.appendChild(b);
+        var b = sec.querySelector('.tanca-seccio');
+        if (!b) {
+            b = document.createElement('button');
+            b.className = 'tanca-seccio';
+            b.type = 'button';
+            sec.appendChild(b);
+        } else {
+            sec.appendChild(b);          /* sempre al final del contingut */
+        }
+        var pare = sec.dataset.pare;
+        if (pare && document.getElementById(pare)) {
+            var titol = document.getElementById(pare).querySelector('.category-title');
+            b.innerHTML = '\u2039 Tornar a ' + (titol ? titol.textContent.trim() : 'enrere');
+            b.onclick = function() { anar(pare); };
+        } else {
+            b.innerHTML = '\u25B2 Tancar';
+            b.onclick = function() {
+                plega();
+                document.getElementById('cockpit-hero').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            };
+        }
     }
 
-    function anar(id, boto) {
+    function anar(id, boto, pare) {
         var sec = document.getElementById(id);
         if (!sec) return;
         var joberta = sec.classList.contains('obert');
         plega();
         if (joberta) return;                       // segon toc sobre el mateix: plega
+        sec.dataset.pare = pare || '';
         sec.classList.add('obert');
         posaTancador(sec);
         if (!boto) boto = stage.querySelector('.ch-spot[data-target="' + id + '"]');
@@ -4314,13 +4329,13 @@ window.CockpitSlots = (function() {
             var carta = e.target.closest('.previ-card[data-secc]');
             if (!carta || typeof window.cockpitObre !== 'function') return;
             var desti = carta.dataset.secc;
-            window.cockpitObre(desti);
+            window.cockpitObre(desti, null, 'corrent-pressio-section');
             var sec = document.getElementById(desti);
             if (sec && !sec.querySelector('.previ-tornar')) {
                 var b = document.createElement('button');
                 b.className = 'previ-tornar';
                 b.type = 'button';
-                b.innerHTML = '\u2039 Corrent i Pressi\u00f3';
+                b.innerHTML = '\u2039 Corrent &amp; Pressi\u00f3';
                 b.style.margin = '4px auto 10px';
                 b.addEventListener('click', function() { window.cockpitObre('corrent-pressio-section'); });
                 sec.insertBefore(b, sec.children[2] || null);
