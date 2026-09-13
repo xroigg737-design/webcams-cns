@@ -1012,7 +1012,11 @@
             color: rgba(255,255,255,0.4);
             font-weight: 600;
         }
-        .windy-map-tabs {
+        /* La barra de pestanyes ja no es mostra: la navegació es fa amb la
+           graella d'opcions. Es queden al document perquè la graella les
+           utilitza per obrir cada contingut. */
+        .windy-map-tabs { display: none !important; }
+        .windy-map-tabs-ocult {
             display: flex;
             gap: 6px;
         }
@@ -2056,7 +2060,7 @@
             <div class="windy-map-widget" id="windyMapWidget">
                 <div class="windy-map-head">
                     <div class="windy-map-titles">
-                        <div class="windy-map-title">Mapa de previsió</div>
+                        <div class="windy-map-title">Previsió Meteo</div>
                     </div>
                     <div class="windy-map-tabs">
                         <span class="windy-map-tab active" id="tabMapaWindy">Mapa Vent</span>
