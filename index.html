@@ -1353,6 +1353,12 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
         }
         .ch-ic-fill { fill: #ffffff; stroke: none; }
+        /* Compensar el brightness(0.6) de la foto perquè el widget peu
+           (que mostra la targeta pintada a través) es vegi clar */
+        .ch-spot.peu {
+            -webkit-backdrop-filter: brightness(1.67);
+            backdrop-filter: brightness(1.67);
+        }
         /* Variant "peu": només substitueix la franja de text de la targeta
            i deixa a la vista la imatge pintada de la foto. */
         .ch-spot.peu .ch-slot {
@@ -1566,7 +1572,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.62</div>
+            <div class="subtitle">v6.63</div>
         </div>
     </div>
 </header>
