@@ -1565,7 +1565,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.57</div>
+            <div class="subtitle">v6.58</div>
         </div>
     </div>
 </header>
@@ -4127,7 +4127,11 @@ window.CockpitSlots = (function() {
             sec.appendChild(b);          /* sempre al final del contingut */
         }
         var pare = sec.dataset.pare;
-        if (pare && document.getElementById(pare)) {
+        if (typeof sec.tornaEnrere === 'function') {
+            /* la secció té subpantalles pròpies (cas de Previsió) */
+            b.innerHTML = sec.tornaEnrereText || '\u2039 Enrere';
+            b.onclick = sec.tornaEnrere;
+        } else if (pare && document.getElementById(pare)) {
             var titol = document.getElementById(pare).querySelector('.category-title');
             b.innerHTML = '\u2039 Tornar a ' + (titol ? titol.textContent.trim() : 'enrere');
             b.onclick = function() { anar(pare); };
@@ -4183,6 +4187,7 @@ window.CockpitSlots = (function() {
         }
     }
     window.cockpitObre = anar;
+    window.cockpitTancador = posaTancador;
     window.addEventListener('hashchange', desDelHash);
     setTimeout(desDelHash, 300);
 
@@ -4278,15 +4283,31 @@ window.CockpitSlots = (function() {
     var tornar = document.getElementById('previTornar');
     if (!matriu || !widget || !tornar) return;
 
+    var seccio = document.getElementById('meteo-section');
+    function refrescaTancador() {
+        if (seccio && typeof window.cockpitTancador === 'function') window.cockpitTancador(seccio);
+    }
     function mostraMatriu() {
         matriu.style.display = '';
         widget.style.display = 'none';
         tornar.hidden = true;
+        /* som a la graella: el botó del final tanca i torna al cockpit */
+        if (seccio) seccio.tornaEnrere = null;
+        refrescaTancador();
     }
     function mostraMapa() {
         matriu.style.display = 'none';
         widget.style.display = '';
         tornar.hidden = false;
+        /* som dins d'una opció: el botó del final torna a la graella */
+        if (seccio) {
+            seccio.tornaEnrere = function() {
+                mostraMatriu();
+                seccio.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+            seccio.tornaEnrereText = '\u2039 Tornar a Previsi\u00f3';
+        }
+        refrescaTancador();
     }
     mostraMatriu();
 
