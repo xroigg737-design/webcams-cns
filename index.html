@@ -3315,7 +3315,7 @@
             container.innerHTML = '';
             container.style.height = 'auto';
             container.style.minHeight = '400px';
-            container.style.background = '#fff';
+            container.style.background = '#16222e';   /* el widget va en fosc: res de franges blanques */
             startWidgetTranslation();
             var widgetDiv = document.createElement('div');
             widgetDiv.setAttribute('data-windywidget', 'forecast');
@@ -3324,7 +3324,16 @@
             widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,waves-direction,waves-height,waves-period');
             if (cur.id !== 'compare') widgetDiv.setAttribute('data-model', cur.cookieId);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
-            container.appendChild(widgetDiv);
+            /* La graella del widget s'ajusta a l'amplada del contenidor: en un
+               mòbil, 12 hores en 370 px queden apilades i no s'hi veuen ni els
+               punts ni els números. Li donem una pista més ampla i deixem que
+               es llisqui cap al costat. */
+            var pista = document.createElement('div');
+            pista.style.minWidth = Math.max(760, container.clientWidth) + 'px';
+            pista.appendChild(widgetDiv);
+            container.appendChild(pista);
+            container.style.overflowX = 'auto';
+            container.style.webkitOverflowScrolling = 'touch';
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
@@ -3339,9 +3348,10 @@
             };
             container.appendChild(script);
             if (subtitle) subtitle.textContent = cur.label + ' — Sitges';
-            if (caption) caption.textContent = cur.id === 'compare'
+            var mesHores = window.innerWidth < 760 ? ' Llisca cap al costat per veure més hores.' : '';
+            if (caption) caption.textContent = (cur.id === 'compare'
                 ? 'Vent (nusos), ratxes i onatge — comparativa de tots els models.'
-                : 'Vent (nusos), ratxes i onatge — model ' + cur.label + '.';
+                : 'Vent (nusos), ratxes i onatge — model ' + cur.label + '.') + mesHores;
             if (source) source.textContent = 'Font: Windy.app';
         }
 
