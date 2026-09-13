@@ -236,7 +236,13 @@ body{
 .res.out .v{ color:rgba(255,255,255,0.28); font-weight:700; }
 
 /* ===== Selector de cursa ===== */
-.picker{ display:flex; align-items:stretch; gap:7px; margin-bottom:12px; }
+.picker-wrap{ margin-bottom:12px; }
+.picker-label{
+  display:flex; align-items:center; gap:5px; margin-bottom:6px;
+  font-size:0.58em; font-weight:800; letter-spacing:1.4px;
+  text-transform:uppercase; color:rgba(0,191,165,0.7);
+}
+.picker{ display:flex; align-items:stretch; gap:7px; }
 .navb{
   flex-shrink:0; width:40px; border-radius:11px; cursor:pointer;
   background:var(--panel); border:1px solid rgba(0,191,165,0.28);
@@ -246,18 +252,28 @@ body{
 .navb:not(:disabled):active{ background:var(--panel-2); }
 .selwrap{ position:relative; flex:1; min-width:0; }
 select.sel{
-  width:100%; height:100%; padding:11px 30px 11px 12px;
-  background:linear-gradient(180deg, rgba(0,191,165,0.14), rgba(0,191,165,0.06));
-  border:1px solid rgba(0,191,165,0.45); border-radius:11px;
+  width:100%; height:100%; padding:11px 30px 11px 34px;
+  background:linear-gradient(180deg, rgba(0,191,165,0.16), rgba(0,191,165,0.07));
+  border:2px solid rgba(0,191,165,0.55); border-radius:11px;
   color:var(--data); font-size:0.82em; font-weight:800; font-family:inherit;
   appearance:none; -webkit-appearance:none; cursor:pointer;
+  box-shadow:0 0 12px rgba(0,191,165,0.15);
+  animation:selpulse 2s ease-in-out 1s 2;
 }
-select.sel:focus{ outline:none; border-color:var(--data); }
+@keyframes selpulse{
+  0%,100%{ box-shadow:0 0 12px rgba(0,191,165,0.15); }
+  50%{ box-shadow:0 0 20px rgba(0,191,165,0.40), 0 0 6px rgba(0,191,165,0.25); }
+}
+select.sel:focus{ outline:none; border-color:var(--data); box-shadow:0 0 16px rgba(0,191,165,0.35); animation:none; }
 select.sel option{ background:#12263f; color:#fff; font-weight:600; }
 select.sel optgroup{ background:#0d1c2e; color:var(--data); font-weight:800; }
+.selwrap::before{
+  content:'📅'; position:absolute; left:10px; top:50%; transform:translateY(-50%);
+  font-size:0.85em; pointer-events:none; z-index:1;
+}
 .selwrap::after{
   content:'▾'; position:absolute; right:12px; top:50%; transform:translateY(-50%);
-  color:var(--data); pointer-events:none; font-size:0.8em;
+  color:var(--data); pointer-events:none; font-size:0.9em; font-weight:800;
 }
 
 .racehead{
@@ -365,10 +381,13 @@ footer a{ color:rgba(255,183,77,0.7); }
   </section>
 
   <section id="viewCursa" hidden>
-    <div class="picker">
-      <button class="navb" id="prevRace" title="Cursa anterior">&lsaquo;</button>
-      <div class="selwrap"><select class="sel" id="raceSel"></select></div>
-      <button class="navb" id="nextRace" title="Cursa següent">&rsaquo;</button>
+    <div class="picker-wrap">
+      <div class="picker-label">&#9654; Tria una cursa per veure els resultats</div>
+      <div class="picker">
+        <button class="navb" id="prevRace" title="Cursa anterior">&lsaquo;</button>
+        <div class="selwrap"><select class="sel" id="raceSel"></select></div>
+        <button class="navb" id="nextRace" title="Cursa següent">&rsaquo;</button>
+      </div>
     </div>
     <div class="racehead" id="raceHead"></div>
     <div class="chips" id="raceChips"></div>
