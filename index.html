@@ -1408,7 +1408,7 @@
             left: 7%;
             top: 5.5%;
             width: 86%;
-            height: 63%;
+            height: var(--th-h, 63%);
             object-fit: cover;
             border-radius: 17% / 23%;
             box-shadow: 0 2px 8px rgba(0,0,0,0.30);
@@ -1436,7 +1436,7 @@
             left: 6%;
             right: 6%;
             bottom: var(--peu-b, 3%);   /* ajustable per alinear textos */
-            height: 25%;
+            height: var(--peu-h, 25%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1709,9 +1709,9 @@
                 <button class="ch-spot filled" style="--x:8.8;--y:28.0;--w:25.4;--h:16.2;--peu-b:5%"
                         data-slot="veins" data-target="neighbours-section" aria-label="Vent veïns">
                     <span class="ch-slot carta" id="slot-veins"><picture><source type="image/webp" srcset="img/w-veleta.webp"><img class="ch-th" src="img/w-veleta.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Vent veïns</span></span></span></button>
-                <button class="ch-spot filled" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9;--peu-b:1.2%"
+                <button class="ch-spot filled" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9;--peu-b:0.2%;--peu-h:40%;--th-h:56%"
                         data-slot="corrent2" data-target="current-section" aria-label="Corrent superficial">
-                    <span class="ch-slot carta" id="slot-corrent2"><picture><source type="image/webp" srcset="img/w-corrent.webp"><img class="ch-th" src="img/w-corrent.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Corrent</span></span></span></button>
+                    <span class="ch-slot carta" id="slot-corrent2"><picture><source type="image/webp" srcset="img/w-corrent.webp"><img class="ch-th" src="img/w-corrent.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Corrent &amp;<br>Pressió</span></span></span></button>
                 <button class="ch-spot filled" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8;--peu-b:2.4%"
                         data-slot="radar" data-target="radar-section" aria-label="Radar de pluges">
                     <span class="ch-slot carta" id="slot-radar"><picture><source type="image/webp" srcset="img/w-radar.webp"><img class="ch-th" src="img/w-radar.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Radar pluges</span></span></span></button>
