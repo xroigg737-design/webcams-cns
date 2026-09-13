@@ -1464,7 +1464,12 @@
         .press-val { font-size: 2.7rem; font-weight: 900; line-height: 1; color: #fff;
             font-variant-numeric: tabular-nums; text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
         .press-val small { font-size: 0.34em; font-weight: 700; color: rgba(255,255,255,0.6); margin-left: 5px; }
-        .press-tend { font-size: 0.82rem; font-weight: 700; color: #8fd6ff; letter-spacing: 0.3px; }
+        .press-tend {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 1.05rem; font-weight: 800; color: #8fd6ff; letter-spacing: 0.4px;
+            padding: 6px 14px; border-radius: 10px;
+            background: rgba(143,214,255,0.12); border: 1px solid rgba(143,214,255,0.25);
+        }
         .press-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
         .press-kpi { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
             border-radius: 10px; padding: 8px 6px; text-align: center; }
@@ -1572,7 +1577,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.64</div>
+            <div class="subtitle">v6.65</div>
         </div>
     </div>
 </header>
@@ -4417,6 +4422,11 @@ window.CockpitSlots = (function() {
         });
     }
 
+    function hexToRgb(h) {
+        h = h.replace('#', '');
+        return parseInt(h.substring(0,2),16) + ',' + parseInt(h.substring(2,4),16) + ',' + parseInt(h.substring(4,6),16);
+    }
+
     function pinta(punts, actual, tendencia, peu) {
         var min = Math.min.apply(null, punts.map(function(p) { return p.v; }));
         var max = Math.max.apply(null, punts.map(function(p) { return p.v; }));
@@ -4440,8 +4450,11 @@ window.CockpitSlots = (function() {
         else if (var3 < -0.3) { text = 'Baixa';           fletxa = '\u25BC'; color = '#ffc48a'; }
         else                  { text = 'Estable';         fletxa = '\u25AC'; color = '#8fd6ff'; }
         var te = document.getElementById('pressTend');
-        te.innerHTML = fletxa + ' ' + text + ' \u00b7 ' + (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',') + ' hPa en 3 h';
+        te.innerHTML = '<span style="font-size:1.2em">' + fletxa + '</span> ' + text + ' <span style="opacity:0.7;font-size:0.82em">\u00b7 ' + (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',') + ' hPa/3h</span>';
         te.style.color = color;
+        te.style.background = color.replace(')', ',0.12)').replace('rgb(', 'rgba(').replace('#', '');
+        te.style.background = 'rgba(' + hexToRgb(color) + ',0.12)';
+        te.style.borderColor = 'rgba(' + hexToRgb(color) + ',0.30)';
 
         dibuixa(punts, min, max);
 
@@ -4451,7 +4464,7 @@ window.CockpitSlots = (function() {
     }
 
     function dibuixa(punts, min, max) {
-        var W = 620, H = 230, ML = 42, MR = 10, MT = 12, MB = 26;
+        var W = 620, H = 230, ML = 48, MR = 10, MT = 12, MB = 30;
         var ampl = W - ML - MR, alt = H - MT - MB;
         var marge = Math.max(1.2, (max - min) * 0.25);
         var y0 = min - marge, y1 = max + marge;
@@ -4466,8 +4479,8 @@ window.CockpitSlots = (function() {
         var pas = (y1 - y0) > 12 ? 4 : 2;
         for (var v = Math.ceil(y0 / pas) * pas; v <= y1; v += pas) {
             var y = Y(v).toFixed(1);
-            reixa += '<line x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>';
-            etiq += '<text x="' + (ML - 6) + '" y="' + (parseFloat(y) + 3.5) + '" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">' + v + '</text>';
+            reixa += '<line x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>';
+            etiq += '<text x="' + (ML - 6) + '" y="' + (parseFloat(y) + 4) + '" text-anchor="end" font-size="12.5" font-weight="600" fill="rgba(255,255,255,0.72)" font-family="system-ui">' + v + '</text>';
         }
         var hores = '', jaPosades = {};
         for (var i = 0; i < punts.length; i++) {
@@ -4480,7 +4493,7 @@ window.CockpitSlots = (function() {
             jaPosades[clau] = 1;
             var x = X(d.getTime()).toFixed(1);
             hores += '<line x1="' + x + '" y1="' + MT + '" x2="' + x + '" y2="' + (MT + alt) + '" stroke="rgba(255,255,255,0.07)"/>'
-                   + '<text x="' + x + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">'
+                   + '<text x="' + x + '" y="' + (H - 6) + '" text-anchor="middle" font-size="12.5" font-weight="600" fill="rgba(255,255,255,0.72)" font-family="system-ui">'
                    + ('0' + d.getHours()).slice(-2) + 'h</text>';
         }
         var ult = punts[punts.length - 1];
