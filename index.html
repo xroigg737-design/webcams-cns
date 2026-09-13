@@ -1447,13 +1447,31 @@
                 background: linear-gradient(168deg, #4a7290 0%, #34556e 55%, #294159 100%);
             }
         }
-        /* Ressaltat de la secció en obrir-la des d'un indicador */
-        .ck-flash { animation: ckFlash 1.9s ease; }
-        @keyframes ckFlash {
-            0%   { box-shadow: 0 0 0 0 rgba(102,187,106,0); }
-            15%  { box-shadow: 0 0 0 3px rgba(102,187,106,0.65); }
-            100% { box-shadow: 0 0 0 0 rgba(102,187,106,0); }
+        /* Seccions que pengen del cockpit: amagades fins que s'obren */
+        .plegable { display: none; }
+        .plegable.obert { display: block; animation: obreSeccio 0.28s ease; }
+        @keyframes obreSeccio {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: none; }
         }
+        /* Indicador triat */
+        .ch-spot.actiu { box-shadow: inset 0 0 0 3px rgba(255,255,255,0.92); }
+        .ch-spot.actiu .ch-slot.carta,
+        .ch-spot.actiu .ch-slot.ch-fit { filter: brightness(1.08); }
+        .tanca-seccio {
+            display: block;
+            margin: 2px auto 14px;
+            padding: 9px 22px;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 22px;
+            background: rgba(255,255,255,0.07);
+            color: #cfe2ee;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        .tanca-seccio:hover { background: rgba(255,255,255,0.13); }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 </head>
@@ -1645,7 +1663,7 @@
         </section>
 
         <!-- VENT ESTACIONS VEÏNES -->
-        <section class="category" id="neighbours-section">
+        <section class="category plegable" id="neighbours-section">
             <div class="category-header">
                 <span class="category-icon">&#127758;</span>
                 <span class="category-title title-meteo">Vent clubs veïns</span>
@@ -1829,7 +1847,7 @@
 
              Referència de càlcul a l'app: 41.233 N, 1.812 E (CUR_LAT/CUR_LON).
              ================================================================ -->
-        <section class="category" id="current-section">
+        <section class="category plegable" id="current-section">
             <div class="category-header">
                 <span class="category-icon">&#127754;</span>
                 <span class="category-title title-current">Corrent superficial</span>
@@ -1916,7 +1934,7 @@
         <!-- WEBCAMS: secció anterior eliminada (Corrent superficial) -->
 
         <!-- WEBCAMS -->
-        <section class="category" id="webcams-section">
+        <section class="category plegable" id="webcams-section">
             <div class="category-header">
                 <span class="category-icon">&#128065;&#65039;</span>
                 <span class="category-title title-webcam">Webcams</span>
@@ -1951,7 +1969,7 @@
         </section>
 
         <!-- METEO -->
-        <section class="category" id="meteo-section">
+        <section class="category plegable" id="meteo-section">
             <div class="category-header">
                 <span class="category-icon">&#127782;&#65039;</span>
                 <span class="category-title title-meteo">Previ i Estacions Meteo</span>
@@ -1982,8 +2000,17 @@
                     <span class="windy-map-source" id="forecastSource">Font: Windy</span>
                 </div>
             </div>
-            <!-- Radar de pluges animat — RainViewer API + Leaflet -->
-            <div id="radar-section" style="padding:4px 12px 12px;">
+        </section>
+
+
+        <!-- RADAR DE PLUGES -->
+        <section class="category plegable" id="radar-section">
+            <div class="category-header">
+                <span class="category-icon">&#127783;&#65039;</span>
+                <span class="category-title title-meteo">Radar de pluges</span>
+            </div>
+            <hr class="category-line line-meteo">
+            <div style="padding:4px 12px 12px;">
                 <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:6px;padding:10px;">
                     <div style="display:flex;align-items:center;gap:6px;">
                         <span style="font-size:0.9em;">&#127783;&#65039;</span>
@@ -2006,9 +2033,8 @@
             </div>
         </section>
 
-
         <!-- REGATES -->
-        <section class="category" id="regates-section">
+        <section class="category plegable" id="regates-section">
             <div class="category-header">
                 <span class="category-icon">&#127942;</span>
                 <span class="category-title title-regata">Regates</span>
@@ -3665,7 +3691,12 @@
             loadPressio();
         });
 
-        loadMapaWindy();
+        /* Igual que el radar: el mapa de Windy espera que s'obri la secció. */
+        window.iniciaMeteo = function() {
+            if (window.__meteoFet) return;
+            window.__meteoFet = true;
+            loadMapaWindy();
+        };
     })();
 
 })();
@@ -3673,7 +3704,11 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-(function() {
+/* El radar és pesat (Leaflet + tessel·les + imatges): no s'engega fins que
+   algú obre el seu indicador al cockpit. */
+window.iniciaRadar = function() {
+    if (window.__radarFet) return;
+    window.__radarFet = true;
     // --- Radar Player amb dades Meteocat ---
     var TIMESTAMP_URL = 'https://static-m.meteo.cat/ginys/referencia/tiles/dates-tiles-CAPPI_0m.json';
     var TILE_BASE = 'https://static-m.meteo.cat/tiles';
@@ -3879,7 +3914,7 @@
     loadRadarData();
     // Recarregar cada 3 minuts (radar s'actualitza cada 6)
     setInterval(loadRadarData, 3 * 60 * 1000);
-})();
+};
 
 </script>
 
@@ -3921,19 +3956,73 @@ window.CockpitSlots = (function() {
     var stage = document.getElementById('cockpit-hero');
     if (!stage) return { set: function() {} };
 
-    function anar(id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        el.classList.remove('ck-flash');
-        void el.offsetWidth;
-        el.classList.add('ck-flash');
-        setTimeout(function() { el.classList.remove('ck-flash'); }, 2000);
+    /* Cada indicador obre la seva secció just sota el cockpit. Les altres
+       queden plegades, i el contingut pesat (radar, mapes) no es carrega
+       fins que s'obre per primera vegada. */
+    var ARRENCADA = { 'meteo-section': 'iniciaMeteo', 'radar-section': 'iniciaRadar' };
+
+    function plega() {
+        var oberta = document.querySelector('.plegable.obert');
+        if (oberta) oberta.classList.remove('obert');
+        var actiu = stage.querySelector('.ch-spot.actiu');
+        if (actiu) actiu.classList.remove('actiu');
     }
+
+    function posaTancador(sec) {
+        if (sec.querySelector('.tanca-seccio')) return;
+        var b = document.createElement('button');
+        b.className = 'tanca-seccio';
+        b.type = 'button';
+        b.innerHTML = '\u25B2 Tancar';
+        b.addEventListener('click', function() {
+            plega();
+            document.getElementById('cockpit-hero').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        sec.appendChild(b);
+    }
+
+    function anar(id, boto) {
+        var sec = document.getElementById(id);
+        if (!sec) return;
+        var joberta = sec.classList.contains('obert');
+        plega();
+        if (joberta) return;                       // segon toc sobre el mateix: plega
+        sec.classList.add('obert');
+        posaTancador(sec);
+        if (!boto) boto = stage.querySelector('.ch-spot[data-target="' + id + '"]');
+        if (boto) boto.classList.add('actiu');
+
+        var arrenca = ARRENCADA[id];
+        if (arrenca && typeof window[arrenca] === 'function') window[arrenca]();
+        // Leaflet dibuixa malament si neix amagat: li diem la mida nova
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 320);
+
+        setTimeout(function() {
+            var r = sec.getBoundingClientRect();
+            if (r.top < 0 || r.top > window.innerHeight * 0.8) {
+                sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 80);
+    }
+
     stage.addEventListener('click', function(e) {
         var b = e.target.closest('.ch-spot');
-        if (b && b.dataset.target) anar(b.dataset.target);
+        if (b && b.dataset.target) anar(b.dataset.target, b);
     });
+
+    /* Enllaç directe: index.html#radar-section obre aquell indicador */
+    function desDelHash() {
+        var h = location.hash.replace('#', '');
+        if (!h) return;
+        if (document.getElementById(h) && document.getElementById(h).classList.contains('plegable')) {
+            anar(h);
+        } else {
+            var b = stage.querySelector('.ch-spot[data-slot="' + h + '"]');
+            if (b) anar(b.dataset.target, b);
+        }
+    }
+    window.addEventListener('hashchange', desDelHash);
+    setTimeout(desDelHash, 300);
 
     /* La lletra va en proporció al widget. Si un text no hi cabés —paraula
        llarga, tipografia del sistema, pantalla petita— la reduïm fins que
