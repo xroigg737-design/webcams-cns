@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Avui Regu ? — Cockpit (proposta)</title>
+<meta name="theme-color" content="#2a1810">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+/* ============================================================
+   AVUI REGU — PROPOSTA "COCKPIT DE TECA"
+   Maqueta de look&feel. No substitueix index.html.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --teak-0:#2a1810; --teak-1:#3d2314; --teak-2:#5e3a1e; --teak-3:#8a5528; --teak-4:#b77a3c;
+  --brass-hi:#f7e7b8; --brass:#c79a4e; --brass-md:#9a7230; --brass-lo:#5d3f18;
+  --ivory:#f2e6cf; --ivory-dim:#b9ac93;
+  --amber:#ffb34d; --amber-glow:rgba(255,179,77,.55);
+  --red:#e4453a; --sea:#0b1f33; --ok:#4ecdc4;
+  --face-0:#20262c; --face-1:#0d1216;
+  --r-instr:50%;
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:#140c07; color:var(--ivory);
+  min-height:100vh; overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ---------- FUSTA ---------- */
+.wood{position:relative;
+  background:
+    repeating-linear-gradient(91deg,
+      rgba(0,0,0,.22) 0 2px, rgba(255,255,255,.028) 2px 5px,
+      rgba(0,0,0,.10) 5px 11px, rgba(255,255,255,.045) 11px 14px,
+      rgba(0,0,0,.16) 14px 23px, transparent 23px 38px),
+    linear-gradient(102deg, var(--teak-1) 0%, var(--teak-3) 26%, var(--teak-2) 48%,
+      var(--teak-4) 66%, var(--teak-2) 82%, var(--teak-1) 100%);
+}
+.wood::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.013 0.62' numOctaves='4' seed='11'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:320px 320px; mix-blend-mode:overlay; opacity:.5;
+}
+/* vernís: reflex de llum de cabina */
+.wood::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(120% 70% at 22% -10%, rgba(255,236,200,.20), transparent 55%),
+    radial-gradient(90% 60% at 85% 115%, rgba(0,0,0,.45), transparent 60%);
+}
+.wood>*{position:relative;z-index:2}
+
+/* ---------- LLAUTÓ ---------- */
+.brass-ring{
+  background:conic-gradient(from 218deg,
+    #4a3212 0deg, #d8bd7d 22deg, #f7ecc9 40deg, #a87f37 68deg, #4e3714 100deg,
+    #8f6b2c 140deg, #efdda8 178deg, #b98f42 205deg, #533a15 240deg,
+    #c49a4c 285deg, #f5e6b9 318deg, #7d5c25 345deg, #4a3212 360deg);
+}
+.screw{position:absolute;width:11px;height:11px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #ffeec2, #b1873a 45%, #5c4119 80%);
+  box-shadow:0 1px 2px rgba(0,0,0,.7), inset 0 -1px 1px rgba(0,0,0,.5);z-index:6}
+.screw::after{content:'';position:absolute;inset:0;margin:auto;width:7px;height:1.6px;border-radius:1px;
+  background:rgba(40,25,8,.85);transform:rotate(var(--sc,35deg))}
+
+/* ---------- CAPÇALERA / PLACA ---------- */
+header{padding:calc(env(safe-area-inset-top) + 16px) 14px 14px;text-align:center;
+  background:linear-gradient(180deg,#1a0f08,#2a1810 60%,#1c1109)}
+.plaque{display:inline-flex;align-items:center;gap:12px;padding:9px 18px;border-radius:8px;
+  background:linear-gradient(168deg,#e6cf94 0%,#b58c3f 32%,#8a6528 55%,#a87f37 72%,#e3d09a 100%);
+  box-shadow:0 3px 10px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 4px rgba(0,0,0,.35);
+  position:relative}
+.plaque h1{font-size:1.05rem;letter-spacing:2.4px;text-transform:uppercase;color:#3a2a0e;
+  text-shadow:0 1px 0 rgba(255,255,255,.45), 0 -1px 0 rgba(0,0,0,.35);font-weight:800;white-space:nowrap}
+.plaque .sub{font-size:.56rem;letter-spacing:2px;color:#4a3512;font-weight:700}
+.lamp{width:9px;height:9px;border-radius:50%;background:#7d1c16;box-shadow:0 0 0 2px rgba(0,0,0,.35)}
+.lamp.on{background:#ff5c4d;box-shadow:0 0 10px 2px rgba(255,92,77,.75),0 0 0 2px rgba(0,0,0,.35);
+  animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+
+/* ---------- TIMÓ ---------- */
+.helm-stage{padding:10px 12px 6px;display:flex;flex-direction:column;align-items:center;
+  background:radial-gradient(80% 70% at 50% 10%, #17324a 0%, #0e2033 45%, #0a1523 100%);
+  position:relative;overflow:hidden}
+.helm-stage::after{content:'';position:absolute;left:0;right:0;bottom:0;height:60px;
+  background:linear-gradient(180deg,transparent,#2a1810);pointer-events:none}
+.horizon{position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background:repeating-linear-gradient(180deg,transparent 0 26px,rgba(255,255,255,.028) 26px 27px)}
+.helm{width:min(82vw,340px);aspect-ratio:1;position:relative;cursor:pointer;border:0;background:none;padding:0;
+  filter:drop-shadow(0 16px 22px rgba(0,0,0,.7))}
+.helm svg{width:100%;height:100%;display:block;overflow:visible}
+#wheelSpin{transform-origin:200px 200px;animation:sway 11s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-2.6deg)}50%{transform:rotate(2.6deg)}}
+.helm:active{transform:scale(.985)}
+.tags{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:8px 0 2px;position:relative;z-index:3;
+  max-width:520px}
+.tag{display:flex;align-items:baseline;gap:5px;padding:5px 11px;border-radius:5px;
+  background:linear-gradient(178deg,#dcc286,#a67e35 48%,#8a6528 62%,#bd944a 100%);
+  box-shadow:0 2px 6px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.5)}
+.tag b{font-size:.8rem;font-weight:900;color:#2e2109;font-variant-numeric:tabular-nums;
+  text-shadow:0 1px 0 rgba(255,255,255,.35)}
+.tag span{font-size:.5rem;letter-spacing:1.4px;text-transform:uppercase;color:#5b4419;font-weight:800}
+
+/* ---------- PANELL D'INSTRUMENTS ---------- */
+.panel{padding:18px 12px calc(env(safe-area-inset-bottom) + 22px);min-height:46vh;
+  border-top:3px solid rgba(0,0,0,.55);
+  box-shadow:inset 0 8px 22px rgba(0,0,0,.55)}
+.panel-head{display:flex;align-items:center;gap:10px;margin:0 4px 14px}
+.panel-head .line{flex:1;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,rgba(247,231,184,.5),transparent)}
+.panel-head span{font-size:.58rem;letter-spacing:3px;text-transform:uppercase;color:#f0dcae;
+  text-shadow:0 1px 2px rgba(0,0,0,.8);font-weight:800;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:16px 14px;max-width:920px;margin:0 auto}
+
+.panel-foot{margin:18px auto 0;max-width:920px;text-align:center;font-size:.55rem;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(44,26,10,.85);font-weight:800;
+  text-shadow:0 1px 0 rgba(255,236,200,.25)}
+.instr{border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;
+  transition:transform .18s ease}
+.instr:active{transform:translateY(2px) scale(.985)}
+.instr:focus-visible{outline:2px solid var(--amber);outline-offset:6px;border-radius:14px}
+.bezel{position:relative;width:100%;aspect-ratio:1;border-radius:var(--r-instr);padding:9px;
+  box-shadow:0 8px 18px rgba(0,0,0,.6), 0 2px 0 rgba(255,255,255,.10), inset 0 -3px 6px rgba(0,0,0,.45)}
+.bezel::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(145deg,rgba(255,255,255,.32),transparent 38%,transparent 62%,rgba(0,0,0,.35))}
+.face{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;
+  background:radial-gradient(68% 62% at 50% 34%, var(--face-0), var(--face-1) 72%);
+  box-shadow:inset 0 3px 12px rgba(0,0,0,.85), inset 0 0 0 2px rgba(0,0,0,.55)}
+.face svg{position:absolute;inset:0;width:100%;height:100%}
+/* vidre */
+.glass{position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:5;
+  background:
+    linear-gradient(128deg, rgba(255,255,255,.19) 0%, rgba(255,255,255,.06) 26%, transparent 44%),
+    radial-gradient(52% 42% at 30% 20%, rgba(255,255,255,.15), transparent 70%)}
+.glass::after{content:'';position:absolute;left:12%;top:6%;width:46%;height:26%;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,255,255,.22),transparent);filter:blur(3px)}
+.nameplate{position:relative;min-width:82%;padding:4px 10px;border-radius:4px;text-align:center;
+  background:linear-gradient(178deg,#dcc286,#a67e35 45%,#8a6528 60%,#bd944a 100%);
+  box-shadow:0 2px 5px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.5);}
+.nameplate b{display:block;font-size:.58rem;letter-spacing:1.8px;text-transform:uppercase;color:#3a2a0e;font-weight:800;
+  text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.nameplate i{display:block;font-style:normal;font-size:.5rem;letter-spacing:.6px;color:#5b4419;margin-top:1px}
+
+/* ---------- CALAIX DE DETALL ---------- */
+.scrim{position:fixed;inset:0;background:rgba(6,10,16,.72);backdrop-filter:blur(3px);opacity:0;
+  pointer-events:none;transition:opacity .3s ease;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;left:0;right:0;bottom:0;z-index:50;max-height:92vh;display:flex;flex-direction:column;
+  transform:translateY(102%);transition:transform .42s cubic-bezier(.22,.9,.25,1);
+  border-radius:18px 18px 0 0;overflow:hidden;box-shadow:0 -12px 40px rgba(0,0,0,.7)}
+.drawer.on{transform:translateY(0)}
+@media(min-width:760px){
+  .drawer{left:50%;right:auto;bottom:0;width:min(880px,94vw);transform:translate(-50%,102%);border-radius:18px 18px 0 0}
+  .drawer.on{transform:translate(-50%,0)}
+}
+.drawer-head{display:flex;align-items:center;gap:10px;padding:12px 14px;flex-shrink:0;
+  border-bottom:2px solid rgba(0,0,0,.5)}
+.drawer-head .ttl{flex:1;font-size:.78rem;letter-spacing:2.2px;text-transform:uppercase;font-weight:800;color:#f6e8c2;
+  text-shadow:0 1px 3px rgba(0,0,0,.85)}
+.drawer-close{width:36px;height:36px;border-radius:50%;border:0;cursor:pointer;flex-shrink:0;color:#3a2a0e;
+  font-size:1.1rem;font-weight:900;line-height:1;
+  box-shadow:0 2px 6px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.5)}
+.handle-bar{width:44px;height:4px;border-radius:3px;background:rgba(247,231,184,.45);margin:8px auto 0;flex-shrink:0}
+.drawer-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(env(safe-area-inset-bottom) + 20px);
+  background:linear-gradient(180deg,#0e2033,#0a1523)}
+
+/* contingut dins el calaix */
+.dbig{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.dval{font-size:2.5rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1;color:#fff;
+  text-shadow:0 2px 12px rgba(0,0,0,.7)}
+.dval small{font-size:.38em;font-weight:700;color:var(--ivory-dim);margin-left:4px}
+.dsub{font-size:.72rem;color:#9fc0d6;letter-spacing:.5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:8px 10px}
+.kpi b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums;color:#fff}
+.kpi span{display:block;font-size:.56rem;letter-spacing:1.4px;text-transform:uppercase;color:#8fb0c6;margin-top:2px}
+.note{font-size:.66rem;color:#7f9bb0;line-height:1.55;margin-top:10px;border-left:2px solid rgba(255,179,77,.4);padding-left:9px}
+.cams{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.cam{display:block;border-radius:12px;overflow:hidden;text-decoration:none;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1)}
+.cam img{width:100%;height:96px;object-fit:cover;display:block}
+.cam div{padding:7px 9px}
+.cam b{display:block;font-size:.76rem;color:#fff}
+.cam span{font-size:.6rem;color:#8fb0c6}
+.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.st{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;
+  display:flex;align-items:center;gap:10px}
+.st .mini{width:46px;height:46px;flex-shrink:0;position:relative}
+.st .nm{font-size:.6rem;letter-spacing:1.2px;text-transform:uppercase;color:#ffd740;font-weight:800}
+.st .sp{font-size:1.25rem;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;line-height:1.1}
+.st .dr{font-size:.58rem;color:#8fb0c6}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tab{padding:6px 11px;border-radius:20px;font-size:.64rem;font-weight:700;letter-spacing:.6px;cursor:pointer;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:#cfe2ee}
+.tab.active{background:linear-gradient(180deg,#dcc286,#a67e35);color:#3a2a0e;border-color:#8a6528}
+.frame{width:100%;height:56vh;min-height:320px;border:0;border-radius:12px;background:#0b1f33;display:block}
+
+@media(min-width:760px){
+  .helm{width:400px}
+  .helm-stage{padding:18px 12px 12px}
+  .grid{grid-template-columns:repeat(3,1fr);max-width:680px;gap:22px 20px}
+  .panel{padding:26px 20px 30px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.12s!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="plaque">
+    <span class="lamp on" id="liveLamp"></span>
+    <div>
+      <h1>Avui Regu ?</h1>
+      <div class="sub">Club Nàutic Sitges &middot; Cockpit</div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= TIMÓ ================= -->
+<div class="helm-stage">
+  <div class="horizon"></div>
+  <button class="helm" id="helmBtn" aria-label="Vent actual al Club Nàutic Sitges">
+    <svg viewBox="0 0 400 400" role="img">
+      <defs>
+        <linearGradient id="wood1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"  stop-color="#8a5528"/>
+          <stop offset="22%" stop-color="#c58f4b"/>
+          <stop offset="46%" stop-color="#7a4a24"/>
+          <stop offset="70%" stop-color="#b3783b"/>
+          <stop offset="100%" stop-color="#4d2c15"/>
+        </linearGradient>
+        <linearGradient id="wood2" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%"  stop-color="#5e3a1e"/>
+          <stop offset="35%" stop-color="#a9702f"/>
+          <stop offset="65%" stop-color="#6b3f1d"/>
+          <stop offset="100%" stop-color="#9c6a33"/>
+        </linearGradient>
+        <linearGradient id="brassG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"  stop-color="#f7ecc9"/>
+          <stop offset="30%" stop-color="#c79a4e"/>
+          <stop offset="58%" stop-color="#6d4a1d"/>
+          <stop offset="78%" stop-color="#e3cb8c"/>
+          <stop offset="100%" stop-color="#8a6528"/>
+        </linearGradient>
+        <radialGradient id="hubG" cx="35%" cy="28%">
+          <stop offset="0%"  stop-color="#fbeec4"/>
+          <stop offset="45%" stop-color="#c49a4c"/>
+          <stop offset="100%" stop-color="#5b3f18"/>
+        </radialGradient>
+        <radialGradient id="glassG" cx="32%" cy="24%">
+          <stop offset="0%"  stop-color="#2b333a"/>
+          <stop offset="60%" stop-color="#121a20"/>
+          <stop offset="100%" stop-color="#070b0e"/>
+        </radialGradient>
+        <filter id="grain2"><feTurbulence type="fractalNoise" baseFrequency="0.015 0.5" numOctaves="3" seed="5"/>
+          <feColorMatrix type="saturate" values="0"/>
+          <feComponentTransfer><feFuncA type="linear" slope="0.22"/></feComponentTransfer></filter>
+        <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+      </defs>
+
+      <!-- ombra projectada -->
+      <ellipse cx="200" cy="352" rx="120" ry="14" fill="rgba(0,0,0,.5)" filter="url(#soft)"/>
+
+      <g id="wheelSpin">
+        <!-- cabillots (mànecs) -->
+        <g id="handles"></g>
+        <!-- llanta exterior -->
+        <circle cx="200" cy="200" r="138" fill="none" stroke="url(#wood1)" stroke-width="30"/>
+        <circle cx="200" cy="200" r="153" fill="none" stroke="rgba(0,0,0,.55)" stroke-width="2.5"/>
+        <circle cx="200" cy="200" r="123" fill="none" stroke="rgba(0,0,0,.5)" stroke-width="2.5"/>
+        <circle cx="200" cy="200" r="145" fill="none" stroke="rgba(255,236,200,.28)" stroke-width="3"/>
+        <circle cx="200" cy="200" r="131" fill="none" stroke="rgba(0,0,0,.22)" stroke-width="5"/>
+        <!-- radis -->
+        <g id="spokes"></g>
+        <!-- botó central de llautó -->
+        <circle cx="200" cy="200" r="72" fill="url(#hubG)"/>
+        <circle cx="200" cy="200" r="72" fill="none" stroke="rgba(0,0,0,.55)" stroke-width="2"/>
+        <circle cx="200" cy="200" r="64" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+        <g id="hubScrews"></g>
+        <!-- gra de fusta per sobre -->
+        <circle cx="200" cy="200" r="153" fill="#8a5528" filter="url(#grain2)" opacity=".5"
+                style="mix-blend-mode:overlay" pointer-events="none"/>
+      </g>
+
+      <!-- vidre central fix (no gira) -->
+      <circle cx="200" cy="200" r="56" fill="url(#glassG)"/>
+      <circle cx="200" cy="200" r="56" fill="none" stroke="rgba(0,0,0,.8)" stroke-width="3"/>
+      <circle cx="200" cy="200" r="52" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+      <!-- rosa dels vents mini -->
+      <g id="helmRose" opacity=".55"></g>
+      <!-- fletxa de vent -->
+      <g id="helmArrow" style="transform-box:fill-box;transform-origin:center;transition:transform 1.1s cubic-bezier(.4,1.4,.5,1)">
+        <path d="M200 162 L208 182 L200 177 L192 182 Z" fill="#e4453a"/>
+      </g>
+      <text x="200" y="208" text-anchor="middle" font-size="34" font-weight="900" fill="#ffb34d"
+            font-family="system-ui,sans-serif" id="helmKn" style="letter-spacing:-1px">--</text>
+      <text x="200" y="224" text-anchor="middle" font-size="9.5" font-weight="700" fill="#9fb6c6"
+            font-family="system-ui,sans-serif" letter-spacing="1.6">KNOTS</text>
+      <text x="200" y="242" text-anchor="middle" font-size="9.5" font-weight="800" fill="#f2e6cf"
+            font-family="system-ui,sans-serif" letter-spacing="1.2" id="helmDir">--</text>
+      <!-- reflex del vidre -->
+      <ellipse cx="184" cy="180" rx="26" ry="14" fill="rgba(255,255,255,.10)" transform="rotate(-28 184 180)"/>
+    </svg>
+  </button>
+  <div class="tags" id="helmTags">
+    <div class="tag"><b id="tgVent">&mdash;</b><span>vent</span></div>
+    <div class="tag"><b id="tgAvg">&mdash;</b><span>mitjana 10&rsquo;</span></div>
+    <div class="tag"><b id="tgGust">&mdash;</b><span>ratxa</span></div>
+    <div class="tag"><b id="tgTemp">&mdash;</b><span>temp</span></div>
+  </div>
+</div>
+
+<!-- ================= PANELL ================= -->
+<div class="panel wood">
+  <div class="panel-head">
+    <span class="line"></span>
+    <span>Quadre d'instruments</span>
+    <span class="line"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="panel-foot"><span id="stamp">&mdash;</span></div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer wood" id="drawer" role="dialog" aria-modal="true">
+  <div class="handle-bar"></div>
+  <div class="drawer-head">
+    <div class="ttl" id="drawerTitle">—</div>
+    <button class="drawer-close brass-ring" id="drawerClose" aria-label="Tancar">&#10005;</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<script>
+/* =======================================================================
+   DADES — mateixos endpoints que l'app de producció
+   ======================================================================= */
+const API = 'https://cns-wind-api.xroigg737.workers.dev';
+const DIRS = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+const deg2c = d => DIRS[Math.round(d/22.5)%16];
+const VENTS = [[0,'Tramuntana'],[45,'Gregal'],[90,'Llevant'],[135,'Xaloc'],[180,'Migjorn'],
+               [225,'Garbí'],[270,'Ponent'],[315,'Mestral']];
+function ventCat(d){ let b='',m=999; VENTS.forEach(v=>{let x=Math.abs(((d-v[0]+540)%360)-180);if(x<m){m=x;b=v[1];}}); return b; }
+function windyColor(kn){
+  const s=[[0,130,155,220],[2,90,150,210],[6,100,200,220],[10,100,200,170],[14,110,220,110],[17,70,210,70],
+           [21,220,210,100],[25,215,170,75],[29,215,145,120],[33,180,75,105],[37,230,110,180],[41,160,100,200]];
+  if(kn<=s[0][0]) return 'rgb('+s[0].slice(1).join(',')+')';
+  for(let i=1;i<s.length;i++){ if(kn<=s[i][0]){ const t=(kn-s[i-1][0])/(s[i][0]-s[i-1][0]);
+    return 'rgb('+[1,2,3].map(j=>Math.round(s[i-1][j]+t*(s[i][j]-s[i-1][j]))).join(',')+')'; } }
+  return 'rgb(160,100,200)';
+}
+const state = { cns:null, corrent:null, veins:{}, baro:null, mar:null };
+
+/* =======================================================================
+   TIMÓ — geometria generada
+   ======================================================================= */
+(function buildHelm(){
+  const sp=[], hn=[], sc=[];
+  for(let i=0;i<8;i++){
+    const a=i*45;
+    sp.push('<g transform="rotate('+a+' 200 200)">'
+      +'<path d="M193 200 L196.5 78 L203.5 78 L207 200 Z" fill="url(#wood2)"/>'
+      +'<path d="M196 200 L198 80 L200 80 L200 200 Z" fill="rgba(255,236,200,.16)"/>'
+      +'<path d="M203.5 200 L203.5 80 L206 80 L207 200 Z" fill="rgba(0,0,0,.25)"/></g>');
+    hn.push('<g transform="rotate('+a+' 200 200)">'
+      +'<rect x="193.5" y="12" width="13" height="56" rx="6.5" fill="url(#wood1)"/>'
+      +'<rect x="193.5" y="12" width="4.5" height="56" rx="3" fill="rgba(255,236,200,.22)"/>'
+      +'<rect x="202" y="12" width="4.5" height="56" rx="3" fill="rgba(0,0,0,.3)"/>'
+      +'<circle cx="200" cy="17" r="6.5" fill="url(#brassG)"/>'
+      +'<rect x="191" y="60" width="18" height="9" rx="3" fill="url(#brassG)"/></g>');
+  }
+  for(let i=0;i<8;i++){
+    const a=i*45*Math.PI/180, r=56;
+    sc.push('<circle cx="'+(200+r*Math.sin(a)).toFixed(1)+'" cy="'+(200-r*Math.cos(a)).toFixed(1)
+      +'" r="3.4" fill="#6b4a1d" stroke="rgba(255,240,200,.5)" stroke-width=".8"/>');
+  }
+  document.getElementById('spokes').innerHTML = sp.join('');
+  document.getElementById('handles').innerHTML = hn.join('');
+  document.getElementById('hubScrews').innerHTML = sc.join('');
+  const rose=[];
+  for(let i=0;i<16;i++){
+    const a=i*22.5, maj=i%4===0;
+    rose.push('<line x1="200" y1="'+(maj?152:156)+'" x2="200" y2="161" stroke="'+(maj?'#f2e6cf':'rgba(242,230,207,.5)')
+      +'" stroke-width="'+(maj?1.8:1)+'" transform="rotate('+a+' 200 200)"/>');
+  }
+  rose.push('<text x="200" y="170" text-anchor="middle" font-size="9" font-weight="800" fill="#e4453a" font-family="system-ui">N</text>');
+  document.getElementById('helmRose').innerHTML = rose.join('');
+})();
+
+/* =======================================================================
+   INSTRUMENTS — definició del quadre
+   ======================================================================= */
+const INSTR = [
+  { id:'corrent', name:'Corrent', sub:'ICATMAR HF', type:'dial',
+    min:0, max:1.2, decs:2, unit:'kn', labels:['0','0,3','0,6','0,9','1,2'], accent:'#00bfa5' },
+  { id:'veins',   name:'Clubs veïns', sub:'4 estacions', type:'dial',
+    min:0, max:30, decs:0, unit:'kn', labels:['0','7','15','22','30'], accent:'#66bb6a' },
+  { id:'webcams', name:'Webcams', sub:'en directe', type:'porthole' },
+  { id:'baro',    name:'Baròmetre', sub:'pressió msl', type:'dial',
+    min:985, max:1035, decs:0, unit:'hPa', labels:['985','997','1010','1022','1035'], accent:'#ffd740' },
+  { id:'mar',     name:'Estat mar', sub:'onatge', type:'dial',
+    min:0, max:2.5, decs:1, unit:'m', labels:['0','0,6','1,2','1,9','2,5'], accent:'#4fc3f7' },
+  { id:'regates', name:'Regates', sub:'calendari', type:'clock' }
+];
+
+function dialSVG(o){
+  const ticks=[];
+  // arc útil: 225° → -45° (270°)
+  for(let i=0;i<=40;i++){
+    const maj = i%5===0;
+    const a = 225 - (i/40)*270;
+    const rad = a*Math.PI/180;
+    const r1 = maj?66:72, r2=80;
+    const x1=100+r1*Math.cos(rad), y1=100-r1*Math.sin(rad);
+    const x2=100+r2*Math.cos(rad), y2=100-r2*Math.sin(rad);
+    ticks.push('<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)
+      +'" stroke="'+(maj?'rgba(242,230,207,.95)':'rgba(242,230,207,.38)')+'" stroke-width="'+(maj?3:1.4)+'" stroke-linecap="round"/>');
+  }
+  const nums=[];
+  (o.labels||[]).forEach(function(t,i){
+    const a=(225-(i/((o.labels.length-1)||1))*270)*Math.PI/180, r=56;
+    nums.push('<text x="'+(100+r*Math.cos(a)).toFixed(1)+'" y="'+(100-r*Math.sin(a)+3.4).toFixed(1)
+      +'" text-anchor="middle" font-size="8.5" font-weight="700" fill="rgba(242,230,207,.62)" font-family="system-ui">'+t+'</text>');
+  });
+  return ''
+   +'<svg viewBox="0 0 200 200">'
+   +'<circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>'
+   +'<path id="arc-'+o.id+'" d="'+arcPath(100,100,76,225,-45)+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5" stroke-linecap="round"/>'
+   +'<path id="arcv-'+o.id+'" d="" fill="none" stroke="'+(o.accent||'#ffb34d')+'" stroke-width="5" stroke-linecap="round" opacity=".9"/>'
+   + ticks.join('') + nums.join('')
+   +'<text x="100" y="148" text-anchor="middle" font-size="27" font-weight="900" fill="#ffb34d" '
+   +'font-family="system-ui" id="num-'+o.id+'" style="letter-spacing:-.5px">--</text>'
+   +'<text x="100" y="161" text-anchor="middle" font-size="8" font-weight="700" letter-spacing="1.4" '
+   +'fill="rgba(159,182,198,.9)" font-family="system-ui">'+(o.unit||'')+'</text>'
+   +'<g id="ndl-'+o.id+'" style="transform-box:view-box;transform-origin:100px 100px;transform:rotate(-135deg);transition:transform 1.2s cubic-bezier(.3,1.3,.4,1)">'
+   +'  <path d="M100 100 L96 104 L100 26 L104 104 Z" fill="#e4453a"/>'
+   +'  <path d="M100 26 L102 100 L100 100 Z" fill="rgba(255,255,255,.35)"/>'
+   +'  <circle cx="100" cy="100" r="9" fill="url(#hubG2)"/>'
+   +'  <circle cx="100" cy="100" r="3" fill="#2a1810"/>'
+   +'</g>'
+   +'<defs><radialGradient id="hubG2" cx="35%" cy="30%"><stop offset="0%" stop-color="#fbeec4"/>'
+   +'<stop offset="55%" stop-color="#c49a4c"/><stop offset="100%" stop-color="#5b3f18"/></radialGradient></defs>'
+   +'</svg>';
+}
+function arcPath(cx,cy,r,a0,a1){
+  const p=(a)=>[cx+r*Math.cos(a*Math.PI/180), cy-r*Math.sin(a*Math.PI/180)];
+  const s=p(a0), e=p(a1), large = Math.abs(a1-a0)>180?1:0;
+  return 'M'+s[0].toFixed(1)+' '+s[1].toFixed(1)+' A'+r+' '+r+' 0 '+large+' 1 '+e[0].toFixed(1)+' '+e[1].toFixed(1);
+}
+function portholeSVG(){
+  return ''
+   +'<div style="position:absolute;inset:0;border-radius:50%;overflow:hidden">'
+   +'  <img id="camShot" src="img/club-nautic.jpg" alt="" style="width:100%;height:100%;object-fit:cover;'
+   +'       filter:saturate(.85) contrast(1.05);transition:opacity .7s ease">'
+   +'  <div style="position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 30%,transparent,rgba(0,0,0,.55))"></div>'
+   +'  <div style="position:absolute;left:0;right:0;bottom:14%;text-align:center">'
+   +'    <span style="font-size:.52rem;letter-spacing:1.6px;font-weight:800;color:#fff;background:rgba(228,69,58,.85);'
+   +'          padding:2px 8px;border-radius:10px;text-shadow:0 1px 2px rgba(0,0,0,.6)">&#9679; EN DIRECTE</span></div>'
+   +'  <div style="position:absolute;left:0;right:0;top:16%;text-align:center;font-size:.5rem;letter-spacing:1.8px;'
+   +'       font-weight:800;color:rgba(242,230,207,.8)" id="camName">NÀUTIC</div>'
+   +'</div>';
+}
+function clockSVG(){
+  const t=[];
+  for(let i=0;i<60;i++){
+    const maj=i%5===0, a=i*6;
+    t.push('<line x1="100" y1="'+(maj?20:24)+'" x2="100" y2="29" stroke="'+(maj?'rgba(242,230,207,.9)':'rgba(242,230,207,.3)')
+      +'" stroke-width="'+(maj?2.6:1)+'" transform="rotate('+a+' 100 100)" stroke-linecap="round"/>');
+  }
+  return '<svg viewBox="0 0 200 200">'+t.join('')
+   +'<text x="100" y="152" text-anchor="middle" font-size="10" font-weight="800" letter-spacing="1.4" fill="#ffb34d" font-family="system-ui" id="clkNext">—</text>'
+   +'<g id="clkH" style="transform-box:view-box;transform-origin:100px 100px"><path d="M100 100 L96 100 L100 52 L104 100 Z" fill="#f2e6cf"/></g>'
+   +'<g id="clkM" style="transform-box:view-box;transform-origin:100px 100px"><path d="M100 100 L97 100 L100 32 L103 100 Z" fill="#f2e6cf"/></g>'
+   +'<g id="clkS" style="transform-box:view-box;transform-origin:100px 100px"><line x1="100" y1="110" x2="100" y2="34" stroke="#e4453a" stroke-width="1.6"/></g>'
+   +'<circle cx="100" cy="100" r="6" fill="url(#hubG3)"/><circle cx="100" cy="100" r="2" fill="#2a1810"/>'
+   +'<defs><radialGradient id="hubG3" cx="35%" cy="30%"><stop offset="0%" stop-color="#fbeec4"/>'
+   +'<stop offset="55%" stop-color="#c49a4c"/><stop offset="100%" stop-color="#5b3f18"/></radialGradient></defs></svg>';
+}
+
+/* render del quadre */
+document.getElementById('grid').innerHTML = INSTR.map(function(o){
+  var inner = o.type==='dial' ? dialSVG(o) : (o.type==='porthole' ? portholeSVG() : clockSVG());
+  return '<button class="instr" data-id="'+o.id+'" aria-label="'+o.name+'">'
+   +'<div class="bezel brass-ring">'
+   +'  <span class="screw" style="top:4px;left:50%;margin-left:-5.5px;--sc:20deg"></span>'
+   +'  <span class="screw" style="bottom:4px;left:50%;margin-left:-5.5px;--sc:75deg"></span>'
+   +'  <span class="screw" style="left:4px;top:50%;margin-top:-5.5px;--sc:120deg"></span>'
+   +'  <span class="screw" style="right:4px;top:50%;margin-top:-5.5px;--sc:160deg"></span>'
+   +'  <div class="face">'+inner+'<div class="glass"></div></div>'
+   +'</div>'
+   +'<div class="nameplate"><b>'+o.name+'</b><i>'+o.sub+'</i></div>'
+   +'</button>';
+}).join('');
+
+function setDial(id,val,txt){
+  const o = INSTR.find(x=>x.id===id); if(!o) return;
+  const f = Math.max(0,Math.min(1,(val-o.min)/(o.max-o.min)));
+  const ndl = document.getElementById('ndl-'+id);
+  const num = document.getElementById('num-'+id);
+  const arcv= document.getElementById('arcv-'+id);
+  if(ndl) ndl.style.transform = 'rotate('+(-135+f*270).toFixed(1)+'deg)';
+  if(num) num.textContent = (txt!==undefined?txt:val.toFixed(o.decs).replace('.',','));
+  if(arcv) arcv.setAttribute('d', arcPath(100,100,76,225,225-f*270));
+}
+
+/* =======================================================================
+   CALAIX DE DETALL
+   ======================================================================= */
+const drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim'),
+      dTitle=document.getElementById('drawerTitle'), dBody=document.getElementById('drawerBody');
+let openId=null;
+
+function miniRose(dir,color){
+  return '<svg viewBox="0 0 100 100" style="width:100%;height:100%">'
+   +'<circle cx="50" cy="50" r="46" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.35)" stroke-width="2"/>'
+   +'<text x="50" y="14" text-anchor="middle" font-size="12" font-weight="800" fill="#e4453a" font-family="system-ui">N</text>'
+   +'<g style="transform-box:view-box;transform-origin:50px 50px;transform:rotate('+dir+'deg)">'
+   +'<path d="M50 16 L60 46 L50 40 L40 46 Z" fill="'+color+'"/>'
+   +'<line x1="50" y1="40" x2="50" y2="82" stroke="'+color+'" stroke-width="4" stroke-linecap="round"/></g></svg>';
+}
+
+const VIEWS = {
+  vent(){
+    const d=state.cns; if(!d) return '<div class="dsub">Carregant dades del Club&hellip;</div>';
+    const c=windyColor(d.speed_kn);
+    return '<div class="dbig"><div style="width:92px;height:92px">'+miniRose((d.dir+180)%360,c)+'</div>'
+     +'<div><div class="dval" style="color:'+c+'">'+d.speed_kn+'<small>kn</small></div>'
+     +'<div class="dsub">'+deg2c(d.dir)+' &middot; '+d.dir+'&deg; &middot; '+ventCat(d.dir)+'</div></div></div>'
+     +'<div class="kpis">'
+     +kpi(d.avg_10m_kn+' kn','Mitjana 10 min')+kpi(d.gust_10m_kn+' kn','Ratxa 10 min')
+     +kpi(d.temp_c+' &deg;C','Temperatura')+kpi(Math.round(d.humidity)+' %','Humitat')+'</div>'
+     +'<div class="note">Estació Davis del Club Nàutic de Sitges. Al cockpit definitiu, aquest calaix '
+     +'contindria el mapa del port amb la fletxa animada, la rolada i l\'historial, tal com ja funciona avui.</div>';
+  },
+  corrent(){
+    const c=state.corrent; if(!c) return '<div class="dsub">Carregant corrent&hellip;</div>';
+    const h=new Date(c.time).toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
+    return '<div class="dbig"><div style="width:92px;height:92px">'+miniRose(c.dirDeg,'#00bfa5')+'</div>'
+     +'<div><div class="dval" style="color:#5ef0e6">'+c.spdKn.toFixed(2).replace('.',',')+'<small>kn</small></div>'
+     +'<div class="dsub">cap a '+deg2c(c.dirDeg)+' &middot; '+c.dirDeg+'&deg;</div></div></div>'
+     +'<div class="kpis">'+kpi(c.nearestKm+' km','Punt més proper')+kpi(c.points,'Punts de radar')
+     +kpi(c.gdop,'GDOP')+kpi(h,'Hora de la dada')+'</div>'
+     +'<div class="note">Font: '+c.source+'. El calaix mostraria també la taula de les últimes hores i el màxim del dia.</div>';
+  },
+  veins(){
+    const V=[['aq','Aiguadolç'],['cb','Cubelles'],['vn','CN Vilanova'],['cd','Castelldefels']];
+    return '<div class="stations">'+V.map(function(v){
+      const d=state.veins[v[0]];
+      if(!d) return '<div class="st"><div class="nm">'+v[1]+'</div><div class="dsub">sense dades</div></div>';
+      const c=windyColor(d.spd);
+      return '<div class="st"><div class="mini">'+miniRose((d.dir+180)%360,c)+'</div>'
+       +'<div><div class="nm">'+v[1]+'</div><div class="sp" style="color:'+c+'">'+d.spd+' <span style="font-size:.5em">kn</span></div>'
+       +'<div class="dr">'+deg2c(d.dir)+' '+Math.round(d.dir)+'&deg; &middot; ratxa '+d.gust+' kn</div></div></div>';
+    }).join('')+'</div>'
+     +'<div class="note">L\'agulla del quadre marca l\'estació amb més vent en aquest moment.</div>';
+  },
+  webcams(){
+    const C=[['https://video.nest.com/live/rRaPmgiwSf','img/club-nautic.jpg','Webcam Nàutic','Platja del club'],
+             ['https://www.hotelcalipolis.com/#webcam','img/calipolis.jpg','Vista Llevant','Des del Calipolis'],
+             ['https://www.youtube.com/@radiomaricelsitges/live','img/esglesia-sitges.jpg','Vista S/SE','Des de l\'Església']];
+    return '<div class="cams">'+C.map(c=>'<a class="cam" href="'+c[0]+'" target="_blank" rel="noopener">'
+      +'<img src="'+c[1]+'" alt=""><div><b>'+c[2]+'</b><span>'+c[3]+'</span></div></a>').join('')+'</div>';
+  },
+  baro(){
+    const b=state.baro; if(!b) return '<div class="dsub">Carregant pressió&hellip;</div>';
+    const t=b.trend, fl = t>0.6?'Puja':(t<-0.6?'Baixa':'Estable');
+    return '<div class="dbig"><div><div class="dval">'+Math.round(b.p)+'<small>hPa</small></div>'
+     +'<div class="dsub">'+fl+' &middot; '+(t>0?'+':'')+t.toFixed(1)+' hPa / 3 h</div></div></div>'
+     +'<div class="kpis">'+kpi(b.tmp.toFixed(1)+' &deg;C','Temperatura')+kpi(Math.round(b.p24min)+'-'+Math.round(b.p24max),'Marge 24 h')+'</div>'
+     +'<div class="tabs"><span class="tab active">Mapa Vent</span><span class="tab">Comparar</span>'
+     +'<span class="tab">Models</span><span class="tab">Windguru</span><span class="tab">Pressió</span></div>'
+     +'<iframe class="frame" loading="lazy" src="https://embed.windy.com/embed2.html?lat=41.23&lon=1.81&zoom=8&level=surface&overlay=wind&menu=&message=&marker=&calendar=now&pressure=true&type=map&location=coordinates&detail=&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1"></iframe>'
+     +'<div class="note">Aquí hi aniria la secció "Previ i Estacions Meteo" sencera, amb els seus 5 tabs.</div>';
+  },
+  mar(){
+    const m=state.mar; if(!m) return '<div class="dsub">Carregant onatge&hellip;</div>';
+    return '<div class="dbig"><div style="width:92px;height:92px">'+miniRose((m.dir+180)%360,'#4fc3f7')+'</div>'
+     +'<div><div class="dval" style="color:#4fc3f7">'+m.h.toFixed(1).replace('.',',')+'<small>m</small></div>'
+     +'<div class="dsub">de '+deg2c(m.dir)+' &middot; període '+m.per+' s</div></div></div>'
+     +'<div class="note">Onatge model Open-Meteo Marine davant de Sitges.</div>';
+  },
+  regates(){
+    return '<div class="dsub" style="margin-bottom:10px">Properes cites del calendari del Club</div>'
+     +'<div class="kpis">'+kpi('Dis. 10:00','Lliga social')+kpi('Diu. 11:30','Patí Català')+kpi('12 kn','Previsió mitjana')+'</div>'
+     +'<div class="note">Demo: el calaix reprendria la secció "Regates" de l\'app actual.</div>';
+  }
+};
+function kpi(v,l){ return '<div class="kpi"><b>'+v+'</b><span>'+l+'</span></div>'; }
+
+function openDrawer(id,title){
+  openId=id; dTitle.textContent=title;
+  dBody.innerHTML = (VIEWS[id]?VIEWS[id]():'');
+  dBody.scrollTop=0;
+  drawer.classList.add('on'); scrim.classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(){ openId=null; drawer.classList.remove('on'); scrim.classList.remove('on');
+  document.body.style.overflow=''; setTimeout(()=>{ if(!openId) dBody.innerHTML=''; },420); }
+function refreshDrawer(){ if(openId && VIEWS[openId]) dBody.innerHTML=VIEWS[openId](); }
+
+document.getElementById('grid').addEventListener('click',function(e){
+  const b=e.target.closest('.instr'); if(!b) return;
+  const o=INSTR.find(x=>x.id===b.dataset.id);
+  openDrawer(o.id,o.name);
+});
+document.getElementById('helmBtn').addEventListener('click',()=>openDrawer('vent','Vent actual al CNS'));
+document.getElementById('drawerClose').addEventListener('click',closeDrawer);
+scrim.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
+function fromHash(){
+  const h=location.hash.replace('#','');
+  if(h==='vent') return openDrawer('vent','Vent actual al CNS');
+  const o=INSTR.find(x=>x.id===h); if(o) openDrawer(o.id,o.name);
+}
+window.addEventListener('hashchange',fromHash);
+setTimeout(fromHash,600);
+
+/* =======================================================================
+   SONDEIG DE DADES
+   ======================================================================= */
+async function jget(u){ const r=await fetch(u); if(!r.ok) throw 0; return r.json(); }
+
+async function loadCNS(){
+  try{
+    const d=await jget(API); state.cns=d;
+    const kn=d.speed_kn;
+    document.getElementById('helmKn').textContent = kn;
+    document.getElementById('helmKn').setAttribute('fill', windyColor(kn));
+    document.getElementById('helmDir').textContent = deg2c(d.dir)+' '+d.dir+'° · '+ventCat(d.dir);
+    document.getElementById('helmArrow').style.transform='rotate('+((d.dir+180)%360)+'deg)';
+    document.getElementById('tgVent').textContent = ventCat(d.dir);
+    document.getElementById('tgAvg').textContent  = d.avg_10m_kn+' kn';
+    document.getElementById('tgGust').textContent = d.gust_10m_kn+' kn';
+    document.getElementById('tgTemp').textContent = d.temp_c+' \u00b0C';
+    const st=document.getElementById('stamp');
+    if(st) st.innerHTML='Dades en directe &middot; actualitzat '+new Date().toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
+    if(openId==='vent') refreshDrawer();
+  }catch(e){}
+}
+async function loadCorrent(){
+  try{
+    const c=await jget(API+'/corrent'); state.corrent=c;
+    setDial('corrent', c.spdKn);
+    if(openId==='corrent') refreshDrawer();
+  }catch(e){}
+}
+async function loadVeins(){
+  const jobs=[
+    jget(API+'/aiguadolc').then(d=>state.veins.aq={spd:d.speed_kn,dir:d.dir,gust:d.gust_kn}).catch(()=>{}),
+    jget(API+'/17nudos').then(d=>state.veins.cd={spd:d.speed_kn,dir:d.dir,gust:d.gust_kn}).catch(()=>{}),
+    jget(API+'/wu?station=IVILAN45').then(d=>{const o=d.observations[0];
+      state.veins.vn={spd:+(o.metric.windSpeed/1.852).toFixed(1),dir:o.winddir,gust:+(o.metric.windGust/1.852).toFixed(1)};}).catch(()=>{}),
+    jget(API+'/wu?station=ICUBEL17').then(d=>{const o=d.observations[0];
+      state.veins.cb={spd:+(o.metric.windSpeed/1.852).toFixed(1),dir:o.winddir,gust:+(o.metric.windGust/1.852).toFixed(1)};}).catch(()=>{})
+  ];
+  await Promise.all(jobs);
+  const vals=Object.values(state.veins).map(v=>v.spd);
+  if(vals.length) setDial('veins', Math.max.apply(null,vals));
+  if(openId==='veins') refreshDrawer();
+}
+async function loadBaro(){
+  try{
+    const d=await jget('https://api.open-meteo.com/v1/forecast?latitude=41.235&longitude=1.805'
+      +'&current=pressure_msl,temperature_2m&hourly=pressure_msl&past_days=1&forecast_days=1&timezone=auto');
+    const p=d.current.pressure_msl, hs=d.hourly.pressure_msl.filter(x=>x!=null);
+    const now=new Date().getHours();
+    const idx=d.hourly.time.findIndex(t=>t.startsWith(new Date().toISOString().substring(0,10)) && +t.substring(11,13)===now);
+    const prev = idx>2 ? d.hourly.pressure_msl[idx-3] : p;
+    state.baro={p:p, tmp:d.current.temperature_2m, trend:p-prev,
+                p24min:Math.min.apply(null,hs.slice(-24)), p24max:Math.max.apply(null,hs.slice(-24))};
+    setDial('baro', p, String(Math.round(p)));
+    if(openId==='baro') refreshDrawer();
+  }catch(e){}
+}
+async function loadMar(){
+  try{
+    const d=await jget('https://marine-api.open-meteo.com/v1/marine?latitude=41.20&longitude=1.82'
+      +'&current=wave_height,wave_direction,wave_period&timezone=auto');
+    state.mar={h:d.current.wave_height,dir:d.current.wave_direction,per:d.current.wave_period};
+    setDial('mar', state.mar.h);
+    if(openId==='mar') refreshDrawer();
+  }catch(e){}
+}
+
+/* rellotge de regates */
+function tickClock(){
+  const n=new Date(), h=n.getHours()%12, m=n.getMinutes(), s=n.getSeconds();
+  const H=document.getElementById('clkH'), M=document.getElementById('clkM'), S=document.getElementById('clkS');
+  if(H) H.style.transform='rotate('+((h+m/60)*30)+'deg)';
+  if(M) M.style.transform='rotate('+((m+s/60)*6)+'deg)';
+  if(S) S.style.transform='rotate('+(s*6)+'deg)';
+  const c=document.getElementById('clkNext');
+  if(c) c.textContent=n.toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* rotació de webcams al porthole */
+const CAMS=[['img/club-nautic.jpg','NÀUTIC'],['img/calipolis.jpg','LLEVANT'],['img/esglesia-sitges.jpg','SUD']];
+let camI=0;
+function rotateCam(){
+  const img=document.getElementById('camShot'), nm=document.getElementById('camName');
+  if(!img) return;
+  camI=(camI+1)%CAMS.length;
+  img.style.opacity='0';
+  setTimeout(()=>{ img.src=CAMS[camI][0]; if(nm) nm.textContent=CAMS[camI][1]; img.style.opacity='1'; },400);
+}
+
+function poll(fn,ms){ fn(); setInterval(()=>{ if(!document.hidden) fn(); },ms); }
+poll(loadCNS,30000); poll(loadCorrent,300000); poll(loadVeins,120000);
+poll(loadBaro,600000); poll(loadMar,600000);
+tickClock(); setInterval(tickClock,1000);
+setInterval(rotateCam,5000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadCNS(); loadVeins(); } });
+</script>
+</body>
+</html>

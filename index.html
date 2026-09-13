@@ -24,6 +24,7 @@
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: #0a1628;
@@ -1011,7 +1012,11 @@
             color: rgba(255,255,255,0.4);
             font-weight: 600;
         }
-        .windy-map-tabs {
+        /* La barra de pestanyes ja no es mostra: la navegació es fa amb la
+           graella d'opcions. Es queden al document perquè la graella les
+           utilitza per obrir cada contingut. */
+        .windy-map-tabs { display: none !important; }
+        .windy-map-tabs-ocult {
             display: flex;
             gap: 6px;
         }
@@ -1212,6 +1217,344 @@
             border-radius: 3px;
             background: linear-gradient(90deg, #0000ff00, #00b0ff, #00e676, #ffeb3b, #ff9800, #f44336, #9c27b0);
         }
+
+        /* ============================================================
+           COCKPIT — imatge sencera del veler com a portada
+           La foto vertical (img/cockpit4.*) es veu sencera en entrar a l'app.
+           A sobre hi ha 6 zones actives, una per cada indicador pintat:
+           són botons reals, ja clicables, i tenen un contenidor buit
+           (.ch-slot) preparat per rebre el contingut en directe.
+           Les mides van en % de la imatge: escalen soles a qualsevol
+           pantalla i sempre queden damunt de la targeta correcta.
+           ============================================================ */
+        .cockpit-hero {
+            position: relative;
+            background: #06121f;
+            overflow: hidden;
+            margin: 10px -14px 4px;      /* de vora a vora de la columna */
+        }
+        @media (max-width: 768px) {
+            .cockpit-hero { margin: 10px -10px 4px; }
+        }
+        /* En pantalles amples la foto és vertical i no pot ocupar tota
+           l'amplada: la centrem i omplim els costats amb la mateixa
+           imatge difuminada, com el fons d'un reproductor. */
+        .cockpit-hero::before {
+            content: '';
+            position: absolute;
+            inset: -8%;
+            background: url('img/cockpit4-sm.jpg') center/cover;
+            filter: blur(34px) saturate(1.15) brightness(0.5);
+            pointer-events: none;
+        }
+        .ch-stage {
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+            line-height: 0;
+        }
+        @media (min-width: 701px) {
+            .cockpit-hero { padding: 18px 0; }
+            .ch-stage { max-width: min(520px, 56vh); }
+        }
+        .ch-img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .ch-spot {
+            position: absolute;
+            overflow: hidden;                 /* retalla el contingut a la forma */
+            border-radius: 27% / 23%;         /* mateix arrodoniment que la targeta */
+            left: calc(var(--x) * 1%);
+            top: calc(var(--y) * 1%);
+            width: calc(var(--w) * 1%);
+            height: calc(var(--h) * 1%);
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+        }
+        .ch-spot:hover, .ch-spot:focus-visible {
+            outline: none;
+            background: rgba(255,255,255,0.10);
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.6), 0 8px 24px rgba(0,0,0,0.35);
+        }
+        .ch-spot:active { transform: scale(0.985); background: rgba(255,255,255,0.18); }
+        /* Contingut dels indicadors.
+           El plafó reprodueix el mateix vidre blau de la targeta pintada
+           (colors presos de la pròpia foto) per tapar-ne el dibuix sense
+           canviar-ne l'aspecte. El text va en blanc, i la mida es calcula
+           en proporció al widget (cqw) amb un ajust per JS que la baixa si
+           no hi cabés: cap lletra pot sortir de la forma. */
+        .ch-spot { container-type: size; }
+        .ch-slot {
+            pointer-events: none;
+            font-variant-numeric: tabular-nums;
+        }
+        .ch-spot.filled .ch-slot {
+            position: absolute;
+            inset: 3.8%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 11% 8%;
+            overflow: hidden;
+            border-radius: 26% / 22%;
+            /* Vidre: el desenfocat esborra el dibuix de sota sense
+               enfosquir la targeta ni perdre'n la transparència. */
+            -webkit-backdrop-filter: blur(16px) saturate(125%);
+            backdrop-filter: blur(16px) saturate(125%);
+            background: linear-gradient(168deg,
+                rgba(76,116,146,0.62) 0%,
+                rgba(52,85,110,0.70) 55%,
+                rgba(38,65,88,0.74) 100%);
+            /* Sense vores pròpies: l'única línia blanca ha de ser la de la
+               targeta pintada, perquè no se'n vegin dues. */
+            box-shadow: none;
+            color: #fff;
+            font-weight: 700;
+            line-height: 1.08;
+            letter-spacing: 0.005em;
+            text-align: center;
+            text-wrap: balance;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+            font-size: 21cqw;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Icona de línia, del mateix estil que les dibuixades a la foto.
+           Va en em: si el text s'ha d'encongir, l'icona l'acompanya. */
+        .ch-ic {
+            flex: none;
+            width: 2.05em;
+            height: 2.05em;
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 1.55;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.97;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.45));
+        }
+        /* Filet fi de separació, per donar aire i ordre */
+        .ch-rule {
+            flex: none;
+            width: 34%;
+            height: 1px;
+            margin: 0.16em 0 0.24em;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+        }
+        .ch-ic-fill { fill: #ffffff; stroke: none; }
+        /* Variant "peu": només substitueix la franja de text de la targeta
+           i deixa a la vista la imatge pintada de la foto. */
+        .ch-spot.peu .ch-slot {
+            inset: auto;
+            left: 5%;
+            right: 5%;
+            top: 70.3%;            /* just sota la icona pintada */
+            bottom: 4.2%;
+            padding: 1% 11%;       /* marge perquè el text respiri */
+            border-radius: 0.34em;
+            /* To exacte de la franja d'etiquetes de la targeta, perquè el
+               plafó no es noti; el desenfocat esborra el text de sota. */
+            background: linear-gradient(180deg,
+                rgba(73,90,104,0.90) 0%,
+                rgba(80,98,113,0.92) 70%,
+                rgba(86,106,121,0.92) 100%);
+            -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+            box-shadow: none;
+        }
+        /* Mini-mapa vectorial: ocupa menys que el dibuixat a la foto i
+           deixa espai per al text, mantenint-se nítid a qualsevol mida. */
+        .ch-map {
+            flex: none;
+            width: 2.35em;
+            height: auto;
+            fill: none;
+            stroke: rgba(255,255,255,0.92);
+            stroke-width: 1.15;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.45));
+        }
+        .ch-map .costa { stroke: rgba(255,255,255,0.72); stroke-width: 0.95; }
+        .ch-map .terra { fill: url(#terraG); stroke: none; }
+        .ch-map .punt { fill: #7fe3ff; stroke: none; }
+        .ch-map .casa { fill: #ffd36a; stroke: none; }
+        .ch-tx { display: block; letter-spacing: -0.015em; }
+        /* Segona línia, més petita: manté la paraula principal ben gran */
+        .ch-sub {
+            display: block;
+            font-size: 0.58em;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            opacity: 0.9;
+            margin-top: 0.14em;
+        }
+        .ch-ic.cian { stroke: #8fe4ff; }
+        /* Targeta amb foto: mateixa estructura que el widget de Webcams
+           (miniatura a dalt, franja d'etiqueta a baix). */
+        .ch-slot.carta { display: block; padding: 0; }
+        .ch-th {
+            position: absolute;
+            left: 7%;
+            top: 5.5%;
+            width: 86%;
+            height: var(--th-h, 63%);
+            object-fit: cover;
+            border-radius: 17% / 23%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.30);
+        }
+        .ch-rodona {
+            position: absolute;
+            left: 50%;
+            top: 41%;
+            width: 38%;
+            aspect-ratio: 1;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: rgba(18,44,66,0.45);
+            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+            box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ch-rodona svg { width: 62%; height: 62%; fill: none; stroke: #fff;
+            stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+        .ch-peu {
+            position: absolute;
+            left: 6%;
+            right: 6%;
+            bottom: var(--peu-b, 3%);   /* ajustable per alinear textos */
+            height: var(--peu-h, 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+        }
+        @supports not (font-size: 1cqw) {
+            .ch-spot.filled .ch-slot { font-size: 5.6vw; }
+        }
+        @supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
+            .ch-spot.filled .ch-slot {
+                background: linear-gradient(168deg, #4a7290 0%, #34556e 55%, #294159 100%);
+            }
+        }
+        /* Pressió atmosfèrica */
+        .press-cos { padding: 6px 12px 14px; }
+        .press-ara { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 4px 2px 12px; }
+        .press-val { font-size: 2.7rem; font-weight: 900; line-height: 1; color: #fff;
+            font-variant-numeric: tabular-nums; text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
+        .press-val small { font-size: 0.34em; font-weight: 700; color: rgba(255,255,255,0.6); margin-left: 5px; }
+        .press-tend { font-size: 0.82rem; font-weight: 700; color: #8fd6ff; letter-spacing: 0.3px; }
+        .press-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .press-kpi { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px; padding: 8px 6px; text-align: center; }
+        .press-kpi b { display: block; font-size: 1.05rem; color: #fff; font-variant-numeric: tabular-nums; }
+        .press-kpi span { display: block; font-size: 0.54rem; letter-spacing: 1px; text-transform: uppercase;
+            color: #8fb0c6; margin-top: 3px; }
+        .press-graf { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 10px 8px 6px; }
+        .press-graf svg { display: block; width: 100%; height: auto; }
+        .press-peu { font-size: 0.62rem; color: #7f9bb0; line-height: 1.5; margin-top: 9px;
+            border-left: 2px solid rgba(143,214,255,0.4); padding-left: 9px; }
+        /* Graella d'opcions de Previsió */
+        .previ-matriu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px 12px 14px;
+        }
+        .previ-matriu .previ-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+        .previ-matriu .previ-card:last-child:nth-child(odd) img { height: 84px; }
+        @media (min-width: 700px) {
+            .previ-matriu { grid-template-columns: repeat(5, 1fr); }
+            .previ-matriu .previ-card:last-child:nth-child(odd) { grid-column: auto; }
+            .previ-matriu .previ-card:last-child:nth-child(odd) img { height: 128px; }
+        }
+        .previ-card {
+            position: relative;
+            padding: 0;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 14px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.05);
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .previ-card:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.34); }
+        .previ-card:active { transform: scale(0.985); }
+        .previ-card img {
+            display: block;
+            width: 100%;
+            height: 104px;
+            object-fit: cover;
+            background: #0b1f33;
+        }
+        @media (min-width: 700px) { .previ-card img { height: 128px; } }
+        .previ-card span {
+            display: flex;
+            align-items: center;
+            min-height: 2.9em;      /* mateixa alçada tant si el nom ocupa una línia com dues */
+            padding: 6px 10px 7px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            color: #fff;
+        }
+        .previ-tornar {
+            display: block;
+            margin: 10px auto 0;
+            padding: 8px 18px;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.07);
+            color: #cfe2ee;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+        }
+        .previ-tornar:hover { background: rgba(255,255,255,0.13); }
+        .previ-tornar[hidden] { display: none; }
+        /* Seccions que pengen del cockpit: amagades fins que s'obren */
+        .plegable { display: none; }
+        .plegable.obert { display: block; animation: obreSeccio 0.28s ease; }
+        @keyframes obreSeccio {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: none; }
+        }
+        /* Indicador triat */
+        .ch-spot.actiu { box-shadow: inset 0 0 0 3px rgba(255,255,255,0.92); }
+        .ch-spot.actiu .ch-slot.carta,
+        .ch-spot.actiu .ch-slot.ch-fit { filter: brightness(1.08); }
+        .tanca-seccio {
+            display: block;
+            margin: 2px auto 14px;
+            padding: 9px 22px;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 22px;
+            background: rgba(255,255,255,0.07);
+            color: #cfe2ee;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        .tanca-seccio:hover { background: rgba(255,255,255,0.13); }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 </head>
@@ -1222,7 +1565,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.54</div>
+            <div class="subtitle">v6.55</div>
         </div>
     </div>
 </header>
@@ -1368,8 +1711,42 @@
             </div>
         </section>
 
+        <!-- ================= COCKPIT (portada) ================= -->
+        <section class="cockpit-hero" id="cockpit-hero">
+            <div class="ch-stage">
+                <picture>
+                    <source type="image/webp"
+                            srcset="img/cockpit4-sm.webp 600w, img/cockpit4.webp 941w"
+                            sizes="(min-width: 701px) 520px, 100vw">
+                    <img class="ch-img" src="img/cockpit4.jpg"
+                         srcset="img/cockpit4-sm.jpg 600w, img/cockpit4.jpg 941w"
+                         sizes="(min-width: 701px) 520px, 100vw"
+                         width="941" height="1672" fetchpriority="high"
+                         alt="Cockpit del veler amb els indicadors d'Avui Regu">
+                </picture>
+                <button class="ch-spot filled" style="--x:8.8;--y:28.0;--w:25.4;--h:16.2;--peu-b:5%"
+                        data-slot="veins" data-target="neighbours-section" aria-label="Vent veïns">
+                    <span class="ch-slot carta" id="slot-veins"><picture><source type="image/webp" srcset="img/w-veleta.webp"><img class="ch-th" src="img/w-veleta.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Vent veïns</span></span></span></button>
+                <button class="ch-spot filled" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9;--peu-b:0.2%;--peu-h:40%;--th-h:56%"
+                        data-slot="corrent2" data-target="corrent-pressio-section" aria-label="Corrent superficial">
+                    <span class="ch-slot carta" id="slot-corrent2"><picture><source type="image/webp" srcset="img/w-corrent.webp"><img class="ch-th" src="img/w-corrent.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Corrent &amp;<br>Pressió</span></span></span></button>
+                <button class="ch-spot filled" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8;--peu-b:2.4%"
+                        data-slot="radar" data-target="radar-section" aria-label="Radar de pluges">
+                    <span class="ch-slot carta" id="slot-radar"><picture><source type="image/webp" srcset="img/w-radar.webp"><img class="ch-th" src="img/w-radar.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Radar pluges</span></span></span></button>
+                <button class="ch-spot filled peu" style="--x:8.8;--y:44.7;--w:25.0;--h:17.4"
+                        data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
+                    <span class="ch-slot ch-fit" id="slot-webcams"><span class="ch-tx">Webcams</span></span></button>
+                <button class="ch-spot filled" style="--x:36.7;--y:44.7;--w:25.6;--h:17.5;--peu-b:2.35%"
+                        data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
+                    <span class="ch-slot carta" id="slot-previsio"><picture><source type="image/webp" srcset="img/w-previ.webp"><img class="ch-th" src="img/w-previ.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Previsió</span></span></span></button>
+                <button class="ch-spot filled" style="--x:64.8;--y:44.7;--w:25.8;--h:17.3;--peu-b:1.45%"
+                        data-slot="regates" data-target="regates-section" aria-label="Regates">
+                    <span class="ch-slot carta" id="slot-regates"><picture><source type="image/webp" srcset="img/w-regates.webp"><img class="ch-th" src="img/w-regates.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Regates</span></span></span></button>
+            </div>
+        </section>
+
         <!-- VENT ESTACIONS VEÏNES -->
-        <section class="category">
+        <section class="category plegable" id="neighbours-section">
             <div class="category-header">
                 <span class="category-icon">&#127758;</span>
                 <span class="category-title title-meteo">Vent clubs veïns</span>
@@ -1531,6 +1908,43 @@
             </div>
         </section>
 
+        <!-- CORRENT & PRESSIÓ — tria d'opcions -->
+        <section class="category plegable" id="corrent-pressio-section">
+            <div class="category-header">
+                <span class="category-icon">&#127754;</span>
+                <span class="category-title title-current">Corrent &amp; Pressió</span>
+            </div>
+            <hr class="category-line line-current">
+            <div class="previ-matriu">
+                <button class="previ-card" type="button" data-secc="current-section">
+                    <img src="img/cp-corrent.jpg" alt="" loading="lazy"><span>Corrent superfície</span></button>
+                <button class="previ-card" type="button" data-secc="pressio-section">
+                    <img src="img/cp-pressio.jpg" alt="" loading="lazy"><span>Pressió atmosfèrica</span></button>
+            </div>
+        </section>
+
+        <!-- PRESSIÓ ATMOSFÈRICA -->
+        <section class="category plegable" id="pressio-section">
+            <div class="category-header">
+                <span class="category-icon">&#127777;&#65039;</span>
+                <span class="category-title title-meteo">Pressió atmosfèrica</span>
+            </div>
+            <hr class="category-line line-meteo">
+            <div class="press-cos">
+                <div class="press-ara">
+                    <div class="press-val"><span id="pressValor">----</span><small>hPa</small></div>
+                    <div class="press-tend" id="pressTend">&nbsp;</div>
+                </div>
+                <div class="press-kpis">
+                    <div class="press-kpi"><b id="pressMin">--</b><span>Mínim 48 h</span></div>
+                    <div class="press-kpi"><b id="pressMax">--</b><span>Màxim 48 h</span></div>
+                    <div class="press-kpi"><b id="pressVar">--</b><span>Canvi 3 h</span></div>
+                </div>
+                <div class="press-graf" id="pressGraf"></div>
+                <div class="press-peu" id="pressPeu">Carregant&hellip;</div>
+            </div>
+        </section>
+
         <!-- ===================== CORRENT SUPERFICIAL =====================
              FONT DE DADES — xarxa de radars HF de l'ICATMAR (Generalitat).
              NO és una boia: l'antena és a TERRA i mesura la superfície del mar
@@ -1553,7 +1967,7 @@
 
              Referència de càlcul a l'app: 41.233 N, 1.812 E (CUR_LAT/CUR_LON).
              ================================================================ -->
-        <section class="category" id="current-section">
+        <section class="category plegable" id="current-section">
             <div class="category-header">
                 <span class="category-icon">&#127754;</span>
                 <span class="category-title title-current">Corrent superficial</span>
@@ -1640,7 +2054,7 @@
         <!-- WEBCAMS: secció anterior eliminada (Corrent superficial) -->
 
         <!-- WEBCAMS -->
-        <section class="category">
+        <section class="category plegable" id="webcams-section">
             <div class="category-header">
                 <span class="category-icon">&#128065;&#65039;</span>
                 <span class="category-title title-webcam">Webcams</span>
@@ -1675,18 +2089,33 @@
         </section>
 
         <!-- METEO -->
-        <section class="category">
+        <section class="category plegable" id="meteo-section">
             <div class="category-header">
                 <span class="category-icon">&#127782;&#65039;</span>
-                <span class="category-title title-meteo">Previ i Estacions Meteo</span>
+                <span class="category-title title-meteo">Previsió</span>
             </div>
             <hr class="category-line line-meteo">
+
+            <!-- Graella d'opcions: cada una obre la seva pestanya -->
+            <div class="previ-matriu" id="previMatriu">
+                <button class="previ-card" type="button" data-tab="tabMapaWindy">
+                    <img src="img/previ-mapa.jpg" alt="" loading="lazy"><span>Mapa Vent</span></button>
+                <button class="previ-card" type="button" data-tab="tabWindy">
+                    <img src="img/previ-comparar.jpg" alt="" loading="lazy"><span>Comparador Models</span></button>
+                <button class="previ-card" type="button" data-tab="tabWindyModels">
+                    <img src="img/previ-models.jpg" alt="" loading="lazy"><span>Comparador vectorial</span></button>
+                <button class="previ-card" type="button" data-tab="tabWindguru">
+                    <img src="img/previ-windguru.jpg" alt="" loading="lazy"><span>Windguru</span></button>
+                <button class="previ-card" type="button" data-tab="tabPressio">
+                    <img src="img/previ-pressio.jpg" alt="" loading="lazy"><span>Pressió</span></button>
+            </div>
+            <button class="previ-tornar" type="button" id="previTornar" hidden>&#8249; Totes les opcions</button>
 
             <!-- Widget Mapa Windy -->
             <div class="windy-map-widget" id="windyMapWidget">
                 <div class="windy-map-head">
                     <div class="windy-map-titles">
-                        <div class="windy-map-title">Mapa de previsió</div>
+                        <div class="windy-map-title">Previsió Meteo</div>
                     </div>
                     <div class="windy-map-tabs">
                         <span class="windy-map-tab active" id="tabMapaWindy">Mapa Vent</span>
@@ -1706,7 +2135,16 @@
                     <span class="windy-map-source" id="forecastSource">Font: Windy</span>
                 </div>
             </div>
-            <!-- Radar de pluges animat — RainViewer API + Leaflet -->
+        </section>
+
+
+        <!-- RADAR DE PLUGES -->
+        <section class="category plegable" id="radar-section">
+            <div class="category-header">
+                <span class="category-icon">&#127783;&#65039;</span>
+                <span class="category-title title-meteo">Radar de pluges</span>
+            </div>
+            <hr class="category-line line-meteo">
             <div style="padding:4px 12px 12px;">
                 <div class="wg-sec-card" style="flex-direction:column;align-items:stretch;gap:6px;padding:10px;">
                     <div style="display:flex;align-items:center;gap:6px;">
@@ -1730,9 +2168,8 @@
             </div>
         </section>
 
-
         <!-- REGATES -->
-        <section class="category">
+        <section class="category plegable" id="regates-section">
             <div class="category-header">
                 <span class="category-icon">&#127942;</span>
                 <span class="category-title title-regata">Regates</span>
@@ -2933,7 +3370,7 @@
             container.innerHTML = '';
             container.style.height = 'auto';
             container.style.minHeight = '400px';
-            container.style.background = '#fff';
+            container.style.background = '#16222e';   /* el widget va en fosc: res de franges blanques */
             startWidgetTranslation();
             var widgetDiv = document.createElement('div');
             widgetDiv.setAttribute('data-windywidget', 'forecast');
@@ -2942,7 +3379,16 @@
             widgetDiv.setAttribute('data-fields', 'wind-direction,wind-speed,wind-gust,waves-direction,waves-height,waves-period');
             if (cur.id !== 'compare') widgetDiv.setAttribute('data-model', cur.cookieId);
             widgetDiv.setAttribute('data-appid', '6caa287fd6e86bd37bd4a2da21a38cb4');
-            container.appendChild(widgetDiv);
+            /* La graella del widget s'ajusta a l'amplada del contenidor: en un
+               mòbil, 12 hores en 370 px queden apilades i no s'hi veuen ni els
+               punts ni els números. Li donem una pista més ampla i deixem que
+               es llisqui cap al costat. */
+            var pista = document.createElement('div');
+            pista.style.minWidth = Math.max(760, container.clientWidth) + 'px';
+            pista.appendChild(widgetDiv);
+            container.appendChild(pista);
+            container.style.overflowX = 'auto';
+            container.style.webkitOverflowScrolling = 'touch';
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://windy.app/widgets-code/forecast/windy_forecast_async.js';
@@ -2957,9 +3403,10 @@
             };
             container.appendChild(script);
             if (subtitle) subtitle.textContent = cur.label + ' — Sitges';
-            if (caption) caption.textContent = cur.id === 'compare'
+            var mesHores = window.innerWidth < 760 ? ' Llisca cap al costat per veure més hores.' : '';
+            if (caption) caption.textContent = (cur.id === 'compare'
                 ? 'Vent (nusos), ratxes i onatge — comparativa de tots els models.'
-                : 'Vent (nusos), ratxes i onatge — model ' + cur.label + '.';
+                : 'Vent (nusos), ratxes i onatge — model ' + cur.label + '.') + mesHores;
             if (source) source.textContent = 'Font: Windy.app';
         }
 
@@ -3389,7 +3836,12 @@
             loadPressio();
         });
 
-        loadMapaWindy();
+        /* Igual que el radar: el mapa de Windy espera que s'obri la secció. */
+        window.iniciaMeteo = function() {
+            if (window.__meteoFet) return;
+            window.__meteoFet = true;
+            loadMapaWindy();
+        };
     })();
 
 })();
@@ -3397,7 +3849,11 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-(function() {
+/* El radar és pesat (Leaflet + tessel·les + imatges): no s'engega fins que
+   algú obre el seu indicador al cockpit. */
+window.iniciaRadar = function() {
+    if (window.__radarFet) return;
+    window.__radarFet = true;
     // --- Radar Player amb dades Meteocat ---
     var TIMESTAMP_URL = 'https://static-m.meteo.cat/ginys/referencia/tiles/dates-tiles-CAPPI_0m.json';
     var TILE_BASE = 'https://static-m.meteo.cat/tiles';
@@ -3603,7 +4059,7 @@
     loadRadarData();
     // Recarregar cada 3 minuts (radar s'actualitza cada 6)
     setInterval(loadRadarData, 3 * 60 * 1000);
-})();
+};
 
 </script>
 
@@ -3632,6 +4088,345 @@ document.getElementById('videoOverlay').addEventListener('click', function(e) {
     if (e.target === this) closeVideoOverlay();
 });
 </script>
+
+<script>
+/* ============================================================
+   COCKPIT (portada) — zones actives sobre la imatge
+   Cada zona ja porta a la seva secció. El contingut en directe de
+   dins de cada indicador s'omple amb CockpitSlots.set(id, html):
+   queda preparat, però de moment no es pinta res (la imatge ja
+   porta els seus valors dibuixats).
+   ============================================================ */
+window.CockpitSlots = (function() {
+    var stage = document.getElementById('cockpit-hero');
+    if (!stage) return { set: function() {} };
+
+    /* Cada indicador obre la seva secció just sota el cockpit. Les altres
+       queden plegades, i el contingut pesat (radar, mapes) no es carrega
+       fins que s'obre per primera vegada. */
+    var ARRENCADA = { 'radar-section': 'iniciaRadar', 'pressio-section': 'iniciaPressio' };
+
+    function plega() {
+        var oberta = document.querySelector('.plegable.obert');
+        if (oberta) oberta.classList.remove('obert');
+        var actiu = stage.querySelector('.ch-spot.actiu');
+        if (actiu) actiu.classList.remove('actiu');
+    }
+
+    function posaTancador(sec) {
+        if (sec.querySelector('.tanca-seccio')) return;
+        var b = document.createElement('button');
+        b.className = 'tanca-seccio';
+        b.type = 'button';
+        b.innerHTML = '\u25B2 Tancar';
+        b.addEventListener('click', function() {
+            plega();
+            document.getElementById('cockpit-hero').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        sec.appendChild(b);
+    }
+
+    function anar(id, boto) {
+        var sec = document.getElementById(id);
+        if (!sec) return;
+        var joberta = sec.classList.contains('obert');
+        plega();
+        if (joberta) return;                       // segon toc sobre el mateix: plega
+        sec.classList.add('obert');
+        posaTancador(sec);
+        if (!boto) boto = stage.querySelector('.ch-spot[data-target="' + id + '"]');
+        if (boto) boto.classList.add('actiu');
+
+        var arrenca = ARRENCADA[id];
+        if (arrenca && typeof window[arrenca] === 'function') window[arrenca]();
+        if (id === 'meteo-section' && typeof window.previMostraMatriu === 'function') window.previMostraMatriu();
+        // Leaflet dibuixa malament si neix amagat: li diem la mida nova
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 320);
+
+        setTimeout(function() {
+            var r = sec.getBoundingClientRect();
+            if (r.top < 0 || r.top > window.innerHeight * 0.8) {
+                sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 80);
+    }
+
+    stage.addEventListener('click', function(e) {
+        var b = e.target.closest('.ch-spot');
+        if (b && b.dataset.target) anar(b.dataset.target, b);
+    });
+
+    /* Enllaç directe: index.html#radar-section obre aquell indicador */
+    function desDelHash() {
+        var h = location.hash.replace('#', '');
+        if (!h) return;
+        if (document.getElementById(h) && document.getElementById(h).classList.contains('plegable')) {
+            anar(h);
+        } else {
+            var b = stage.querySelector('.ch-spot[data-slot="' + h + '"]');
+            if (b) anar(b.dataset.target, b);
+        }
+    }
+    window.cockpitObre = anar;
+    window.addEventListener('hashchange', desDelHash);
+    setTimeout(desDelHash, 300);
+
+    /* La lletra va en proporció al widget. Si un text no hi cabés —paraula
+       llarga, tipografia del sistema, pantalla petita— la reduïm fins que
+       hi entri. Cap lletra pot sortir de la forma del widget. */
+    function ajusta(el) {
+        if (!el) return 0;
+        var caixa = el.getBoundingClientRect();
+        if (!caixa.width) return 0;
+        var mida = Math.min(caixa.width * 0.34, caixa.height * 0.80);
+        el.style.fontSize = mida + 'px';
+        var volta = 0;
+        while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
+               && mida > 7 && volta++ < 70) {
+            mida *= 0.95;
+            el.style.fontSize = mida + 'px';
+        }
+        return mida;
+    }
+    /* Totes les etiquetes comparteixen mida: agafem la més gran que hi
+       càpiga a totes, així cap widget no crida més que un altre. */
+    function ajustaTots() {
+        var slots = stage.querySelectorAll('.ch-fit');
+        if (!slots.length) return;
+        var minima = Infinity;
+        for (var i = 0; i < slots.length; i++) {
+            var m = ajusta(slots[i]);
+            if (m > 0 && m < minima) minima = m;
+        }
+        if (minima === Infinity) return;
+        for (var j = 0; j < slots.length; j++) slots[j].style.fontSize = minima + 'px';
+    }
+    var foto = stage.querySelector('.ch-img');
+    if (foto && !foto.complete) foto.addEventListener('load', ajustaTots);
+    ajustaTots();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaTots);
+    /* Quan la foto acaba de carregar, l'escenari canvia d'alçada: si no
+       ho recalculem, al mòbil el text queda amb la mida d'abans i surt
+       de la forma. Amb ResizeObserver ho agafem sempre. */
+    if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function() { ajustaTots(); });
+        ro.observe(stage.querySelector('.ch-stage') || stage);
+    }
+    window.addEventListener('orientationchange', function() { setTimeout(ajustaTots, 250); });
+    setTimeout(ajustaTots, 600);
+    setTimeout(ajustaTots, 1800);   /* xarxa lenta: la foto pot arribar tard */
+    window.addEventListener('resize', function() {
+        clearTimeout(window.__ckAjust);
+        window.__ckAjust = setTimeout(ajustaTots, 150);
+    });
+
+    return {
+        /* CockpitSlots.set('vent', '<b>12 kn</b>') */
+        set: function(slot, html) {
+            var el = document.getElementById('slot-' + slot);
+            if (!el) return;
+            el.innerHTML = html;
+            el.parentNode.classList.add('filled');
+            ajusta(el);
+        },
+        /* Valors en directe que ja tenim a la pàgina, a punt de fer servir.
+           Retorna, p. ex.: { vent:'0.9', veins:'5.2', corrent:'0.13', temp:'24.1' } */
+        dades: function() {
+            function t(id) {
+                var el = document.getElementById(id);
+                if (!el) return null;
+                var v = (el.textContent || '').trim();
+                return (v && v !== '--') ? v : null;
+            }
+            function n(id) { var v = t(id); v = v && parseFloat(v.replace(',', '.')); return isNaN(v) ? null : v; }
+            var veins = ['aq-speed', 'cb-speed', 'vn-speed', 'cd-speed'].map(n)
+                        .filter(function(v) { return v !== null; });
+            return {
+                vent:    t('wind-pill-val'),
+                veins:   veins.length ? Math.max.apply(null, veins) : null,
+                corrent: t('cur-speed'),
+                temp:    t('wm-temp') || t('wm-temp-m')
+            };
+        }
+    };
+})();
+</script>
+<script>
+/* ============================================================
+   PREVISIÓ — graella d'opcions
+   En obrir la secció es veu la graella; en triar-ne una es mostra
+   el mapa corresponent (i només llavors es carrega).
+   ============================================================ */
+(function() {
+    var matriu = document.getElementById('previMatriu');
+    var widget = document.getElementById('windyMapWidget');
+    var tornar = document.getElementById('previTornar');
+    if (!matriu || !widget || !tornar) return;
+
+    function mostraMatriu() {
+        matriu.style.display = '';
+        widget.style.display = 'none';
+        tornar.hidden = true;
+    }
+    function mostraMapa() {
+        matriu.style.display = 'none';
+        widget.style.display = '';
+        tornar.hidden = false;
+    }
+    mostraMatriu();
+
+    matriu.addEventListener('click', function(e) {
+        var carta = e.target.closest('.previ-card');
+        if (!carta) return;
+        var id = carta.dataset.tab;
+        var tab = document.getElementById(id);
+        mostraMapa();
+        if (tab) {
+            if (tab.classList.contains('active')) {
+                /* la pestanya ja és l'activa: si encara no s'ha carregat, ara sí */
+                if (id === 'tabMapaWindy' && typeof window.iniciaMeteo === 'function') window.iniciaMeteo();
+            } else {
+                tab.click();
+            }
+        }
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 260);
+        widget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    tornar.addEventListener('click', function() {
+        mostraMatriu();
+        matriu.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    window.previMostraMatriu = mostraMatriu;
+})();
+</script>
+
+<script>
+/* ============================================================
+   CORRENT & PRESSIÓ — tria d'opcions + pantalla de pressió
+   ============================================================ */
+(function() {
+    /* --- la graella de dues opcions obre la secció que toca --- */
+    var tria = document.getElementById('corrent-pressio-section');
+    if (tria) {
+        tria.addEventListener('click', function(e) {
+            var carta = e.target.closest('.previ-card[data-secc]');
+            if (!carta || typeof window.cockpitObre !== 'function') return;
+            var desti = carta.dataset.secc;
+            window.cockpitObre(desti);
+            var sec = document.getElementById(desti);
+            if (sec && !sec.querySelector('.previ-tornar')) {
+                var b = document.createElement('button');
+                b.className = 'previ-tornar';
+                b.type = 'button';
+                b.innerHTML = '\u2039 Corrent i Pressi\u00f3';
+                b.style.margin = '4px auto 10px';
+                b.addEventListener('click', function() { window.cockpitObre('corrent-pressio-section'); });
+                sec.insertBefore(b, sec.children[2] || null);
+            }
+        });
+    }
+
+    /* --- pressió: valor actual + evolució de 48 h --- */
+    var fet = false;
+    window.iniciaPressio = function() {
+        if (fet) return;
+        fet = true;
+        var url = 'https://api.open-meteo.com/v1/forecast?latitude=41.235&longitude=1.805'
+                + '&current=pressure_msl&hourly=pressure_msl&past_days=2&forecast_days=1&timezone=auto';
+        fetch(url).then(function(r) { return r.json(); }).then(function(d) {
+            var hores = d.hourly.time, vals = d.hourly.pressure_msl;
+            var ara = new Date();
+            var punts = [];
+            for (var i = 0; i < hores.length; i++) {
+                var t = new Date(hores[i]);
+                if (vals[i] == null) continue;
+                if (t > ara) continue;                       /* només el passat */
+                if (ara - t > 48.5 * 3600 * 1000) continue;  /* últimes 48 h */
+                punts.push({ t: t, v: vals[i] });
+            }
+            if (!punts.length) { document.getElementById('pressPeu').textContent = 'Sense dades.'; return; }
+
+            var actual = d.current && d.current.pressure_msl != null
+                       ? d.current.pressure_msl : punts[punts.length - 1].v;
+            var min = Math.min.apply(null, punts.map(function(p) { return p.v; }));
+            var max = Math.max.apply(null, punts.map(function(p) { return p.v; }));
+            var fa3 = punts[Math.max(0, punts.length - 4)].v;
+            var var3 = actual - fa3;
+
+            document.getElementById('pressValor').textContent = actual.toFixed(1).replace('.', ',');
+            document.getElementById('pressMin').textContent = min.toFixed(1).replace('.', ',');
+            document.getElementById('pressMax').textContent = max.toFixed(1).replace('.', ',');
+            document.getElementById('pressVar').textContent = (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',');
+
+            var tendencia, fletxa, color;
+            if (var3 > 1.0)       { tendencia = 'Puja de pressa';  fletxa = '\u25B2'; color = '#7ee0a6'; }
+            else if (var3 > 0.3)  { tendencia = 'Puja';            fletxa = '\u25B2'; color = '#7ee0a6'; }
+            else if (var3 < -1.0) { tendencia = 'Baixa de pressa'; fletxa = '\u25BC'; color = '#ff9a76'; }
+            else if (var3 < -0.3) { tendencia = 'Baixa';           fletxa = '\u25BC'; color = '#ffc48a'; }
+            else                  { tendencia = 'Estable';         fletxa = '\u25AC'; color = '#8fd6ff'; }
+            var te = document.getElementById('pressTend');
+            te.innerHTML = fletxa + ' ' + tendencia + ' \u00b7 ' + (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',') + ' hPa en 3 h';
+            te.style.color = color;
+
+            dibuixa(punts, min, max);
+
+            var h = punts[punts.length - 1].t;
+            document.getElementById('pressPeu').innerHTML =
+                'Pressió al nivell del mar a Sitges, hora local. Última dada: '
+                + ('0' + h.getHours()).slice(-2) + ':' + ('0' + h.getMinutes()).slice(-2)
+                + '. Font: Open-Meteo (model). Quan connectem el baròmetre del Club, '
+                + 'aquesta pantalla passarà a mostrar la mesura real de l\'estació.';
+        }).catch(function() {
+            document.getElementById('pressPeu').textContent = 'No s\'han pogut carregar les dades de pressió.';
+        });
+    };
+
+    function dibuixa(punts, min, max) {
+        var W = 620, H = 230, ML = 42, MR = 10, MT = 12, MB = 26;
+        var ampl = W - ML - MR, alt = H - MT - MB;
+        var marge = Math.max(1.2, (max - min) * 0.25);
+        var y0 = min - marge, y1 = max + marge;
+        var t0 = punts[0].t.getTime(), t1 = punts[punts.length - 1].t.getTime();
+        function X(t) { return ML + (t - t0) / (t1 - t0 || 1) * ampl; }
+        function Y(v) { return MT + (y1 - v) / (y1 - y0) * alt; }
+
+        var linia = punts.map(function(p, i) { return (i ? 'L' : 'M') + X(p.t).toFixed(1) + ' ' + Y(p.v).toFixed(1); }).join(' ');
+        var area = linia + ' L' + X(t1).toFixed(1) + ' ' + (MT + alt) + ' L' + X(t0).toFixed(1) + ' ' + (MT + alt) + ' Z';
+
+        var reixa = '', etiq = '';
+        var pas = (y1 - y0) > 12 ? 4 : 2;
+        for (var v = Math.ceil(y0 / pas) * pas; v <= y1; v += pas) {
+            var y = Y(v).toFixed(1);
+            reixa += '<line x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>';
+            etiq += '<text x="' + (ML - 6) + '" y="' + (parseFloat(y) + 3.5) + '" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">' + v + '</text>';
+        }
+        var hores = '';
+        for (var i = 0; i < punts.length; i++) {
+            var d = punts[i].t;
+            if (d.getHours() % 12 !== 0) continue;
+            var x = X(d.getTime()).toFixed(1);
+            hores += '<line x1="' + x + '" y1="' + MT + '" x2="' + x + '" y2="' + (MT + alt) + '" stroke="rgba(255,255,255,0.07)"/>'
+                   + '<text x="' + x + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">'
+                   + ('0' + d.getHours()).slice(-2) + 'h</text>';
+        }
+        var ult = punts[punts.length - 1];
+        document.getElementById('pressGraf').innerHTML =
+            '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" style="height:230px">'
+          + '<defs><linearGradient id="pgrad" x1="0" y1="0" x2="0" y2="1">'
+          + '<stop offset="0%" stop-color="#8fd6ff" stop-opacity="0.35"/>'
+          + '<stop offset="100%" stop-color="#8fd6ff" stop-opacity="0"/></linearGradient></defs>'
+          + reixa + hores
+          + '<path d="' + area + '" fill="url(#pgrad)"/>'
+          + '<path d="' + linia + '" fill="none" stroke="#8fd6ff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>'
+          + '<circle cx="' + X(ult.t.getTime()).toFixed(1) + '" cy="' + Y(ult.v).toFixed(1) + '" r="4" fill="#fff"/>'
+          + etiq
+          + '</svg>';
+    }
+})();
+</script>
+
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
