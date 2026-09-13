@@ -3942,7 +3942,7 @@ window.CockpitSlots = (function() {
         if (!el) return 0;
         var caixa = el.getBoundingClientRect();
         if (!caixa.width) return 0;
-        var mida = Math.min(caixa.width * 0.30, caixa.height * 0.52);
+        var mida = Math.min(caixa.width * 0.34, caixa.height * 0.80);
         el.style.fontSize = mida + 'px';
         var volta = 0;
         while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
