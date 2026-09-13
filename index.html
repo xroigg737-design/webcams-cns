@@ -1565,7 +1565,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.55</div>
+            <div class="subtitle">v6.56</div>
         </div>
     </div>
 </header>
@@ -4328,60 +4328,84 @@ window.CockpitSlots = (function() {
         });
     }
 
-    /* --- pressió: valor actual + evolució de 48 h --- */
+    /* --- pressió: baròmetre del Club, amb el model com a pla B --- */
     var fet = false;
+    var API_P = 'https://cns-wind-api.xroigg737.workers.dev';
+
     window.iniciaPressio = function() {
         if (fet) return;
         fet = true;
+        Promise.all([
+            fetch(API_P + '/pressio-historic').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+            fetch(API_P).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+        ]).then(function(res) {
+            var hist = res[0], ara = res[1];
+            if (hist && hist.punts && hist.punts.length > 6 && ara && ara.pressure_hpa != null) {
+                var punts = hist.punts.map(function(p) { return { t: new Date(p.ts * 1000), v: p.hpa }; });
+                pinta(punts, ara.pressure_hpa, ara.pressure_trend_hpa,
+                      'Baròmetre de l\'estació del Club Nàutic de Sitges (Davis), pressió al nivell '
+                      + 'del mar. Lectura cada 5 minuts; al gràfic, un punt cada 15.');
+            } else {
+                modelDeReserva();
+            }
+        });
+    };
+
+    /* Si el Worker o l'estació fallen, no deixem la pantalla buida:
+       ensenyem la pressió del model i ho diem. */
+    function modelDeReserva() {
         var url = 'https://api.open-meteo.com/v1/forecast?latitude=41.235&longitude=1.805'
                 + '&current=pressure_msl&hourly=pressure_msl&past_days=2&forecast_days=1&timezone=auto';
         fetch(url).then(function(r) { return r.json(); }).then(function(d) {
-            var hores = d.hourly.time, vals = d.hourly.pressure_msl;
-            var ara = new Date();
-            var punts = [];
-            for (var i = 0; i < hores.length; i++) {
-                var t = new Date(hores[i]);
-                if (vals[i] == null) continue;
-                if (t > ara) continue;                       /* només el passat */
-                if (ara - t > 48.5 * 3600 * 1000) continue;  /* últimes 48 h */
-                punts.push({ t: t, v: vals[i] });
+            var ara = new Date(), punts = [];
+            for (var i = 0; i < d.hourly.time.length; i++) {
+                var t = new Date(d.hourly.time[i]);
+                if (d.hourly.pressure_msl[i] == null || t > ara) continue;
+                if (ara - t > 48.5 * 3600 * 1000) continue;
+                punts.push({ t: t, v: d.hourly.pressure_msl[i] });
             }
             if (!punts.length) { document.getElementById('pressPeu').textContent = 'Sense dades.'; return; }
-
-            var actual = d.current && d.current.pressure_msl != null
-                       ? d.current.pressure_msl : punts[punts.length - 1].v;
-            var min = Math.min.apply(null, punts.map(function(p) { return p.v; }));
-            var max = Math.max.apply(null, punts.map(function(p) { return p.v; }));
-            var fa3 = punts[Math.max(0, punts.length - 4)].v;
-            var var3 = actual - fa3;
-
-            document.getElementById('pressValor').textContent = actual.toFixed(1).replace('.', ',');
-            document.getElementById('pressMin').textContent = min.toFixed(1).replace('.', ',');
-            document.getElementById('pressMax').textContent = max.toFixed(1).replace('.', ',');
-            document.getElementById('pressVar').textContent = (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',');
-
-            var tendencia, fletxa, color;
-            if (var3 > 1.0)       { tendencia = 'Puja de pressa';  fletxa = '\u25B2'; color = '#7ee0a6'; }
-            else if (var3 > 0.3)  { tendencia = 'Puja';            fletxa = '\u25B2'; color = '#7ee0a6'; }
-            else if (var3 < -1.0) { tendencia = 'Baixa de pressa'; fletxa = '\u25BC'; color = '#ff9a76'; }
-            else if (var3 < -0.3) { tendencia = 'Baixa';           fletxa = '\u25BC'; color = '#ffc48a'; }
-            else                  { tendencia = 'Estable';         fletxa = '\u25AC'; color = '#8fd6ff'; }
-            var te = document.getElementById('pressTend');
-            te.innerHTML = fletxa + ' ' + tendencia + ' \u00b7 ' + (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',') + ' hPa en 3 h';
-            te.style.color = color;
-
-            dibuixa(punts, min, max);
-
-            var h = punts[punts.length - 1].t;
-            document.getElementById('pressPeu').innerHTML =
-                'Pressió al nivell del mar a Sitges, hora local. Última dada: '
-                + ('0' + h.getHours()).slice(-2) + ':' + ('0' + h.getMinutes()).slice(-2)
-                + '. Font: Open-Meteo (model). Quan connectem el baròmetre del Club, '
-                + 'aquesta pantalla passarà a mostrar la mesura real de l\'estació.';
+            var actual = d.current && d.current.pressure_msl != null ? d.current.pressure_msl : punts[punts.length - 1].v;
+            pinta(punts, actual, null,
+                  'L\'estació del Club no respon ara mateix: es mostra la pressió del model '
+                  + '(Open-Meteo) per a Sitges.');
         }).catch(function() {
             document.getElementById('pressPeu').textContent = 'No s\'han pogut carregar les dades de pressió.';
         });
-    };
+    }
+
+    function pinta(punts, actual, tendencia, peu) {
+        var min = Math.min.apply(null, punts.map(function(p) { return p.v; }));
+        var max = Math.max.apply(null, punts.map(function(p) { return p.v; }));
+        /* canvi de 3 h calculat de la sèrie (el punt més proper a fa 3 h) */
+        var fa3ms = punts[punts.length - 1].t.getTime() - 3 * 3600 * 1000;
+        var ref = punts[0];
+        for (var i = 0; i < punts.length; i++) {
+            if (Math.abs(punts[i].t.getTime() - fa3ms) < Math.abs(ref.t.getTime() - fa3ms)) ref = punts[i];
+        }
+        var var3 = tendencia != null ? tendencia : actual - ref.v;
+
+        document.getElementById('pressValor').textContent = actual.toFixed(1).replace('.', ',');
+        document.getElementById('pressMin').textContent = min.toFixed(1).replace('.', ',');
+        document.getElementById('pressMax').textContent = max.toFixed(1).replace('.', ',');
+        document.getElementById('pressVar').textContent = (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',');
+
+        var text, fletxa, color;
+        if (var3 > 1.0)       { text = 'Puja de pressa';  fletxa = '\u25B2'; color = '#7ee0a6'; }
+        else if (var3 > 0.3)  { text = 'Puja';            fletxa = '\u25B2'; color = '#7ee0a6'; }
+        else if (var3 < -1.0) { text = 'Baixa de pressa'; fletxa = '\u25BC'; color = '#ff9a76'; }
+        else if (var3 < -0.3) { text = 'Baixa';           fletxa = '\u25BC'; color = '#ffc48a'; }
+        else                  { text = 'Estable';         fletxa = '\u25AC'; color = '#8fd6ff'; }
+        var te = document.getElementById('pressTend');
+        te.innerHTML = fletxa + ' ' + text + ' \u00b7 ' + (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',') + ' hPa en 3 h';
+        te.style.color = color;
+
+        dibuixa(punts, min, max);
+
+        var h = punts[punts.length - 1].t;
+        document.getElementById('pressPeu').innerHTML = peu + ' Última dada: '
+            + ('0' + h.getHours()).slice(-2) + ':' + ('0' + h.getMinutes()).slice(-2) + ' h.';
+    }
 
     function dibuixa(punts, min, max) {
         var W = 620, H = 230, ML = 42, MR = 10, MT = 12, MB = 26;
@@ -4402,10 +4426,15 @@ window.CockpitSlots = (function() {
             reixa += '<line x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>';
             etiq += '<text x="' + (ML - 6) + '" y="' + (parseFloat(y) + 3.5) + '" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">' + v + '</text>';
         }
-        var hores = '';
+        var hores = '', jaPosades = {};
         for (var i = 0; i < punts.length; i++) {
             var d = punts[i].t;
             if (d.getHours() % 12 !== 0) continue;
+            /* amb un punt cada 15 min, una mateixa hora sortiria 4 vegades i
+               les etiquetes es trepitjarien: només la primera */
+            var clau = d.getDate() + '-' + d.getHours();
+            if (jaPosades[clau]) continue;
+            jaPosades[clau] = 1;
             var x = X(d.getTime()).toFixed(1);
             hores += '<line x1="' + x + '" y1="' + MT + '" x2="' + x + '" y2="' + (MT + alt) + '" stroke="rgba(255,255,255,0.07)"/>'
                    + '<text x="' + x + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">'
