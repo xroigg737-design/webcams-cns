@@ -1484,8 +1484,10 @@
         }
         @media (min-width: 700px) { .previ-card img { height: 128px; } }
         .previ-card span {
-            display: block;
-            padding: 8px 10px 9px;
+            display: flex;
+            align-items: center;
+            min-height: 2.9em;      /* mateixa alçada tant si el nom ocupa una línia com dues */
+            padding: 6px 10px 7px;
             font-size: 0.82rem;
             font-weight: 800;
             letter-spacing: 0.3px;
@@ -2040,7 +2042,7 @@
                 <button class="previ-card" type="button" data-tab="tabMapaWindy">
                     <img src="img/previ-mapa.jpg" alt="" loading="lazy"><span>Mapa Vent</span></button>
                 <button class="previ-card" type="button" data-tab="tabWindy">
-                    <img src="img/previ-comparar.jpg" alt="" loading="lazy"><span>Comparar</span></button>
+                    <img src="img/previ-comparar.jpg" alt="" loading="lazy"><span>Comparador Models</span></button>
                 <button class="previ-card" type="button" data-tab="tabWindyModels">
                     <img src="img/previ-models.jpg" alt="" loading="lazy"><span>Models</span></button>
                 <button class="previ-card" type="button" data-tab="tabWindguru">
