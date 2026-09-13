@@ -1451,6 +1451,24 @@
                 background: linear-gradient(168deg, #4a7290 0%, #34556e 55%, #294159 100%);
             }
         }
+        /* Pressió atmosfèrica */
+        .press-cos { padding: 6px 12px 14px; }
+        .press-ara { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 4px 2px 12px; }
+        .press-val { font-size: 2.7rem; font-weight: 900; line-height: 1; color: #fff;
+            font-variant-numeric: tabular-nums; text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
+        .press-val small { font-size: 0.34em; font-weight: 700; color: rgba(255,255,255,0.6); margin-left: 5px; }
+        .press-tend { font-size: 0.82rem; font-weight: 700; color: #8fd6ff; letter-spacing: 0.3px; }
+        .press-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .press-kpi { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px; padding: 8px 6px; text-align: center; }
+        .press-kpi b { display: block; font-size: 1.05rem; color: #fff; font-variant-numeric: tabular-nums; }
+        .press-kpi span { display: block; font-size: 0.54rem; letter-spacing: 1px; text-transform: uppercase;
+            color: #8fb0c6; margin-top: 3px; }
+        .press-graf { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 10px 8px 6px; }
+        .press-graf svg { display: block; width: 100%; height: auto; }
+        .press-peu { font-size: 0.62rem; color: #7f9bb0; line-height: 1.5; margin-top: 9px;
+            border-left: 2px solid rgba(143,214,255,0.4); padding-left: 9px; }
         /* Graella d'opcions de Previsió */
         .previ-matriu {
             display: grid;
@@ -1710,7 +1728,7 @@
                         data-slot="veins" data-target="neighbours-section" aria-label="Vent veïns">
                     <span class="ch-slot carta" id="slot-veins"><picture><source type="image/webp" srcset="img/w-veleta.webp"><img class="ch-th" src="img/w-veleta.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Vent veïns</span></span></span></button>
                 <button class="ch-spot filled" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9;--peu-b:0.2%;--peu-h:40%;--th-h:56%"
-                        data-slot="corrent2" data-target="current-section" aria-label="Corrent superficial">
+                        data-slot="corrent2" data-target="corrent-pressio-section" aria-label="Corrent superficial">
                     <span class="ch-slot carta" id="slot-corrent2"><picture><source type="image/webp" srcset="img/w-corrent.webp"><img class="ch-th" src="img/w-corrent.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Corrent &amp;<br>Pressió</span></span></span></button>
                 <button class="ch-spot filled" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8;--peu-b:2.4%"
                         data-slot="radar" data-target="radar-section" aria-label="Radar de pluges">
@@ -1887,6 +1905,43 @@
                         <a href="https://www.17nudos.com/" target="_blank" style="font-size:0.48em;color:rgba(255,255,255,0.35);text-decoration:none;">Detall estació &rarr;</a>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- CORRENT & PRESSIÓ — tria d'opcions -->
+        <section class="category plegable" id="corrent-pressio-section">
+            <div class="category-header">
+                <span class="category-icon">&#127754;</span>
+                <span class="category-title title-current">Corrent &amp; Pressió</span>
+            </div>
+            <hr class="category-line line-current">
+            <div class="previ-matriu">
+                <button class="previ-card" type="button" data-secc="current-section">
+                    <img src="img/cp-corrent.jpg" alt="" loading="lazy"><span>Corrent superfície</span></button>
+                <button class="previ-card" type="button" data-secc="pressio-section">
+                    <img src="img/cp-pressio.jpg" alt="" loading="lazy"><span>Pressió atmosfèrica</span></button>
+            </div>
+        </section>
+
+        <!-- PRESSIÓ ATMOSFÈRICA -->
+        <section class="category plegable" id="pressio-section">
+            <div class="category-header">
+                <span class="category-icon">&#127777;&#65039;</span>
+                <span class="category-title title-meteo">Pressió atmosfèrica</span>
+            </div>
+            <hr class="category-line line-meteo">
+            <div class="press-cos">
+                <div class="press-ara">
+                    <div class="press-val"><span id="pressValor">----</span><small>hPa</small></div>
+                    <div class="press-tend" id="pressTend">&nbsp;</div>
+                </div>
+                <div class="press-kpis">
+                    <div class="press-kpi"><b id="pressMin">--</b><span>Mínim 48 h</span></div>
+                    <div class="press-kpi"><b id="pressMax">--</b><span>Màxim 48 h</span></div>
+                    <div class="press-kpi"><b id="pressVar">--</b><span>Canvi 3 h</span></div>
+                </div>
+                <div class="press-graf" id="pressGraf"></div>
+                <div class="press-peu" id="pressPeu">Carregant&hellip;</div>
             </div>
         </section>
 
@@ -4049,7 +4104,7 @@ window.CockpitSlots = (function() {
     /* Cada indicador obre la seva secció just sota el cockpit. Les altres
        queden plegades, i el contingut pesat (radar, mapes) no es carrega
        fins que s'obre per primera vegada. */
-    var ARRENCADA = { 'radar-section': 'iniciaRadar' };
+    var ARRENCADA = { 'radar-section': 'iniciaRadar', 'pressio-section': 'iniciaPressio' };
 
     function plega() {
         var oberta = document.querySelector('.plegable.obert');
@@ -4112,6 +4167,7 @@ window.CockpitSlots = (function() {
             if (b) anar(b.dataset.target, b);
         }
     }
+    window.cockpitObre = anar;
     window.addEventListener('hashchange', desDelHash);
     setTimeout(desDelHash, 300);
 
@@ -4243,6 +4299,131 @@ window.CockpitSlots = (function() {
     });
 
     window.previMostraMatriu = mostraMatriu;
+})();
+</script>
+
+<script>
+/* ============================================================
+   CORRENT & PRESSIÓ — tria d'opcions + pantalla de pressió
+   ============================================================ */
+(function() {
+    /* --- la graella de dues opcions obre la secció que toca --- */
+    var tria = document.getElementById('corrent-pressio-section');
+    if (tria) {
+        tria.addEventListener('click', function(e) {
+            var carta = e.target.closest('.previ-card[data-secc]');
+            if (!carta || typeof window.cockpitObre !== 'function') return;
+            var desti = carta.dataset.secc;
+            window.cockpitObre(desti);
+            var sec = document.getElementById(desti);
+            if (sec && !sec.querySelector('.previ-tornar')) {
+                var b = document.createElement('button');
+                b.className = 'previ-tornar';
+                b.type = 'button';
+                b.innerHTML = '\u2039 Corrent i Pressi\u00f3';
+                b.style.margin = '4px auto 10px';
+                b.addEventListener('click', function() { window.cockpitObre('corrent-pressio-section'); });
+                sec.insertBefore(b, sec.children[2] || null);
+            }
+        });
+    }
+
+    /* --- pressió: valor actual + evolució de 48 h --- */
+    var fet = false;
+    window.iniciaPressio = function() {
+        if (fet) return;
+        fet = true;
+        var url = 'https://api.open-meteo.com/v1/forecast?latitude=41.235&longitude=1.805'
+                + '&current=pressure_msl&hourly=pressure_msl&past_days=2&forecast_days=1&timezone=auto';
+        fetch(url).then(function(r) { return r.json(); }).then(function(d) {
+            var hores = d.hourly.time, vals = d.hourly.pressure_msl;
+            var ara = new Date();
+            var punts = [];
+            for (var i = 0; i < hores.length; i++) {
+                var t = new Date(hores[i]);
+                if (vals[i] == null) continue;
+                if (t > ara) continue;                       /* només el passat */
+                if (ara - t > 48.5 * 3600 * 1000) continue;  /* últimes 48 h */
+                punts.push({ t: t, v: vals[i] });
+            }
+            if (!punts.length) { document.getElementById('pressPeu').textContent = 'Sense dades.'; return; }
+
+            var actual = d.current && d.current.pressure_msl != null
+                       ? d.current.pressure_msl : punts[punts.length - 1].v;
+            var min = Math.min.apply(null, punts.map(function(p) { return p.v; }));
+            var max = Math.max.apply(null, punts.map(function(p) { return p.v; }));
+            var fa3 = punts[Math.max(0, punts.length - 4)].v;
+            var var3 = actual - fa3;
+
+            document.getElementById('pressValor').textContent = actual.toFixed(1).replace('.', ',');
+            document.getElementById('pressMin').textContent = min.toFixed(1).replace('.', ',');
+            document.getElementById('pressMax').textContent = max.toFixed(1).replace('.', ',');
+            document.getElementById('pressVar').textContent = (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',');
+
+            var tendencia, fletxa, color;
+            if (var3 > 1.0)       { tendencia = 'Puja de pressa';  fletxa = '\u25B2'; color = '#7ee0a6'; }
+            else if (var3 > 0.3)  { tendencia = 'Puja';            fletxa = '\u25B2'; color = '#7ee0a6'; }
+            else if (var3 < -1.0) { tendencia = 'Baixa de pressa'; fletxa = '\u25BC'; color = '#ff9a76'; }
+            else if (var3 < -0.3) { tendencia = 'Baixa';           fletxa = '\u25BC'; color = '#ffc48a'; }
+            else                  { tendencia = 'Estable';         fletxa = '\u25AC'; color = '#8fd6ff'; }
+            var te = document.getElementById('pressTend');
+            te.innerHTML = fletxa + ' ' + tendencia + ' \u00b7 ' + (var3 >= 0 ? '+' : '') + var3.toFixed(1).replace('.', ',') + ' hPa en 3 h';
+            te.style.color = color;
+
+            dibuixa(punts, min, max);
+
+            var h = punts[punts.length - 1].t;
+            document.getElementById('pressPeu').innerHTML =
+                'Pressió al nivell del mar a Sitges, hora local. Última dada: '
+                + ('0' + h.getHours()).slice(-2) + ':' + ('0' + h.getMinutes()).slice(-2)
+                + '. Font: Open-Meteo (model). Quan connectem el baròmetre del Club, '
+                + 'aquesta pantalla passarà a mostrar la mesura real de l\'estació.';
+        }).catch(function() {
+            document.getElementById('pressPeu').textContent = 'No s\'han pogut carregar les dades de pressió.';
+        });
+    };
+
+    function dibuixa(punts, min, max) {
+        var W = 620, H = 230, ML = 42, MR = 10, MT = 12, MB = 26;
+        var ampl = W - ML - MR, alt = H - MT - MB;
+        var marge = Math.max(1.2, (max - min) * 0.25);
+        var y0 = min - marge, y1 = max + marge;
+        var t0 = punts[0].t.getTime(), t1 = punts[punts.length - 1].t.getTime();
+        function X(t) { return ML + (t - t0) / (t1 - t0 || 1) * ampl; }
+        function Y(v) { return MT + (y1 - v) / (y1 - y0) * alt; }
+
+        var linia = punts.map(function(p, i) { return (i ? 'L' : 'M') + X(p.t).toFixed(1) + ' ' + Y(p.v).toFixed(1); }).join(' ');
+        var area = linia + ' L' + X(t1).toFixed(1) + ' ' + (MT + alt) + ' L' + X(t0).toFixed(1) + ' ' + (MT + alt) + ' Z';
+
+        var reixa = '', etiq = '';
+        var pas = (y1 - y0) > 12 ? 4 : 2;
+        for (var v = Math.ceil(y0 / pas) * pas; v <= y1; v += pas) {
+            var y = Y(v).toFixed(1);
+            reixa += '<line x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>';
+            etiq += '<text x="' + (ML - 6) + '" y="' + (parseFloat(y) + 3.5) + '" text-anchor="end" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">' + v + '</text>';
+        }
+        var hores = '';
+        for (var i = 0; i < punts.length; i++) {
+            var d = punts[i].t;
+            if (d.getHours() % 12 !== 0) continue;
+            var x = X(d.getTime()).toFixed(1);
+            hores += '<line x1="' + x + '" y1="' + MT + '" x2="' + x + '" y2="' + (MT + alt) + '" stroke="rgba(255,255,255,0.07)"/>'
+                   + '<text x="' + x + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.45)" font-family="system-ui">'
+                   + ('0' + d.getHours()).slice(-2) + 'h</text>';
+        }
+        var ult = punts[punts.length - 1];
+        document.getElementById('pressGraf').innerHTML =
+            '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" style="height:230px">'
+          + '<defs><linearGradient id="pgrad" x1="0" y1="0" x2="0" y2="1">'
+          + '<stop offset="0%" stop-color="#8fd6ff" stop-opacity="0.35"/>'
+          + '<stop offset="100%" stop-color="#8fd6ff" stop-opacity="0"/></linearGradient></defs>'
+          + reixa + hores
+          + '<path d="' + area + '" fill="url(#pgrad)"/>'
+          + '<path d="' + linia + '" fill="none" stroke="#8fd6ff" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>'
+          + '<circle cx="' + X(ult.t.getTime()).toFixed(1) + '" cy="' + Y(ult.v).toFixed(1) + '" r="4" fill="#fff"/>'
+          + etiq
+          + '</svg>';
+    }
 })();
 </script>
 
