@@ -60,3 +60,8 @@ Els tabs de la secció meteo (~línia 1692):
 - CartoDB tiles → API key required → Canviat a OSM + filtre CSS fosc
 - Leaflet des d'unpkg.com → fallava → Canviat a cdnjs.cloudflare.com
 - Fletxes vent invertides → +180° a la direcció
+- **Imatges massa pesades** → l'app trigava molt a mòbil (5,5 MB en imatges).
+  El 15-set-2026 es van reoptimitzar: 5,3 MB → 1,55 MB. Regla: les miniatures
+  dels widgets (`.ch-th`) es veuen a ~130 px, o sigui **440 px d'ample com a
+  màxim**; les targetes (`.card-img`) fan 90 px d'alt, **620 px màxim**. Cap
+  foto en PNG (`regu.png` pesava 1,5 MB; en JPEG fa 70 KB).
