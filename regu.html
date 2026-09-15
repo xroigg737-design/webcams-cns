@@ -313,6 +313,17 @@ select.sel optgroup{ background:#0d1c2e; color:var(--data); font-weight:800; }
   border:3px solid rgba(255,255,255,0.12); border-top-color:var(--accent);
   animation:sp 0.8s linear infinite;
 }
+/* Barra de progres: avanca de veritat, un tram per cada categoria llegida. */
+.prog{
+  width:200px; max-width:70%; height:5px; margin:14px auto 0;
+  background:rgba(255,255,255,0.08); border-radius:99px; overflow:hidden;
+}
+.prog-i{
+  height:100%; width:6%; border-radius:99px; background:var(--accent);
+  transition:width .35s ease;
+}
+.prog-t{ margin-top:9px; font-size:0.88em; color:rgba(255,255,255,0.38); }
+.prog-slow{ margin-top:6px; font-size:0.84em; color:rgba(255,183,77,0.75); }
 footer{
   margin-top:22px; padding-top:14px; border-top:1px solid var(--line);
   font-size:0.62em; color:rgba(255,255,255,0.3); line-height:1.7; text-align:center;
@@ -370,7 +381,10 @@ footer a{ color:rgba(255,183,77,0.7); }
 <div class="wrap">
   <div id="loading" class="msg">
     <div class="spinner"></div>
-    Carregant dades del full del club&hellip;
+    Llegint el full del club&hellip;
+    <div class="prog"><div class="prog-i" id="progBar"></div></div>
+    <div class="prog-t" id="progTxt"></div>
+    <div class="prog-slow" id="progSlow" hidden></div>
   </div>
   <div id="error" class="msg" hidden></div>
 
@@ -615,6 +629,14 @@ function fetchWithTimeout(url, opts, ms){
 }
 
 /* ---------- càrrega ---------- */
+/* La barra avança de veritat: un tram per cada categoria acabada de llegir.
+   Amb timeout de 15s i un reintent, una categoria pot trigar fins a 30s, i
+   sense cap senyal visible semblava que l'app s'hagués penjat. */
+function progress(done, total){
+  $('progBar').style.width = (done === 0 ? 6 : Math.round(done / total * 100)) + '%';
+  $('progTxt').textContent = done + ' de ' + total + ' categories';
+}
+
 function load(force){
   if (state.loading) return;
   state.loading = true;
@@ -624,6 +646,16 @@ function load(force){
   $('viewCursa').hidden = true;
   $('kpiBand').hidden = true;
   $('refresh').classList.add('spin');
+
+  var total = CLASSES.length, done = 0;
+  progress(0, total);
+  $('progSlow').hidden = true;
+  var slowTimer = setTimeout(function(){
+    if (done < total && $('progSlow').hidden){
+      $('progSlow').textContent = 'Google triga a respondre\u2026';
+      $('progSlow').hidden = false;
+    }
+  }, 6000);
 
   var bust = force ? '&_=' + Date.now() : '';
   var fetchClass = function(cl, retry){
@@ -638,14 +670,25 @@ function load(force){
       })
       .then(function(t){ return { key: cl.key, ok: true, data: parseSheet(t) }; })
       .catch(function(e){
-        if (!retry) return fetchClass(cl, true);
+        if (!retry){
+          $('progSlow').textContent = 'La connexi\u00f3 falla, tornant-ho a provar\u2026';
+          $('progSlow').hidden = false;
+          return fetchClass(cl, true);
+        }
         return { key: cl.key, ok: false, err: e.message };
       });
   };
 
-  var jobs = CLASSES.map(function(cl){ return fetchClass(cl, false); });
+  var jobs = CLASSES.map(function(cl){
+    return fetchClass(cl, false).then(function(out){
+      done++;
+      progress(done, total);
+      return out;
+    });
+  });
 
   Promise.all(jobs).then(function(out){
+    clearTimeout(slowTimer);
     state.loading = false;
     $('refresh').classList.remove('spin');
     $('loading').hidden = true;
@@ -657,7 +700,8 @@ function load(force){
     if (!any){
       $('error').hidden = false;
       $('error').innerHTML = 'No s\'han pogut llegir les dades del full del club.<br>' +
-        'Comprova la connexió o obre\'l directament: ' +
+        'Prova el botó Actualitzar de dalt, comprova la connexió, ' +
+        'o obre\'l directament: ' +
         '<a href="https://docs.google.com/spreadsheets/d/' + DOC + '/edit" target="_blank" rel="noopener">Google Sheet</a>';
       return;
     }
