@@ -19,6 +19,10 @@ L'app i les comunicacions són en **català**. Totes les etiquetes, traduccions 
 4. GitHub Pages desplega automàticament des de `master`
 5. URL producció: https://tinyurl.com/avui-regu (→ https://xroigg737-design.github.io/webcams-cns/)
 
+**GitHub Pages és l'únic lloc on es publica.** No hi ha entorn AWS ni còpia de dev:
+les carpetes `avui-regu`, `avui-regu-dev` i `webcams-cns` del servidor es van
+retirar el 15-set-2026 perquè quedaven endarrerides i despistaven.
+
 ## Regles de treball
 - **SEMPRE** incrementar versió a cada deploy (format: 6.XX)
 - **SEMPRE** fer git commit + push després de cada canvi
