@@ -1,9 +1,26 @@
 // Service Worker — network-first amb temps límit: sempre intenta la versió nova,
 // però si la xarxa triga més de NET_TIMEOUT serveix la còpia guardada.
-const CACHE_NAME = 'avui-regu-v123';
+const CACHE_NAME = 'avui-regu-v124';
 const NET_TIMEOUT = 3000;   // ms d'espera abans de servir la còpia guardada
 
-self.addEventListener('install', () => self.skipWaiting());
+// A cada versió nova l'activate esborra la cache anterior, així que la primera
+// arrencada després de publicar es trobava la cache BUIDA i havia d'esperar la
+// xarxa sencera. Amb això la nova versió ja ve carregada d'abans.
+const PREPARAR = ['./', 'index.html', 'regu.html', 'cockpit.html',
+                  'manifest.json', 'favicon.ico'];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((c) =>
+      // Un a un: si un fitxer falla, els altres s'han de guardar igualment.
+      Promise.all(PREPARAR.map((u) =>
+        fetch(u, { cache: 'reload' })
+          .then((r) => (r.ok ? c.put(u, r) : null))
+          .catch(() => null)
+      ))
+    ).then(() => self.skipWaiting())
+  );
+});
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys =>

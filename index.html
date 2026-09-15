@@ -3,13 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Avui Regu ? - Sitges</title>
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="manifest" href="manifest.json">
+    <!-- Pantalla d'arrencada de l'iPhone. Sense aquests enllaços iOS pinta
+         BLANC mentre engega l'app: no fa servir el background_color del
+         manifest, només aquestes imatges. -->
+    <link rel="apple-touch-startup-image" href="img/splash/750x1334.png"
+          media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1242x2208.png"
+          media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1125x2436.png"
+          media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/828x1792.png"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1242x2688.png"
+          media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1170x2532.png"
+          media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1284x2778.png"
+          media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1179x2556.png"
+          media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1290x2796.png"
+          media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1206x2622.png"
+          media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="img/splash/1320x2868.png"
+          media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <meta name="theme-color" content="#0b1f33">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1583,7 +1605,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.67</div>
+            <div class="subtitle">v6.68<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -4516,6 +4538,21 @@ window.CockpitSlots = (function() {
           + '</svg>';
     }
 })();
+</script>
+
+<script>
+/* Quant ha trigat la pàgina a estar llesta, al costat de la versió. Si aquí hi
+   surt mig segon però l'app ha trigat 10, el temps se'l menja l'arrencada
+   d'iOS, no la pàgina. */
+window.addEventListener('load', function(){
+    setTimeout(function(){
+        var n = performance.getEntriesByType('navigation')[0];
+        if (!n) return;
+        var seg = (n.domContentLoadedEventEnd / 1000).toFixed(1).replace('.', ',');
+        var e = document.getElementById('tempsCarrega');
+        if (e) e.textContent = ' \u00b7 ' + seg + 's';
+    }, 0);
+});
 </script>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
