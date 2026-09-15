@@ -1,5 +1,7 @@
-// Service Worker — network-first: sempre intenta descarregar la versió nova
-const CACHE_NAME = 'avui-regu-v122';
+// Service Worker — network-first amb temps límit: sempre intenta la versió nova,
+// però si la xarxa triga més de NET_TIMEOUT serveix la còpia guardada.
+const CACHE_NAME = 'avui-regu-v123';
+const NET_TIMEOUT = 3000;   // ms d'espera abans de servir la còpia guardada
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => {
@@ -20,16 +22,33 @@ self.addEventListener('fetch', (e) => {
   // Amb cache:'reload' saltem aquesta memòria i preguntem sempre al servidor.
   const isDoc = req.mode === 'navigate' || req.destination === 'document';
 
-  e.respondWith(
+  e.respondWith(new Promise((resolve) => {
+    let servit = false;
+    const respon = (r) => { if (!servit && r) { servit = true; resolve(r); } };
+
     (isDoc ? fetch(req.url, { cache: 'reload', credentials: 'same-origin' }) : fetch(req))
-      .then(res => {
+      .then((res) => {
         // Guardar còpia en cache per offline
         if (res.ok) {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, clone));
+          const copia = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(req, copia));
         }
-        return res;
+        respon(res);
       })
-      .catch(() => caches.match(req))  // Fallback a cache si offline
-  );
+      .catch(() => {
+        caches.match(req).then((c) => {
+          if (c) respon(c);
+          else if (!servit) { servit = true; resolve(Response.error()); }
+        });
+      });
+
+    // Si la xarxa no contesta a temps servim la còpia guardada i deixem que la
+    // descàrrega acabi en segon pla, així el proper cop ja serà la versió nova.
+    // Sense això, a l'iPhone amb cobertura fluixa l'app es quedava en blanc
+    // esperant la xarxa abans de pintar res.
+    setTimeout(() => {
+      if (servit) return;
+      caches.match(req).then((c) => respon(c));
+    }, NET_TIMEOUT);
+  }));
 });

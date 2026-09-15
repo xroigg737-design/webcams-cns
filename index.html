@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <meta name="theme-color" content="#0b1f33">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1568,7 +1569,12 @@
         }
         .tanca-seccio:hover { background: rgba(255,255,255,0.13); }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <!-- El CSS de Leaflet nomes fa falta quan s'obre un mapa. Carregat aixi
+         (media="print" fins que arriba) deixa de bloquejar el primer pintat:
+         abans la pagina no es veia fins que cdnjs contestava. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+          media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" /></noscript>
 </head>
 <body>
 
@@ -1577,7 +1583,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.66</div>
+            <div class="subtitle">v6.67</div>
         </div>
     </div>
 </header>
@@ -3859,7 +3865,7 @@
 })();
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 /* El radar és pesat (Leaflet + tessel·les + imatges): no s'engega fins que
    algú obre el seu indicador al cockpit. */
