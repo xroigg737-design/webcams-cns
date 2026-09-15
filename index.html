@@ -1607,7 +1607,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.72<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.73<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3489,6 +3489,7 @@
         var mmSelectedDay = 0;
 
         function loadMultimodel() {
+            if (!window.L) { carregaLeaflet().then(loadMultimodel).catch(function(){}); return; }
             stopWidgetTranslation();
             hideModelSelector();
             if (mmPlayTimer) { clearInterval(mmPlayTimer); mmPlayTimer = null; }
@@ -3889,11 +3890,27 @@
 })();
 </script>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* Leaflet (147 KB) només fa falta si s'obre un mapa, i abans el baixàvem sempre
+   abans que la pàgina estigués llesta. Ara es demana el primer cop que cal. */
+window.carregaLeaflet = function(){
+    if (window.__leaflet) return window.__leaflet;
+    window.__leaflet = new Promise(function(resolve, reject){
+        if (window.L) return resolve();
+        var sc = document.createElement('script');
+        sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+        sc.onload = function(){ resolve(); };
+        sc.onerror = function(){ window.__leaflet = null; reject(); };
+        document.head.appendChild(sc);
+    });
+    return window.__leaflet;
+};
+</script>
 <script>
 /* El radar és pesat (Leaflet + tessel·les + imatges): no s'engega fins que
    algú obre el seu indicador al cockpit. */
 window.iniciaRadar = function() {
+    if (!window.L) { carregaLeaflet().then(window.iniciaRadar).catch(function(){}); return; }
     if (window.__radarFet) return;
     window.__radarFet = true;
     // --- Radar Player amb dades Meteocat ---
@@ -4562,6 +4579,10 @@ document.addEventListener('DOMContentLoaded', function(){
    còpia i recarreguem. No es desa res al mòbil: el bucle s'evita perquè només
    recarreguem si la còpia nova ha quedat ben guardada. */
 (function(){
+    var tocat = false;
+    ['pointerdown','touchstart','keydown','scroll'].forEach(function(ev){
+        addEventListener(ev, function(){ tocat = true; }, { once: true, passive: true });
+    });
     /* La versió es llegeix del subtítol, no s'escriu aquí: si fossin dos llocs
        i un quedés endarrerit, l'app es recarregaria en bucle per sempre. */
     var sub = document.querySelector('.subtitle');
@@ -4576,12 +4597,17 @@ document.addEventListener('DOMContentLoaded', function(){
               // Refrescar la còpia ABANS de recarregar: si no, el service worker
               // ens tornaria a servir exactament la mateixa pàgina vella.
               return c.add(new Request(location.pathname, { cache: 'reload' }));
-          }).then(function(){ location.reload(); });
+          }).then(function(){
+              // No recarregar sota els dits de l'usuari: si ja ha tocat res o
+              // ja fa estona que és a dins, ho deixem per al proper cop.
+              if (tocat || performance.now() > 6000) return;
+              location.reload();
+          });
       })
       .catch(function(){});   // sense xarxa o sense permis: ens quedem com estem
 })();
 </script>
 
-<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
+<!-- Cloudflare Web Analytics --><script async src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
