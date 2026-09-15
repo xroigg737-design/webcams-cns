@@ -60,6 +60,12 @@ Els tabs de la secció meteo (~línia 1692):
 - CartoDB tiles → API key required → Canviat a OSM + filtre CSS fosc
 - Leaflet des d'unpkg.com → fallava → Canviat a cdnjs.cloudflare.com
 - Fletxes vent invertides → +180° a la direcció
+- **Service worker sense `e.waitUntil()` a la petició de xarxa** → l'app es va
+  quedar encallada a la v6.68 amb la v6.70 publicada. Quan es serveix la còpia
+  guardada, iOS mata el service worker tot seguit i la descàrrega de la versió
+  nova no acaba mai, així que la cache no s'actualitza **mai més**. Sempre
+  `e.waitUntil(peticio)` a qualsevol descàrrega que hagi de sobreviure a la
+  resposta.
 - **Imatges massa pesades** → l'app trigava molt a mòbil (5,5 MB en imatges).
   El 15-set-2026 es van reoptimitzar: 5,3 MB → 1,55 MB. Regla: les miniatures
   dels widgets (`.ch-th`) es veuen a ~130 px, o sigui **440 px d'ample com a
