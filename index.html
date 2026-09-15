@@ -45,15 +45,6 @@
         navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
             .then(reg => reg.update());
 
-        // Quan entra un service worker nou, recarreguem una sola vegada perquè
-        // es vegi la versió acabada de publicar i no la còpia guardada.
-        var jaControlada = !!navigator.serviceWorker.controller;
-        var recarregat = false;
-        navigator.serviceWorker.addEventListener('controllerchange', function(){
-            if (!jaControlada || recarregat) return;   // 1a instal·lació: no cal
-            recarregat = true;
-            location.reload();
-        });
     }
     </script>
     <style>
@@ -1616,7 +1607,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.71<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.72<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -4565,6 +4556,30 @@ document.addEventListener('DOMContentLoaded', function(){
         if (e) e.textContent = ' \u00b7 ' + (ms / 1000).toFixed(1).replace('.', ',') + 's';
     }, 0);
 });
+
+/* L'app s'obre amb la còpia guardada, que pot ser d'una versió anterior.
+   Mirem el fitxer VERSION (5 bytes) i, si n'hi ha una de nova, refresquem la
+   còpia i recarreguem. No es desa res al mòbil: el bucle s'evita perquè només
+   recarreguem si la còpia nova ha quedat ben guardada. */
+(function(){
+    /* La versió es llegeix del subtítol, no s'escriu aquí: si fossin dos llocs
+       i un quedés endarrerit, l'app es recarregaria en bucle per sempre. */
+    var sub = document.querySelector('.subtitle');
+    var m = sub && sub.textContent.match(/v([0-9][0-9.]*)/);
+    var ACTUAL = m && m[1];
+    if (!ACTUAL || !window.caches || !window.fetch) return;
+    fetch('VERSION?_=' + Date.now(), { cache: 'no-store' })
+      .then(function(r){ return r.ok ? r.text() : null; })
+      .then(function(t){
+          if (!t || t.trim() === ACTUAL) return;
+          return caches.open('avui-regu').then(function(c){
+              // Refrescar la còpia ABANS de recarregar: si no, el service worker
+              // ens tornaria a servir exactament la mateixa pàgina vella.
+              return c.add(new Request(location.pathname, { cache: 'reload' }));
+          }).then(function(){ location.reload(); });
+      })
+      .catch(function(){});   // sense xarxa o sense permis: ens quedem com estem
+})();
 </script>
 
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9dde9cb4c5947e680a83717fc14a6af"}'></script><!-- End Cloudflare Web Analytics -->

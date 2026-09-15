@@ -1,11 +1,12 @@
-// Service Worker — network-first amb temps límit: sempre intenta la versió nova,
-// però si la xarxa triga més de NET_TIMEOUT serveix la còpia guardada.
-const CACHE_NAME = 'avui-regu-v127';
-const NET_TIMEOUT = 3000;   // ms d'espera abans de servir la còpia guardada
+// Service Worker — "serveix el que tens, refresca pel darrere".
+//
+// Abans intentàvem la xarxa primer i només al cap de 3s servíem la còpia
+// guardada: a l'iPhone la xarxa mai no hi arribava a temps, així que l'app
+// esperava SEMPRE els 3 segons sencers per acabar servint la còpia igualment.
+// Ara la còpia es dóna a l'instant i la versió nova es baixa en segon pla.
+const CACHE_NAME = 'avui-regu';   // estable: no s'esborra a cada versió publicada
 
-// A cada versió nova l'activate esborra la cache anterior, així que la primera
-// arrencada després de publicar es trobava la cache BUIDA i havia d'esperar la
-// xarxa sencera. Amb això la nova versió ja ve carregada d'abans.
+// Perquè la primera visita ja tingui les altres pantalles a punt.
 const PREPARAR = ['./', 'index.html', 'regu.html', 'cockpit.html',
                   'manifest.json', 'favicon.ico'];
 
@@ -21,10 +22,12 @@ self.addEventListener('install', (e) => {
     ).then(() => self.skipWaiting())
   );
 });
+
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    caches.keys().then((noms) =>
+      // Neteja les caches velles amb número (avui-regu-v127 i companyia)
+      Promise.all(noms.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
     ).then(() => self.clients.claim())
   );
 });
@@ -33,18 +36,14 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
 
-  // Les dades en directe (vent, tessel·les del radar, Windy…) no passen pel
-  // service worker: són d'altres dominis, no s'han de guardar mai i anaven
-  // més lentes donant tota la volta per aquí.
+  // Les dades en directe (vent, tessel·les del radar, Windy…) no passen per
+  // aquí: són d'altres dominis i no s'han de guardar mai.
   if (new URL(req.url).origin !== self.location.origin) return;
 
-  // Les pàgines (index.html, regu.html…) les serveix GitHub Pages amb
-  // max-age=600, així que el navegador les podia tornar de la seva pròpia
-  // memòria durant 10 minuts i no véiem els canvis acabats de publicar.
-  // Amb cache:'reload' saltem aquesta memòria i preguntem sempre al servidor.
   const isDoc = req.mode === 'navigate' || req.destination === 'document';
 
-  const xarxa = (isDoc ? fetch(req.url, { cache: 'reload', credentials: 'same-origin' }) : fetch(req))
+  const xarxa = (isDoc ? fetch(req.url, { cache: 'reload', credentials: 'same-origin' })
+                       : fetch(req))
     .then((res) => {
       if (res.ok) {
         const copia = res.clone();
@@ -53,28 +52,13 @@ self.addEventListener('fetch', (e) => {
       return res;
     });
 
-  // ⚠️ IMPRESCINDIBLE: sense aquest waitUntil, quan servíem la còpia guardada
-  // iOS matava el service worker tot seguit i la descàrrega de la versió nova
-  // no arribava a acabar mai. Resultat: l'app es quedava encallada per sempre
-  // en la versió que hi hagués guardada.
+  // ⚠️ IMPRESCINDIBLE: sense això iOS mata el service worker així que hem
+  // contestat des de la cache, la descàrrega no acaba mai i l'app es queda
+  // encallada per sempre en la versió guardada (ens va passar a la v6.68).
   e.waitUntil(xarxa.catch(() => {}));
 
-  e.respondWith(new Promise((resolve) => {
-    let servit = false;
-    const respon = (r) => { if (!servit && r) { servit = true; resolve(r); } };
-
-    xarxa.then(respon).catch(() => {
-      caches.match(req).then((c) => {
-        if (c) respon(c);
-        else if (!servit) { servit = true; resolve(Response.error()); }
-      });
-    });
-
-    // Si la xarxa no contesta a temps servim la còpia guardada i deixem que la
-    // descàrrega acabi en segon pla (viva gràcies al waitUntil de sobre).
-    setTimeout(() => {
-      if (servit) return;
-      caches.match(req).then((c) => respon(c));
-    }, NET_TIMEOUT);
-  }));
+  // El que tenim guardat, a l'instant. Si no en tenim, el que porti la xarxa.
+  e.respondWith(
+    caches.match(req).then((desat) => desat || xarxa)
+  );
 });

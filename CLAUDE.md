@@ -8,7 +8,10 @@ L'app i les comunicacions són en **català**. Totes les etiquetes, traduccions 
 
 ## Arquitectura
 - **Un sol fitxer**: `index.html` (~3200 línies) — HTML + CSS + JS tot inline
-- **Versió**: controlada per `VERSION` (fitxer) i `<div class="subtitle">vX.XX</div>` dins index.html (~línia 1225)
+- **Versió**: `VERSION` (fitxer) i `<div class="subtitle">vX.XX</div>` dins index.html.
+  Només aquests dos: el `CACHE_NAME` del `sw.js` ja **no** porta número (és
+  `'avui-regu'`, estable), i la comprovació de versió nova llegeix el número
+  del propi subtítol, no el té escrit.
 - **No hi ha framework** — vanilla JS, sense build step
 - **CDNs**: Leaflet (cdnjs.cloudflare.com), Google Fonts. Cap altre CDN extern per JS/CSS.
 
@@ -60,6 +63,11 @@ Els tabs de la secció meteo (~línia 1692):
 - CartoDB tiles → API key required → Canviat a OSM + filtre CSS fosc
 - Leaflet des d'unpkg.com → fallava → Canviat a cdnjs.cloudflare.com
 - Fletxes vent invertides → +180° a la direcció
+- **Esperar la xarxa abans de pintar** → l'app trigava 3,1s a obrir-se a
+  l'iPhone, clavat al temps d'espera de 3.000 ms que li havíem posat: la xarxa
+  no hi arribava mai a temps i acabava servint la còpia guardada igualment,
+  havent perdut els 3 segons. Ara el service worker serveix la còpia a
+  l'instant i refresca pel darrere.
 - **Service worker sense `e.waitUntil()` a la petició de xarxa** → l'app es va
   quedar encallada a la v6.68 amb la v6.70 publicada. Quan es serveix la còpia
   guardada, iOS mata el service worker tot seguit i la descàrrega de la versió
