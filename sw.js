@@ -1,6 +1,6 @@
 // Service Worker — network-first amb temps límit: sempre intenta la versió nova,
 // però si la xarxa triga més de NET_TIMEOUT serveix la còpia guardada.
-const CACHE_NAME = 'avui-regu-v125';
+const CACHE_NAME = 'avui-regu-v126';
 const NET_TIMEOUT = 3000;   // ms d'espera abans de servir la còpia guardada
 
 // A cada versió nova l'activate esborra la cache anterior, així que la primera

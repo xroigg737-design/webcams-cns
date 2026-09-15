@@ -1605,7 +1605,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.69<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.70<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -4544,13 +4544,14 @@ window.CockpitSlots = (function() {
 /* Quant ha trigat la pàgina a estar llesta, al costat de la versió. Si aquí hi
    surt mig segon però l'app ha trigat 10, el temps se'l menja l'arrencada
    d'iOS, no la pàgina. */
-window.addEventListener('load', function(){
+/* A l'esdeveniment 'load' no, que espera TOTES les imatges: el que volem saber
+   és quan la pàgina ja es pot fer servir. */
+document.addEventListener('DOMContentLoaded', function(){
     setTimeout(function(){
         var n = performance.getEntriesByType('navigation')[0];
-        if (!n) return;
-        var seg = (n.domContentLoadedEventEnd / 1000).toFixed(1).replace('.', ',');
+        var ms = n ? n.domContentLoadedEventEnd : performance.now();
         var e = document.getElementById('tempsCarrega');
-        if (e) e.textContent = ' \u00b7 ' + seg + 's';
+        if (e) e.textContent = ' \u00b7 ' + (ms / 1000).toFixed(1).replace('.', ',') + 's';
     }, 0);
 });
 </script>
