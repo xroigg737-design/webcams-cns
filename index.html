@@ -39,9 +39,20 @@
     <meta name="apple-mobile-web-app-title" content="Avui Regu?">
     <script>
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').then(reg => {
-            // Forçar actualització del SW cada cop que s'obre l'app
-            reg.update();
+        // updateViaCache:'none' — GitHub Pages serveix sw.js amb max-age=600, i
+        // sense això el navegador es podia tornar el sw.js vell de la seva pròpia
+        // memòria i no assabentar-se mai que hi ha versió nova.
+        navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+            .then(reg => reg.update());
+
+        // Quan entra un service worker nou, recarreguem una sola vegada perquè
+        // es vegi la versió acabada de publicar i no la còpia guardada.
+        var jaControlada = !!navigator.serviceWorker.controller;
+        var recarregat = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function(){
+            if (!jaControlada || recarregat) return;   // 1a instal·lació: no cal
+            recarregat = true;
+            location.reload();
         });
     }
     </script>
@@ -1605,7 +1616,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.70<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.71<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
