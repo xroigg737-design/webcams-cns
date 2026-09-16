@@ -57,6 +57,31 @@
             min-height: 100vh;
         }
 
+        /* Barra de progres d'arrencada. Nomes es veu si la connexio va
+           lenta: si l'app acaba de carregar abans de 350 ms no arriba mai a
+           fer-se visible i l'usuari no veu cap parpelleig. */
+        #barraCarrega {
+            position: fixed;
+            top: env(safe-area-inset-top, 0px);
+            left: 0;
+            width: 100%;
+            height: 3px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        #barraCarrega.visible { opacity: 1; }
+        #barraCarrega i {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 0 3px 3px 0;
+            background: linear-gradient(90deg, #1e6b8a, #2a9d8f, #4ecdc4, #f4a261, #e76f51);
+            box-shadow: 0 0 10px rgba(78,205,196,0.55);
+            transition: width 0.25s ease;
+        }
+
         /* Header - Alba al mar */
         header {
             background: linear-gradient(180deg,
@@ -1602,12 +1627,77 @@
 </head>
 <body>
 
+<!-- Barra de progres: dona senyal de vida mentre carreguen imatges i widgets. -->
+<div id="barraCarrega" aria-hidden="true"><i></i></div>
+<script>
+(function(){
+    var caixa = document.getElementById('barraCarrega');
+    if (!caixa) return;
+    var barra = caixa.firstElementChild;
+    var fet = 0, total = 0, mostrada = false, acabat = false, vist = 0;
+
+    // Nomes apareix si la carrega s'allarga: en connexions rapides no es veu.
+    var tempsMostrar = setTimeout(function(){
+        if (!acabat) { caixa.className = 'visible'; mostrada = true; }
+    }, 350);
+
+    function pintar(){
+        // Mentre no sabem quantes imatges hi ha, la barra avanca sola fins al
+        // 90% del tram que li toca, per no quedar-se clavada a zero.
+        var real = total ? fet / total : 0;
+        var pct = acabat ? 100 : Math.max(vist, Math.round(8 + real * 84));
+        vist = Math.min(pct, 96);
+        barra.style.width = pct + '%';
+    }
+
+    function tancar(){
+        if (acabat) return;
+        acabat = true;
+        clearTimeout(tempsMostrar);
+        clearTimeout(tempsSeguretat);
+        clearInterval(pols);
+        pintar();
+        if (!mostrada) { caixa.remove(); return; }
+        setTimeout(function(){
+            caixa.className = '';
+            setTimeout(function(){ caixa.remove(); }, 300);
+        }, 200);
+    }
+
+    // Si alguna imatge no acaba mai, no deixem la barra penjada per sempre.
+    var tempsSeguretat = setTimeout(tancar, 20000);
+
+    // Avanc lent i constant mentre esperem, encara que no arribi res de la xarxa.
+    var pols = setInterval(function(){
+        if (!acabat && vist < 90) { vist += (90 - vist) * 0.06; pintar(); }
+    }, 300);
+
+    function comptar(){
+        var imgs = document.images;
+        total = imgs.length;
+        fet = 0;
+        for (var i = 0; i < imgs.length; i++) {
+            if (imgs[i].complete) { fet++; continue; }
+            var un = function(){ fet++; pintar(); };
+            imgs[i].addEventListener('load', un, { once: true });
+            imgs[i].addEventListener('error', un, { once: true });
+        }
+        pintar();
+    }
+
+    document.addEventListener('DOMContentLoaded', comptar);
+    addEventListener('load', tancar);
+    if (document.readyState === 'complete') tancar();
+    pintar();
+})();
+</script>
+
 <header>
     <div class="header-content">
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.73<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.74<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
