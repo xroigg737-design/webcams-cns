@@ -564,7 +564,88 @@
         }
         @media (prefers-reduced-motion: reduce) {
             .cur-wave-pulse { animation: none; opacity: 0; }
+            .cur-pill::before { animation: none; opacity: 0.35; }
         }
+        /* ===== PILL DE CORRENT, a l'estil Windy (17-set-2026) =====
+           Mateixa gramatica que el pill del vent: barra orientada amb la xifra
+           a dins. Dues coses el diferencien sempre del vent, perque el conveni
+           es l'OPOSAT i no es poden confondre mai:
+             - el vent seu a la seva marcacio amb la punta cap al CENTRE (d'on
+               ve); el corrent, amb la punta cap ENFORA (cap on va).
+             - el corrent es mes estret, mes curt i turquesa; el vent es gruixut
+               i porta el color de la seva escala.
+           Quan les dues marcacions es acosten, el pill del corrent s'aparta de
+           costat (--cur-off) en comptes de solapar-s'hi. Windy els separa
+           sempre; aqui nomes quan cal, i aixi la resta del temps cadascun es
+           llegeix al seu angle real contra la rosa. */
+        .cur-pill-orbit {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 1s ease, opacity 0.6s ease;
+        }
+        .cur-pill {
+            position: absolute;
+            top: 34px;
+            left: 50%;
+            width: 22px;
+            height: 44px;
+            transform: translateX(calc(-50% + var(--cur-off, 0px)));
+            transition: transform 0.6s ease;
+            border-radius: 4px 4px 11px 11px;
+            background: var(--cur-color, #00c9b1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        /* La punta, a DALT: el corrent va cap enfora. */
+        .cur-pill::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-bottom: 12px solid var(--cur-color, #00c9b1);
+        }
+        /* Un pill es quiet i l'aigua no: aixi conserva el pols que tenia l'ona,
+           una claror que puja del centre cap enfora al ritme del corrent. */
+        .cur-pill::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+            background-size: 100% 55%;
+            background-repeat: no-repeat;
+            animation: cur-pill-flow var(--cur-dur, 2.4s) linear infinite;
+            opacity: 0.7;
+        }
+        @keyframes cur-pill-flow {
+            from { background-position: 0 130%; }
+            to   { background-position: 0 -55%; }
+        }
+        .cur-pill-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            color: #04231f;
+            font-size: 0.8em;
+            font-weight: 900;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .cur-pill-text small { font-size: 0.62em; font-weight: 800; opacity: 0.75; }
+
         /* Targeta de corrent, a DALT a l'esquerra (17-set-2026). A baix es
            trepitjava amb el pill verd del vent quan aquest apunta al sud, que
            a Sitges es el cas mes frequent (migjorn). A dalt a l'esquerra no hi
@@ -1247,6 +1328,9 @@
             .wind-map-info-link { font-size: 0.45em; }
             .wind-map-info-right { right: 2px; max-width: 50%; bottom: 2px; }
             .wind-map-info-left { left: 2px; max-width: 48%; top: 2px; padding: 4px 7px 4px 6px; }
+            .cur-pill { top: 24px; width: 17px; height: 32px; border-radius: 3px 3px 8px 8px; }
+            .cur-pill::after { top: -9px; border-left-width: 8.5px; border-right-width: 8.5px; border-bottom-width: 9px; }
+            .cur-pill-text { font-size: 0.62em; }
             .wind-map-cur-val { font-size: 1.0em; }
             .role-detall-hint { top: 80px; right: 4px; }
             .role-hint-arrow { font-size: 0.85em; }
@@ -1793,7 +1877,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.77<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.78<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -1837,6 +1921,13 @@
                                 <text x="5" y="106" text-anchor="start" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">W</text>
                             </svg>
                             <!-- Pill Windy-style que radia des del centre — VENT (verd) -->
+                            <!-- Pill del corrent. Va ABANS del pill del vent
+                                 al DOM: si mai es toquen, mana el vent. -->
+                            <div class="cur-pill-orbit" id="cur-pill-orbit">
+                                <div class="cur-pill" id="cur-pill">
+                                    <div class="cur-pill-text" id="cur-pill-text"><span id="cur-pill-val">--</span><small>kn</small></div>
+                                </div>
+                            </div>
                             <div class="wind-pill-orbit" id="wind-pill-orbit">
                                 <div class="wind-pill" id="wind-pill">
                                     <div class="wind-pill-text" id="wind-pill-text"><span id="wind-pill-val">--</span><small>kts</small></div>
@@ -2890,6 +2981,15 @@
        que tots dos coincideixin d'eix, que es el cas dolent.
        La INTENSITAT no va per color —el vent ja es menja tota la paleta Windy—
        sino per llargada de la fletxa, amplitud de l'ona i velocitat del pols. */
+    /* Dos estils de corrent, per poder-los comparar al mobil sense tornar a
+       pujar res:  ?corrent-estil=ona  torna a l'ona ondulada.
+       Per defecte, el pill a l'estil Windy amb la xifra a dins. */
+    var CUR_ESTIL = 'pill';
+    try { if (new URLSearchParams(location.search).get('corrent-estil') === 'ona') CUR_ESTIL = 'ona'; } catch (e) {}
+    /* Per sota d'aquesta separacio entre les dues marcacions, el pill del
+       corrent s'aparta de costat. Per sobre de 36 graus no cal tocar res. */
+    const CUR_SEP_MIN = 20, CUR_SEP_MAX = 36;
+
     const CUR_ROSA_REF = 0.8;   // kn: corrent ja fort per aqui davant
     const CUR_ROSA_MAX_R = 66;  // la xifra de nusos del pill viu a r~92: no s'hi arriba
 
@@ -2953,7 +3053,37 @@
         // Com mes corrent, mes de pressa hi viatja el pols.
         orbit.style.setProperty('--cur-dur', (3.2 - 2.2 * f).toFixed(2) + 's');
         orbit.style.transform = 'rotate(' + c.dirDeg + 'deg)';
-        orbit.style.opacity = '1';
+        orbit.style.opacity = (CUR_ESTIL === 'ona') ? '1' : '0';
+
+        /* Pill a l'estil Windy: la xifra viatja dins la fletxa. */
+        var pOrb = document.getElementById('cur-pill-orbit');
+        var pill = document.getElementById('cur-pill');
+        if (pOrb && pill) {
+            pOrb.style.transform = 'rotate(' + c.dirDeg + 'deg)';
+            pOrb.style.opacity = (CUR_ESTIL === 'pill') ? '1' : '0';
+            pill.style.setProperty('--cur-color', color);
+            pill.style.setProperty('--cur-dur', (3.2 - 2.2 * f).toFixed(2) + 's');
+            var pv = document.getElementById('cur-pill-val');
+            if (pv) pv.textContent = spd.toFixed(2).replace('.', ',');
+            var pt = document.getElementById('cur-pill-text');
+            if (pt) {
+                var rot = (c.dirDeg > 0 && c.dirDeg < 180) ? -90 : 90;
+                pt.style.transform = 'translate(-50%, -50%) rotate(' + rot + 'deg)';
+            }
+            /* Separacio entre les dues marcacions de la rosa. Si s'acosten, el
+               pill del corrent es fa a un costat; el del vent no es mou mai,
+               que es el que tothom ja sap llegir. El desplacament entra de mica
+               en mica entre 36 i 20 graus, per no fer cap salt sec. */
+            var vent = window.ventDirActual;
+            var off = 0;
+            if (vent != null && isFinite(vent)) {
+                var sep = Math.abs(((c.dirDeg - vent + 540) % 360) - 180);
+                var k = (CUR_SEP_MAX - sep) / (CUR_SEP_MAX - CUR_SEP_MIN);
+                k = Math.min(1, Math.max(0, k));
+                off = k * (window.innerWidth <= 768 ? 19 : 26);
+            }
+            pill.style.setProperty('--cur-off', off.toFixed(1) + 'px');
+        }
 
         if (box) {
             box.style.display = '';
