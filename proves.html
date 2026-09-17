@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Avui Regu? — Proves</title>
+<!--
+  Comandament de proves. Munta l'adreça de l'app amb els paràmetres de prova
+  (?corrent-estil, ?solape, ?corrent, ?vent) perquè no s'hagin d'escriure a mà
+  al mòbil. Obre sempre ./index.html d'aquesta mateixa carpeta, així funciona
+  igual a l'entorn de proves i a qualsevol còpia local.
+-->
+<style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+        margin: 0;
+        padding: 16px 16px 120px;
+        background: #0a1420;
+        color: #e8f1f8;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        font-size: 16px;
+    }
+    h1 {
+        font-size: 1.25em;
+        margin: 4px 0 2px;
+        letter-spacing: 1px;
+    }
+    .sub { color: #7c98ae; font-size: 0.8em; margin-bottom: 20px; }
+    fieldset {
+        border: none;
+        margin: 0 0 18px;
+        padding: 0;
+    }
+    legend, .etiqueta {
+        font-size: 0.72em;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #66bb6a;
+        padding: 0 0 8px;
+    }
+    .etiqueta.cur { color: #00e6c8; }
+    .files { display: flex; gap: 8px; flex-wrap: wrap; }
+    button.opcio {
+        flex: 1 1 0;
+        min-width: 90px;
+        min-height: 54px;
+        padding: 10px 12px;
+        border: 2px solid rgba(255,255,255,0.14);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.05);
+        color: #e8f1f8;
+        font-size: 0.9em;
+        font-weight: 700;
+        font-family: inherit;
+        line-height: 1.25;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    button.opcio small {
+        display: block;
+        font-size: 0.72em;
+        font-weight: 600;
+        opacity: 0.55;
+        margin-top: 2px;
+    }
+    button.opcio[aria-pressed="true"] {
+        border-color: #00e6c8;
+        background: rgba(0,230,200,0.16);
+        color: #fff;
+    }
+    .camp {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+    }
+    .camp span.nom { font-size: 0.8em; color: #9fb6c8; min-width: 72px; }
+    .camp output {
+        min-width: 74px;
+        text-align: right;
+        font-weight: 900;
+        font-size: 1.05em;
+        color: #00e6c8;
+        font-variant-numeric: tabular-nums;
+    }
+    input[type=range] { flex: 1; accent-color: #00e6c8; height: 34px; }
+    .ocult { display: none; }
+    .barra {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        background: rgba(8,16,26,0.96);
+        border-top: 2px solid rgba(0,230,200,0.35);
+        backdrop-filter: blur(8px);
+    }
+    .adreca {
+        font-family: ui-monospace, monospace;
+        font-size: 0.68em;
+        color: #7c98ae;
+        word-break: break-all;
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+    a.obre {
+        display: block;
+        text-align: center;
+        padding: 15px;
+        border-radius: 12px;
+        background: #00c9b1;
+        color: #04231f;
+        font-weight: 900;
+        font-size: 1.05em;
+        letter-spacing: 1px;
+        text-decoration: none;
+    }
+    .nota {
+        font-size: 0.75em;
+        color: #7c98ae;
+        line-height: 1.5;
+        border-left: 3px solid rgba(255,255,255,0.12);
+        padding-left: 10px;
+        margin-top: 24px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Avui Regu? &mdash; Proves</h1>
+<div class="sub">Tria i obre. No cal escriure res.</div>
+
+<fieldset>
+    <div class="etiqueta cur">Com es dibuixa el corrent</div>
+    <div class="files" id="g-estil">
+        <button class="opcio" data-val="pill" aria-pressed="true">Pill<small>estil Windy, xifra a dins</small></button>
+        <button class="opcio" data-val="ona" aria-pressed="false">Ona<small>el d'abans, ondulat</small></button>
+    </div>
+</fieldset>
+
+<fieldset>
+    <div class="etiqueta cur">Corrent</div>
+    <div class="files" id="g-corrent">
+        <button class="opcio" data-val="real" aria-pressed="true">Real<small>el que hi ha ara</small></button>
+        <button class="opcio" data-val="solape" aria-pressed="false">Damunt el vent<small>el cas dolent</small></button>
+        <button class="opcio" data-val="fixat" aria-pressed="false">A dit<small>rumb i força</small></button>
+    </div>
+    <div id="c-forca" class="ocult">
+        <div class="camp">
+            <span class="nom">Força</span>
+            <input type="range" id="cur-kn" min="0.05" max="1.5" step="0.05" value="0.55">
+            <output id="cur-kn-out">0,55 kn</output>
+        </div>
+        <div class="camp" id="c-rumb">
+            <span class="nom">Cap a</span>
+            <input type="range" id="cur-dir" min="0" max="350" step="10" value="40">
+            <output id="cur-dir-out">40&deg;</output>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset>
+    <div class="etiqueta">Vent</div>
+    <div class="files" id="g-vent">
+        <button class="opcio" data-val="real" aria-pressed="true">Real<small>l'estaci&oacute; del club</small></button>
+        <button class="opcio" data-val="fixat" aria-pressed="false">A dit<small>rumb i for&ccedil;a</small></button>
+    </div>
+    <div id="v-camps" class="ocult">
+        <div class="camp">
+            <span class="nom">For&ccedil;a</span>
+            <input type="range" id="v-kn" min="1" max="35" step="1" value="12">
+            <output id="v-kn-out">12 kn</output>
+        </div>
+        <div class="camp">
+            <span class="nom">Ve de</span>
+            <input type="range" id="v-dir" min="0" max="350" step="10" value="200">
+            <output id="v-dir-out">200&deg;</output>
+        </div>
+    </div>
+</fieldset>
+
+<div class="nota">
+    <b>Damunt el vent</b> planta el corrent al mateix eix del vent d'ara mateix:
+    &eacute;s la comprovaci&oacute; que importa, perqu&egrave; &eacute;s quan es
+    podrien confondre. Si vols veure com se separen de mica en mica, posa el
+    vent i el corrent <b>a dit</b> i ves acostant-ne els rumbs: per sota de 36&deg;
+    el pill del corrent comen&ccedil;a a apartar-se, i del tot per sota de 20&deg;.
+</div>
+
+<div class="barra">
+    <div class="adreca" id="adreca">index.html</div>
+    <a class="obre" id="obre" href="index.html">Obrir l'app</a>
+</div>
+
+<script>
+(function() {
+    var estat = { estil: 'pill', corrent: 'real', vent: 'real' };
+
+    function grup(id, clau) {
+        var cont = document.getElementById(id);
+        cont.addEventListener('click', function(e) {
+            var b = e.target.closest('button.opcio');
+            if (!b) return;
+            cont.querySelectorAll('button.opcio').forEach(function(x) {
+                x.setAttribute('aria-pressed', String(x === b));
+            });
+            estat[clau] = b.dataset.val;
+            refresca();
+        });
+    }
+    grup('g-estil', 'estil');
+    grup('g-corrent', 'corrent');
+    grup('g-vent', 'vent');
+
+    function val(id) { return document.getElementById(id).value; }
+
+    function refresca() {
+        // Amb "damunt el vent" el rumb del corrent el mana el vent: amagar-lo.
+        document.getElementById('c-forca').className = (estat.corrent === 'real') ? 'ocult' : '';
+        document.getElementById('c-rumb').className = (estat.corrent === 'fixat') ? 'camp' : 'ocult';
+        document.getElementById('v-camps').className = (estat.vent === 'fixat') ? '' : 'ocult';
+
+        var kn = parseFloat(val('cur-kn'));
+        document.getElementById('cur-kn-out').textContent = kn.toFixed(2).replace('.', ',') + ' kn';
+        document.getElementById('cur-dir-out').textContent = val('cur-dir') + '°';
+        document.getElementById('v-kn-out').textContent = val('v-kn') + ' kn';
+        document.getElementById('v-dir-out').textContent = val('v-dir') + '°';
+
+        var p = [];
+        if (estat.estil === 'ona') p.push('corrent-estil=ona');
+        if (estat.corrent === 'solape') p.push('solape=' + kn);
+        if (estat.corrent === 'fixat') p.push('corrent=' + kn + ',' + val('cur-dir'));
+        if (estat.vent === 'fixat') p.push('vent=' + val('v-kn') + ',' + val('v-dir'));
+
+        var url = 'index.html' + (p.length ? '?' + p.join('&') : '');
+        document.getElementById('obre').href = url;
+        document.getElementById('adreca').textContent = url;
+    }
+
+    document.querySelectorAll('input[type=range]').forEach(function(r) {
+        r.addEventListener('input', refresca);
+    });
+    refresca();
+})();
+</script>
+</body>
+</html>
