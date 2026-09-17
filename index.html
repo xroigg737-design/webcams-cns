@@ -1793,7 +1793,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.76<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.77<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2920,9 +2920,27 @@
         var total = 46 + (CUR_ROSA_MAX_R - 46) * f;
         var cap = 12 + 4 * f;
         var rL = total - cap;
-        var amp = 3.5 + 3.5 * f;
-        var ona = curOnaPath(18, rL, amp, 1.75);
-        var hw = 7 + 3 * f;
+        // La llargada sola no dona per distingir un corrent fluix d'un de fort:
+        // no es pot escurcar mes per sota (deixaria de veure's) ni allargar mes
+        // per dalt (taparia la xifra de nusos del vent). Aixi que la forca va
+        // per quatre canals alhora — llargada, GRUIX, ona i color — i cap d'ells
+        // no ha de carregar sol amb tota la diferencia.
+        var amp = 3.0 + 4.5 * f;
+        var voltes = 1.4 + 0.8 * f;   // corrent fort = ona mes atapeida
+        var ona = curOnaPath(18, rL, amp, voltes);
+        var hw = 6.5 + 4 * f;
+        // Mateix to turquesa sempre (el vent ja es queda tota la paleta), pero
+        // de mig apagat a ences: la saturacio i la claror si que son lliures.
+        var gruix = 3.0 + 2.8 * f;
+        var color = 'hsl(172, ' + (58 + 42 * f).toFixed(0) + '%, ' + (44 + 16 * f).toFixed(0) + '%)';
+        var pols = 'hsl(168, 100%, ' + (72 + 22 * f).toFixed(0) + '%)';
+        posa('cur-rosa-casing', 'stroke-width', (gruix + 5).toFixed(1));
+        posa('cur-rosa-wave', 'stroke-width', gruix.toFixed(1));
+        posa('cur-rosa-wave', 'stroke', color);
+        posa('cur-rosa-wave', 'stroke-opacity', (0.72 + 0.28 * f).toFixed(2));
+        posa('cur-rosa-pulse', 'stroke-width', (gruix + 0.4).toFixed(1));
+        posa('cur-rosa-pulse', 'stroke', pols);
+        posa('cur-rosa-head', 'fill', color);
         var punta = 'M100 ' + (100 - total).toFixed(1)
                   + ' L' + (100 + hw).toFixed(1) + ' ' + (100 - rL + cap * 0.38).toFixed(1)
                   + ' L100 ' + (100 - rL).toFixed(1)
