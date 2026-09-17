@@ -528,6 +528,78 @@
         }
         .wind-map-info-link:hover { color: rgba(255,255,255,0.85); }
 
+        /* ===== CORRENT SUPERFICIAL dins la rosa dels vents =====
+           El vent i el corrent comparteixen centre, i tard o d'hora
+           coincideixen d'eix. Perque no es confonguin mai, es diferencien per
+           tres coses alhora:
+             1. CONVENI OPOSAT — el pill del vent apunta CAP AL centre (d'on ve
+                el vent); la fletxa del corrent surt del centre CAP ENFORA (cap
+                on va el corrent, conveni oceanografic).
+             2. FORMA — el vent es una barra gruixuda i recta; el corrent una
+                linia ondulada prima amb un pols que hi viatja per dins.
+             3. CONTORN FOSC (casing) — com als mapes nautics: encara que la
+                fletxa passi per sobre del pill verd, es llegeix igual.
+           A mes, la fletxa del corrent no passa mai de r=66 (el numero de nusos
+           del pill del vent viu a r~92), aixi que no en tapa mai la xifra. */
+        .cur-orbit {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 1s ease, opacity 0.6s ease;
+        }
+        .cur-orbit svg { width: 100%; height: 100%; overflow: visible; }
+        /* El pols que viatja del centre cap enfora: es el que dona la sensacio
+           d'aigua en moviment sense haver de fer anar cap bucle de JS. */
+        .cur-wave-pulse {
+            stroke-dasharray: 9 260;
+            animation: cur-flow var(--cur-dur, 2.4s) linear infinite;
+        }
+        @keyframes cur-flow {
+            from { stroke-dashoffset: 269; }
+            to   { stroke-dashoffset: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .cur-wave-pulse { animation: none; opacity: 0; }
+        }
+        /* Targeta de corrent, a baix a l'esquerra: mateixa gramatica que la de
+           Vent Real de la dreta, pero amb el turquesa de la seccio Corrent. */
+        .wind-map-info-left {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            text-align: left;
+            align-items: flex-start;
+            max-width: 46%;
+        }
+        .wind-map-cur-val {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #00e6c8;
+            white-space: nowrap;
+            line-height: 1.1;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+        .wind-map-cur-val small {
+            font-size: 0.45em;
+            font-weight: 700;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+        .wind-map-cur-val .cur-rumb {
+            font-size: 0.6em;
+            font-weight: 800;
+            color: #5ef0e6;
+            margin-left: 4px;
+        }
+
         /* Rosa de vents */
         .wind-flow-canvas {
             position: absolute;
@@ -1152,6 +1224,8 @@
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
             .wind-map-info-right { right: 2px; max-width: 50%; bottom: 2px; }
+            .wind-map-info-left { left: 2px; max-width: 48%; bottom: 2px; }
+            .wind-map-cur-val { font-size: 1.0em; }
             .role-detall-hint { top: 80px; right: 4px; }
             .role-hint-arrow { font-size: 0.85em; }
             .role-hint-text { font-size: 0.42em; }
@@ -1697,7 +1771,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.74<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.75<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -1745,6 +1819,20 @@
                                 <div class="wind-pill" id="wind-pill">
                                     <div class="wind-pill-text" id="wind-pill-text"><span id="wind-pill-val">--</span><small>kts</small></div>
                                 </div>
+                            </div>
+                            <!-- Corrent superficial. Va DESPRES del pill al
+                                 DOM a proposit: aixi es pinta a sobre i el
+                                 contorn fosc la fa llegible encara que hi
+                                 passi per damunt. Els camins els calcula
+                                 actualitzaCorrentRosa(). -->
+                            <div class="cur-orbit" id="cur-rosa">
+                                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                    <path id="cur-rosa-casing" d="" fill="none" stroke="rgba(3,16,28,0.88)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path id="cur-rosa-head-casing" d="" fill="rgba(3,16,28,0.88)" stroke="rgba(3,16,28,0.88)" stroke-width="5" stroke-linejoin="round"/>
+                                    <path id="cur-rosa-wave" d="" fill="none" stroke="#00e6c8" stroke-width="4" stroke-linecap="round" stroke-opacity="0.8"/>
+                                    <path id="cur-rosa-pulse" class="cur-wave-pulse" d="" fill="none" stroke="#b6fff5" stroke-width="4" stroke-linecap="round"/>
+                                    <path id="cur-rosa-head" d="" fill="#00e6c8"/>
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -1819,6 +1907,14 @@
                             <div class="wg-sec-label">Sensació T.</div>
                             <div class="wg-temp-val" id="wm-temp-m">--<small>°C</small></div>
                         </div>
+                    </div>
+                    <!-- Esquerra: Corrent Superficie (mateixa font que la
+                         seccio "Corrent superficial": radar HF de l'ICATMAR) -->
+                    <div class="wind-map-info-left" id="wm-cur-box" style="display:none;">
+                        <div class="wind-map-info-title" style="color:#00e6c8;">Corrent Superfície</div>
+                        <div class="wind-map-cur-val" id="wm-cur-val">--<small>kn</small></div>
+                        <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
+                        <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
                     </div>
                     <!-- Dreta: Vent Real -->
                     <div class="wind-map-info-right">
@@ -2421,6 +2517,7 @@
         if (!arrow) return;
         const dir = d.dir || 0;
         const spd = d.speed_kn ?? 0;
+        window.ventDirActual = dir;   // la fa servir ?solape=
         const dirS = degToCompass(dir);
         const ventNom = degToVentCatala(dir, spd);
         const mapCol = arcColor(spd);
@@ -2472,6 +2569,12 @@
                 }
             });
         }
+
+        /* Ajuda de proves (?solape=), sempre l'ultima cosa i dins un try:
+           si petes aqui, el vent ja esta pintat i no s'arrossega res. */
+        try {
+            if (typeof window.aplicaCorrentForcat === 'function') window.aplicaCorrentForcat();
+        } catch (e) { /* les proves no poden trencar l'app */ }
     }
 
     async function fetchWind() {
@@ -2757,6 +2860,148 @@
         return { hora: hora, fa: fa };
     }
 
+    /* ===== El corrent, dibuixat dins la rosa dels vents =====
+       Comparteix centre amb el vent, aixi que la unica manera de no confondre'ls
+       es que no s'assemblin: el vent es una barra recta i gruixuda que apunta
+       CAP AL centre (d'on ve), i el corrent una linia ondulada prima que surt
+       del centre CAP ENFORA (cap on va). El contorn fosc la fa llegible encara
+       que tots dos coincideixin d'eix, que es el cas dolent.
+       La INTENSITAT no va per color —el vent ja es menja tota la paleta Windy—
+       sino per llargada de la fletxa, amplitud de l'ona i velocitat del pols. */
+    const CUR_ROSA_REF = 0.8;   // kn: corrent ja fort per aqui davant
+    const CUR_ROSA_MAX_R = 66;  // la xifra de nusos del pill viu a r~92: no s'hi arriba
+
+    function curOnaPath(r0, r1, amp, voltes) {
+        // Sinus dibuixat cap amunt (0 graus); despres tot el grup gira.
+        var d = '', N = 44;
+        for (var i = 0; i <= N; i++) {
+            var t = i / N;
+            var r = r0 + (r1 - r0) * t;
+            var x = 100 + amp * Math.sin(t * voltes * 2 * Math.PI);
+            var y = 100 - r;
+            d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+        }
+        return d.trim();
+    }
+
+    function posa(id, attr, val) {
+        var el = document.getElementById(id);
+        if (el) el.setAttribute(attr, val);
+    }
+
+    function actualitzaCorrentRosa(c) {
+        var orbit = document.getElementById('cur-rosa');
+        var box = document.getElementById('wm-cur-box');
+        if (!orbit) return;
+        var spd = c.spdKn || 0;
+        var f = Math.min(1, Math.max(0, spd / CUR_ROSA_REF));
+        var total = 46 + (CUR_ROSA_MAX_R - 46) * f;
+        var cap = 12 + 4 * f;
+        var rL = total - cap;
+        var amp = 3.5 + 3.5 * f;
+        var ona = curOnaPath(18, rL, amp, 1.75);
+        var hw = 7 + 3 * f;
+        var punta = 'M100 ' + (100 - total).toFixed(1)
+                  + ' L' + (100 + hw).toFixed(1) + ' ' + (100 - rL + cap * 0.38).toFixed(1)
+                  + ' L100 ' + (100 - rL).toFixed(1)
+                  + ' L' + (100 - hw).toFixed(1) + ' ' + (100 - rL + cap * 0.38).toFixed(1) + ' Z';
+        posa('cur-rosa-casing', 'd', ona);
+        posa('cur-rosa-wave', 'd', ona);
+        posa('cur-rosa-pulse', 'd', ona);
+        posa('cur-rosa-head-casing', 'd', punta);
+        posa('cur-rosa-head', 'd', punta);
+        // Com mes corrent, mes de pressa hi viatja el pols.
+        orbit.style.setProperty('--cur-dur', (3.2 - 2.2 * f).toFixed(2) + 's');
+        orbit.style.transform = 'rotate(' + c.dirDeg + 'deg)';
+        orbit.style.opacity = '1';
+
+        if (box) {
+            box.style.display = '';
+            var val = document.getElementById('wm-cur-val');
+            var sub = document.getElementById('wm-cur-sub');
+            if (val) {
+                val.innerHTML = spd.toFixed(2).replace('.', ',') + '<small>kn</small>'
+                              + '<span class="cur-rumb">' + degToCompass(c.dirDeg) + '</span>';
+            }
+            if (sub) {
+                var hl = c.time ? curHoraLocal(c.time) : null;
+                sub.textContent = 'cap a ' + c.dirDeg + '\u00b0'
+                                + (hl ? ' \u00b7 ' + hl.hora : '');
+            }
+        }
+    }
+
+    function amagaCorrentRosa() {
+        var orbit = document.getElementById('cur-rosa');
+        var box = document.getElementById('wm-cur-box');
+        if (orbit) orbit.style.opacity = '0';
+        if (box) box.style.display = 'none';
+    }
+
+    /* Ajuda per a proves: des de la consola del navegador,
+       provaCorrent(0.55, 210) forca velocitat i rumb per veure com queda —
+       sobretot el cas dolent, quan corrent i vent coincideixen d'eix. */
+    window.provaCorrent = function(kn, graus) {
+        actualitzaCorrentRosa({ spdKn: kn, dirDeg: graus, time: null });
+    };
+
+    /* El mateix pero des de la URL, que al mobil no hi ha consola:
+         ?corrent=0.55,210   velocitat i rumb a dit
+         ?solape=0.55        el posa damunt l'eix del vent d'ara mateix,
+                             que es justament el cas que volem comprovar
+       Sense cap d'aquests parametres no fa absolutament res. */
+    var CUR_FORCAT = (function() {
+        try {
+            var q = new URLSearchParams(location.search);
+            var c = q.get('corrent'), so = q.get('solape');
+            if (c) {
+                var t = c.split(',');
+                return { kn: parseFloat(t[0]), dir: parseFloat(t[1]) };
+            }
+            if (so) return { kn: parseFloat(so), dir: null };  // dir = la del vent
+        } catch (e) { /* navegador antic: sense proves */ }
+        return null;
+    })();
+
+    /* ?vent=12,141 pinta un vent inventat. Serveix per provar el solapament
+       quan el backend no respon: sense aixo, el pill es queda a 0 graus i no
+       hi ha res amb que solapar. La dada real, si arriba, el trepitja. */
+    (function() {
+        try {
+            var v = new URLSearchParams(location.search).get('vent');
+            if (!v) return;
+            var t = v.split(','), kn = parseFloat(t[0]), gr = parseFloat(t[1]);
+            if (!isFinite(kn) || !isFinite(gr)) return;
+            updateWindMap({ speed_kn: kn, dir: gr, avg_10m_kn: kn, dir_avg_10m: gr,
+                            gust_10m_kn: Math.round(kn * 1.25), temp_c: 22 });
+        } catch (e) { /* les proves no poden trencar l'app */ }
+    })();
+
+    window.aplicaCorrentForcat = function() {
+        if (!CUR_FORCAT || !isFinite(CUR_FORCAT.kn)) return false;
+        var d = (CUR_FORCAT.dir == null) ? window.ventDirActual : CUR_FORCAT.dir;
+        if (d == null || !isFinite(d)) return false;   // encara no sabem el vent
+        d = Math.round(d);
+        actualitzaCorrentRosa({ spdKn: CUR_FORCAT.kn, dirDeg: d, time: null });
+        var sub = document.getElementById('wm-cur-sub');
+        if (sub) {
+            sub.innerHTML = '<span style="color:#ff9a76;font-weight:800;">PROVA</span>'
+                          + ' \u00b7 cap a ' + d + '\u00b0';
+        }
+        return true;
+    };
+
+    // L'enllac obre la seccio de corrent com ho fan els widgets del cockpit.
+    (function(){
+        var l = document.getElementById('wm-cur-link');
+        if (!l) return;
+        l.addEventListener('click', function(ev){
+            if (typeof window.cockpitObre !== 'function') return;
+            ev.preventDefault();
+            window.cockpitObre('current-section', null, 'corrent-pressio-section');
+        });
+    })();
+
     function renderCurrent(c) {
         const arrow = document.getElementById('cur-arrow');
         const spd = document.getElementById('cur-speed');
@@ -2766,6 +3011,7 @@
 
         if (spd) spd.textContent = c.spdKn.toFixed(2);
         if (dir) dir.textContent = degToCompass(c.dirDeg) + ' ' + c.dirDeg + '°';
+        if (!window.aplicaCorrentForcat()) actualitzaCorrentRosa(c);
         if (arrow) {
             arrow.style.opacity = '1';
             arrow.style.transform = 'rotate(' + c.dirDeg + 'deg)';
@@ -2868,6 +3114,7 @@
             if (!curHasData) {
                 const sec = document.getElementById('current-section');
                 if (sec) sec.style.display = 'none';
+                amagaCorrentRosa();
             } else {
                 curStaleNote();
             }
@@ -2884,6 +3131,7 @@
             if (spd) spd.textContent = '--';
             if (dir) dir.textContent = '--';
             if (arrow) arrow.style.opacity = '0';
+            amagaCorrentRosa();
         }
         if (meta) {
             meta.innerHTML = '<span style="color:#ffab40;">El radar no cobreix ' +
