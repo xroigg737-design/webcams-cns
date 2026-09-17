@@ -19,6 +19,7 @@ L'app i les comunicacions són en **català**. Totes les etiquetes, traduccions 
 1. Editar `index.html`
 2. Incrementar versió a `VERSION` i al `<div class="subtitle">` dins index.html
 3. `git add index.html VERSION && git commit -m "vX.XX: descripció" && git push origin master`
+   (treballant des de `dev`, veure "Branques" més avall)
 4. GitHub Pages desplega automàticament des de `master`
 5. URL producció: https://tinyurl.com/avui-regu (→ https://xroigg737-design.github.io/webcams-cns/)
 
@@ -32,6 +33,23 @@ https://i-xr.duckdns.org/avui-regu-dev/index.html (amb usuari i contrasenya).
 No és producció i no té versió pròpia. Desactiva el service worker i posa un
 distintiu DEV amb l'hora de la pujada a la portada: si al mòbil no hi surt
 l'hora que toca, estàs mirant una còpia vella guardada al telèfon.
+
+## Branques: `dev` per treballar, `master` per publicar (17-set-2026)
+- **`master` = producció.** Tot el que hi arriba es publica sol a GitHub Pages.
+  No s'hi puja mai res a mig fer.
+- **`dev` = feina en curs**, també a GitHub. Serveix per aparcar-hi el que encara
+  no està llest i poder-ho continuar des de l'altre portàtil. Aquí s'hi pot pujar
+  tantes vegades com calgui, sense versió nova i sense por.
+- Es prova amb `./deploy-dev.sh` (AWS), que puja el que hi ha al disc, sigui
+  quina sigui la branca.
+- Quan està llest: pujar versió a `VERSION` i al subtítol, i publicar:
+  ```bash
+  git checkout master && git merge --ff-only dev && git push origin master
+  git checkout dev && git merge master && git push origin dev
+  ```
+  Si el `--ff-only` es queixa, és que `master` té alguna cosa que `dev` no té:
+  `git merge master` des de dev primer, i tornar-hi.
+- Les dues branques han d'acabar sempre al mateix commit després de publicar.
 
 ## Regles de treball
 - **SEMPRE** incrementar versió a cada deploy (format: 6.XX)
