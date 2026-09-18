@@ -500,23 +500,20 @@
             right: 0;
             z-index: 20;
             display: flex;
-            padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+            padding: 6px 8px;
             gap: 0;
-            background: rgba(4, 16, 24, 0.78);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
         }
         .wind-map-info-col {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 1px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7);
         }
         .wind-map-info-col.col-vent {
             text-align: left;
             align-items: flex-start;
             padding-right: 6px;
-            border-right: 1px solid rgba(255,255,255,0.12);
         }
         .wind-map-info-col.col-corrent {
             text-align: right;
@@ -2125,15 +2122,15 @@
                     <div class="wind-map-info-bottom" id="wm-info-bottom">
                         <div class="wind-map-info-col col-vent">
                             <div class="wind-map-info-title" style="color:#66bb6a;">Vent Real</div>
-                            <div class="wind-compass-label" id="wind-map-dir" style="position:static;text-shadow:none;">--</div>
-                            <div class="wind-map-info-sub" id="wm-time" style="text-shadow:none;">--</div>
-                            <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind" style="text-shadow:none;">Detall estació &rarr;</a>
+                            <div class="wind-compass-label" id="wind-map-dir" style="position:static;">--</div>
+                            <div class="wind-map-info-sub" id="wm-time">--</div>
+                            <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall estació &rarr;</a>
                         </div>
                         <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
                             <div class="wind-map-info-title" style="color:#00e6c8;">Corrent</div>
                             <div class="wind-map-cur-label" id="wm-cur-label">--</div>
-                            <div class="wind-map-info-sub" id="wm-cur-sub" style="text-shadow:none;">--</div>
-                            <a class="wind-map-info-link" href="#current-section" id="wm-cur-link" style="text-shadow:none;">Detall corrent &rarr;</a>
+                            <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
+                            <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
                         </div>
                     </div>
                     <div class="role-detall-panel" id="role-detall-panel">
@@ -3123,13 +3120,13 @@
 
         var total, cap, rL, amp, voltes, ona, hw;
         if (CUR_ESTIL === 'mini') {
-            total = 10 + 16 * f;
-            cap = 5 + 3 * f;
+            total = 14 + 12 * f;
+            cap = 6 + 3 * f;
             rL = total - cap;
-            amp = 2.0 + 3.0 * f;
-            voltes = 1.2 + 0.6 * f;
-            ona = curOnaPath(4, rL, amp, voltes);
-            hw = 4 + 3 * f;
+            amp = 4.0 + 5.0 * f;
+            voltes = 1.8 + 0.8 * f;
+            ona = curOnaPath(3, rL, amp, voltes);
+            hw = 5 + 3.5 * f;
         } else {
             total = 46 + (CUR_ROSA_MAX_R - 46) * f;
             cap = 12 + 4 * f;
@@ -3141,7 +3138,7 @@
         }
         // Mateix to turquesa sempre (el vent ja es queda tota la paleta), pero
         // de mig apagat a ences: la saturacio i la claror si que son lliures.
-        var gruix = 3.0 + 2.8 * f;
+        var gruix = (CUR_ESTIL === 'mini') ? (4.0 + 3.5 * f) : (3.0 + 2.8 * f);
         var color = 'hsl(172, ' + (58 + 42 * f).toFixed(0) + '%, ' + (44 + 16 * f).toFixed(0) + '%)';
         var pols = 'hsl(168, 100%, ' + (72 + 22 * f).toFixed(0) + '%)';
         posa('cur-rosa-casing', 'stroke-width', (gruix + 5).toFixed(1));
