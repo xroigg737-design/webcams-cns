@@ -1947,7 +1947,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.79<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.80<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2138,8 +2138,7 @@
                     <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
                         <div class="wind-map-info-title" style="color:#C89868;">Corrent</div>
                         <div class="wind-map-cur-label" id="wm-cur-label">--</div>
-                        <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
-                        <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
+                        <div class="wind-map-info-sub" id="wm-cur-max" style="color:rgba(255,255,255,0.45);">--</div>
                     </div>
                 </div>
             </div>
@@ -3270,14 +3269,13 @@
         if (box) {
             box.style.display = '';
             var curLabel = document.getElementById('wm-cur-label');
-            var sub = document.getElementById('wm-cur-sub');
             if (curLabel) {
-                curLabel.textContent = degToCompass(c.dirDeg) + ' ' + spd.toFixed(2).replace('.', ',') + 'kn';
+                curLabel.textContent = degToCompass(c.dirDeg) + ' ' + c.dirDeg + '\u00b0 ' + spd.toFixed(1).replace('.', ',') + 'kn';
             }
-            if (sub) {
-                var hl = c.time ? curHoraLocal(c.time) : null;
-                sub.textContent = 'cap a ' + c.dirDeg + '\u00b0'
-                                + (hl ? ' \u00b7 ' + hl.hora : '');
+            var maxEl = document.getElementById('wm-cur-max');
+            if (maxEl && window._curMaxSetmana) {
+                var mx = window._curMaxSetmana;
+                maxEl.textContent = 'MAX.ULT.SETMANA: ' + mx.spd + 'kn ' + mx.when + ' ' + mx.dir;
             }
         }
     }
@@ -3342,24 +3340,13 @@
         if (d == null || !isFinite(d)) return false;   // encara no sabem el vent
         d = Math.round(d);
         actualitzaCorrentRosa({ spdKn: CUR_FORCAT.kn, dirDeg: d, time: null });
-        var sub = document.getElementById('wm-cur-sub');
-        if (sub) {
-            sub.innerHTML = '<span style="color:#ff9a76;font-weight:800;">PROVA</span>'
-                          + ' \u00b7 cap a ' + d + '\u00b0';
+        var maxEl = document.getElementById('wm-cur-max');
+        if (maxEl) {
+            maxEl.innerHTML = '<span style="color:#ff9a76;font-weight:800;">PROVA</span>';
         }
         return true;
     };
 
-    // L'enllac obre la seccio de corrent com ho fan els widgets del cockpit.
-    (function(){
-        var l = document.getElementById('wm-cur-link');
-        if (!l) return;
-        l.addEventListener('click', function(ev){
-            if (typeof window.cockpitObre !== 'function') return;
-            ev.preventDefault();
-            window.cockpitObre('current-section', null, 'corrent-pressio-section');
-        });
-    })();
 
     function renderCurrent(c) {
         const arrow = document.getElementById('cur-arrow');
@@ -3644,15 +3631,22 @@
             const mw = document.getElementById('cur-max-when');
             if (max) {
                 const d = new Date(max.t + ':00:00Z');
+                var maxWhen = d.toLocaleDateString('ca-ES', {
+                    weekday: 'short', day: 'numeric'
+                }) + ' ' + d.toLocaleTimeString('ca-ES', {
+                    hour: '2-digit', minute: '2-digit'
+                });
+                window._curMaxSetmana = {
+                    spd: max.s.toFixed(1).replace('.', ','),
+                    when: maxWhen,
+                    dir: degToCompass(max.d) + ' ' + max.d + '\u00b0'
+                };
                 if (mv) mv.textContent = max.s.toFixed(2) + ' kn';
                 if (mw) {
-                    mw.textContent = d.toLocaleDateString('ca-ES', {
-                        weekday: 'short', day: 'numeric'
-                    }) + ', ' + d.toLocaleTimeString('ca-ES', {
-                        hour: '2-digit', minute: '2-digit'
-                    }) + ' \u00b7 ' + degToCompass(max.d);
+                    mw.textContent = maxWhen + ' \u00b7 ' + degToCompass(max.d);
                 }
             } else {
+                window._curMaxSetmana = null;
                 if (mv) mv.textContent = '--';
                 if (mw) mw.textContent = '--';
             }
