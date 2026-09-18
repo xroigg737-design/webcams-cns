@@ -3116,13 +3116,13 @@
 
         var total, cap, rL, amp, voltes, ona, hw;
         if (CUR_ESTIL === 'mini') {
-            total = 14 + 12 * f;
-            cap = 6 + 3 * f;
+            total = 30 + 18 * f;
+            cap = 8 + 4 * f;
             rL = total - cap;
             amp = 4.0 + 5.0 * f;
-            voltes = 1.8 + 0.8 * f;
-            ona = curOnaPath(3, rL, amp, voltes);
-            hw = 5 + 3.5 * f;
+            voltes = 1.6 + 0.8 * f;
+            ona = curOnaPath(4, rL, amp, voltes);
+            hw = 5.5 + 4 * f;
         } else {
             total = 46 + (CUR_ROSA_MAX_R - 46) * f;
             cap = 12 + 4 * f;
