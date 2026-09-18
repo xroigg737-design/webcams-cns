@@ -1965,7 +1965,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.83<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.84<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2813,6 +2813,11 @@
 
     // Carrega inicial + refresh cada 60s
     fetchWind();
+    // Preflight del corrent: dispara el fetch ja, en paral·lel amb el vent,
+    // perquè les dades estiguin llestes quan el parser arribi a fetchCurrents().
+    var _curPreflight = fetch(API + '/corrent').then(function(r) {
+        return r.ok ? r.json() : null;
+    }).catch(function() { return null; });
     /* Els sondejos s'aturen quan la pestanya no es veu.
        Sense això, una pestanya oberta tot el dia fa ~7.400 peticions al
        servidor propi, i n'hi ha un límit diari. En tornar a primer pla es
@@ -3431,19 +3436,22 @@
     }
 
     async function fetchCurrents() {
-        // 1) Endpoint compacte del Worker. Atenció: si /corrent no hi és
-        //    desplegat, el catch-all del Worker respon 200 amb dades de vent,
-        //    per això exigim un marcador inequívoc abans de fer-lo servir.
+        // 1) Endpoint compacte del Worker. Si el preflight ja ha resolt,
+        //    consumim la resposta directament (estalvia ~0.5s a la càrrega).
         try {
-            const r = await fetch(API + '/corrent');
-            if (r.ok) {
-                const c = await r.json();
-                if (c && c.convention === 'toward' && isFinite(c.spdKn)) {
-                    curLastHour = c.time ? c.time.substring(0, 13) : null;
-                    curHasData = true;
-                    renderCurrent(c);
-                    return;
-                }
+            var c;
+            if (_curPreflight) {
+                c = await _curPreflight;
+                _curPreflight = null;
+            } else {
+                var r = await fetch(API + '/corrent');
+                c = r.ok ? await r.json() : null;
+            }
+            if (c && c.convention === 'toward' && isFinite(c.spdKn)) {
+                curLastHour = c.time ? c.time.substring(0, 13) : null;
+                curHasData = true;
+                renderCurrent(c);
+                return;
             }
         } catch (e) { /* provem el fallback */ }
 
