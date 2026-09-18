@@ -3142,13 +3142,13 @@
         }
         // Mateix to turquesa sempre (el vent ja es queda tota la paleta), pero
         // de mig apagat a ences: la saturacio i la claror si que son lliures.
-        var gruix = (CUR_ESTIL === 'mini') ? (4.0 + 3.5 * f) : (3.0 + 2.8 * f);
-        var color = 'hsl(30, ' + (80 + 20 * f).toFixed(0) + '%, ' + (50 + 12 * f).toFixed(0) + '%)';
-        var pols = 'hsl(35, 100%, ' + (70 + 20 * f).toFixed(0) + '%)';
+        var gruix = (CUR_ESTIL === 'mini') ? 6.5 : (3.0 + 2.8 * f);
+        var color = (CUR_ESTIL === 'mini') ? 'hsl(30, 94%, 58%)' : ('hsl(30, ' + (80 + 20 * f).toFixed(0) + '%, ' + (50 + 12 * f).toFixed(0) + '%)');
+        var pols = (CUR_ESTIL === 'mini') ? 'hsl(35, 100%, 84%)' : ('hsl(35, 100%, ' + (70 + 20 * f).toFixed(0) + '%)');
         posa('cur-rosa-casing', 'stroke-width', (gruix + 5).toFixed(1));
         posa('cur-rosa-wave', 'stroke-width', gruix.toFixed(1));
         posa('cur-rosa-wave', 'stroke', color);
-        posa('cur-rosa-wave', 'stroke-opacity', (0.72 + 0.28 * f).toFixed(2));
+        posa('cur-rosa-wave', 'stroke-opacity', (CUR_ESTIL === 'mini') ? '1' : (0.72 + 0.28 * f).toFixed(2));
         posa('cur-rosa-pulse', 'stroke-width', (gruix + 0.4).toFixed(1));
         posa('cur-rosa-pulse', 'stroke', pols);
         posa('cur-rosa-head', 'fill', color);
