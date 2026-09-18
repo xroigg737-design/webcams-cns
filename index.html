@@ -3116,21 +3116,20 @@
         var total, cap, rL, amp, voltes, ona, hw;
         var curXoff = 0;
         if (CUR_ESTIL === 'mini') {
-            var r0mini = 16;
-            var kOverlap = 0;
+            var r0mini = 10;
             var vent = window.ventDirActual;
             if (vent != null && isFinite(vent)) {
                 var sep = Math.abs(((c.dirDeg - vent + 540) % 360) - 180);
-                kOverlap = Math.min(1, Math.max(0, (CUR_SEP_MAX - sep) / (CUR_SEP_MAX - CUR_SEP_MIN)));
-                r0mini = 16 - kOverlap * 42;
+                var k = Math.min(1, Math.max(0, (CUR_SEP_MAX - sep) / (CUR_SEP_MAX - CUR_SEP_MIN)));
+                r0mini = 10 - k * 32;
             }
-            total = 42 - kOverlap * 18;
-            cap = 10 - kOverlap * 4;
-            rL = total - cap;
-            amp = 4.5;
-            voltes = 1.8;
+            rL = r0mini + 28;
+            total = rL + 8;
+            cap = 8;
+            amp = 5.0;
+            voltes = 2.0;
             ona = curOnaPath(r0mini, rL, amp, voltes);
-            hw = 8 - kOverlap * 2;
+            hw = 7;
         } else {
             total = 46 + (CUR_ROSA_MAX_R - 46) * f;
             cap = 12 + 4 * f;
