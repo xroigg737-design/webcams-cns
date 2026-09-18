@@ -768,7 +768,7 @@
         .wind-map-cur-label {
             font-size: 2.1em;
             font-weight: 900;
-            color: #ff9a40;
+            color: #C89868;
             white-space: nowrap;
             line-height: 1.1;
         }
@@ -1393,7 +1393,7 @@
             .wind-pill-text { font-size: 1.3em; }
             .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 1.25em; }
-            .wind-map-cur-label { font-size: 1.25em; color: #ff9a40; }
+            .wind-map-cur-label { font-size: 1.25em; color: #C89868; }
             .wind-map-info-title { font-size: 0.65em; }
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
@@ -1947,7 +1947,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.78<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.79<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2136,7 +2136,7 @@
                         <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall estació &rarr;</a>
                     </div>
                     <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
-                        <div class="wind-map-info-title" style="color:#ff9a40;">Corrent</div>
+                        <div class="wind-map-info-title" style="color:#C89868;">Corrent</div>
                         <div class="wind-map-cur-label" id="wm-cur-label">--</div>
                         <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
                         <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
@@ -3139,11 +3139,11 @@
             ona = curOnaPath(18, rL, amp, voltes);
             hw = 6.5 + 4 * f;
         }
-        // Mateix to turquesa sempre (el vent ja es queda tota la paleta), pero
-        // de mig apagat a ences: la saturacio i la claror si que son lliures.
+        // Ambre/sorra apagat, ben diferent del vent (que es queda tota la paleta Windy).
+        // Saturacio moderada, claror creix amb la intensitat del corrent.
         var gruix = (CUR_ESTIL === 'mini') ? 5.0 : (3.0 + 2.8 * f);
-        var color = (CUR_ESTIL === 'mini') ? 'hsl(30, 94%, 58%)' : ('hsl(30, ' + (80 + 20 * f).toFixed(0) + '%, ' + (50 + 12 * f).toFixed(0) + '%)');
-        var pols = (CUR_ESTIL === 'mini') ? 'hsl(35, 100%, 84%)' : ('hsl(35, 100%, ' + (70 + 20 * f).toFixed(0) + '%)');
+        var color = (CUR_ESTIL === 'mini') ? 'hsl(30, 48%, 60%)' : ('hsl(30, ' + (40 + 18 * f).toFixed(0) + '%, ' + (52 + 12 * f).toFixed(0) + '%)');
+        var pols = (CUR_ESTIL === 'mini') ? 'hsl(32, 55%, 78%)' : ('hsl(32, 55%, ' + (68 + 16 * f).toFixed(0) + '%)');
         posa('cur-rosa-casing', 'stroke-width', (gruix + 5).toFixed(1));
         posa('cur-rosa-wave', 'stroke-width', gruix.toFixed(1));
         posa('cur-rosa-wave', 'stroke', color);
