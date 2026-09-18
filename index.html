@@ -494,21 +494,17 @@
             align-items: center;
         }
         .wind-map-info-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
             display: flex;
-            padding: 6px 8px;
+            padding: 8px 10px;
             gap: 0;
+            background: rgba(11, 31, 51, 0.6);
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
         .wind-map-info-col {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 1px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7);
         }
         .wind-map-info-col.col-vent {
             text-align: left;
@@ -1401,7 +1397,7 @@
             .wind-map-info-title { font-size: 0.65em; }
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
-            .wind-map-info-bottom { padding: 5px 6px; }
+            .wind-map-info-bottom { padding: 6px 8px; }
             .cur-pill { top: 24px; width: 17px; height: 32px; border-radius: 3px 3px 8px 8px; }
             .cur-pill::after { top: -9px; border-left-width: 8.5px; border-right-width: 8.5px; border-bottom-width: 9px; }
             .cur-pill-text { font-size: 0.62em; }
@@ -2118,21 +2114,6 @@
                             <div class="wg-temp-val" id="wm-temp-m">--<small>°C</small></div>
                         </div>
                     </div>
-                    <!-- Barra inferior: Vent (esquerra) i Corrent (dreta) -->
-                    <div class="wind-map-info-bottom" id="wm-info-bottom">
-                        <div class="wind-map-info-col col-vent">
-                            <div class="wind-map-info-title" style="color:#66bb6a;">Vent Real</div>
-                            <div class="wind-compass-label" id="wind-map-dir" style="position:static;">--</div>
-                            <div class="wind-map-info-sub" id="wm-time">--</div>
-                            <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall estació &rarr;</a>
-                        </div>
-                        <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
-                            <div class="wind-map-info-title" style="color:#00e6c8;">Corrent</div>
-                            <div class="wind-map-cur-label" id="wm-cur-label">--</div>
-                            <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
-                            <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
-                        </div>
-                    </div>
                     <div class="role-detall-panel" id="role-detall-panel">
                         <div class="role-detall-header">
                             <span>Sèrie direcció vent (últims 30')</span>
@@ -2144,6 +2125,21 @@
                             </div>
                             <div class="role-detall-empty">Carregant dades...</div>
                         </div>
+                    </div>
+                </div>
+                <!-- Barra inferior: Vent (esquerra) i Corrent (dreta), FORA del mapa -->
+                <div class="wind-map-info-bottom" id="wm-info-bottom">
+                    <div class="wind-map-info-col col-vent">
+                        <div class="wind-map-info-title" style="color:#66bb6a;">Vent Real</div>
+                        <div class="wind-compass-label" id="wind-map-dir" style="position:static;">--</div>
+                        <div class="wind-map-info-sub" id="wm-time">--</div>
+                        <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall estació &rarr;</a>
+                    </div>
+                    <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
+                        <div class="wind-map-info-title" style="color:#00e6c8;">Corrent</div>
+                        <div class="wind-map-cur-label" id="wm-cur-label">--</div>
+                        <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
+                        <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
                     </div>
                 </div>
             </div>
