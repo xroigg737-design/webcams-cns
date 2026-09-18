@@ -768,7 +768,7 @@
         .wind-map-cur-label {
             font-size: 2.1em;
             font-weight: 900;
-            color: #00e6c8;
+            color: #ff9a40;
             white-space: nowrap;
             line-height: 1.1;
         }
@@ -1393,7 +1393,7 @@
             .wind-pill-text { font-size: 1.3em; }
             .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 1.25em; }
-            .wind-map-cur-label { font-size: 1.25em; }
+            .wind-map-cur-label { font-size: 1.25em; color: #ff9a40; }
             .wind-map-info-title { font-size: 0.65em; }
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
@@ -2136,7 +2136,7 @@
                         <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall estació &rarr;</a>
                     </div>
                     <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
-                        <div class="wind-map-info-title" style="color:#00e6c8;">Corrent</div>
+                        <div class="wind-map-info-title" style="color:#ff9a40;">Corrent</div>
                         <div class="wind-map-cur-label" id="wm-cur-label">--</div>
                         <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
                         <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
@@ -3124,8 +3124,8 @@
                 k = Math.min(1, Math.max(0, k));
                 r0mini = 4 - k * 30;
             }
-            total = 30 + 18 * f;
-            cap = 8 + 4 * f;
+            total = 16 + 12 * f;
+            cap = 6 + 3 * f;
             rL = total - cap;
             amp = 4.0 + 5.0 * f;
             voltes = 1.6 + 0.8 * f;
@@ -3143,8 +3143,8 @@
         // Mateix to turquesa sempre (el vent ja es queda tota la paleta), pero
         // de mig apagat a ences: la saturacio i la claror si que son lliures.
         var gruix = (CUR_ESTIL === 'mini') ? (4.0 + 3.5 * f) : (3.0 + 2.8 * f);
-        var color = 'hsl(172, ' + (58 + 42 * f).toFixed(0) + '%, ' + (44 + 16 * f).toFixed(0) + '%)';
-        var pols = 'hsl(168, 100%, ' + (72 + 22 * f).toFixed(0) + '%)';
+        var color = 'hsl(30, ' + (80 + 20 * f).toFixed(0) + '%, ' + (50 + 12 * f).toFixed(0) + '%)';
+        var pols = 'hsl(35, 100%, ' + (70 + 20 * f).toFixed(0) + '%)';
         posa('cur-rosa-casing', 'stroke-width', (gruix + 5).toFixed(1));
         posa('cur-rosa-wave', 'stroke-width', gruix.toFixed(1));
         posa('cur-rosa-wave', 'stroke', color);
