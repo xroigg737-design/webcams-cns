@@ -3087,7 +3087,7 @@
     var CUR_ESTIL = 'pill';
     try {
         var _ce = new URLSearchParams(location.search).get('corrent-estil');
-        if (_ce && ['ona','pill','arc','punt','fons'].indexOf(_ce) !== -1) CUR_ESTIL = _ce;
+        if (_ce && ['ona','pill','arc','punt','fons','mini'].indexOf(_ce) !== -1) CUR_ESTIL = _ce;
     } catch (e) {}
     /* Per sota d'aquesta separacio entre les dues marcacions, el pill del
        corrent s'aparta de costat. Per sobre de 36 graus no cal tocar res. */
@@ -3120,18 +3120,25 @@
         if (!orbit) return;
         var spd = c.spdKn || 0;
         var f = Math.min(1, Math.max(0, spd / CUR_ROSA_REF));
-        var total = 46 + (CUR_ROSA_MAX_R - 46) * f;
-        var cap = 12 + 4 * f;
-        var rL = total - cap;
-        // La llargada sola no dona per distingir un corrent fluix d'un de fort:
-        // no es pot escurcar mes per sota (deixaria de veure's) ni allargar mes
-        // per dalt (taparia la xifra de nusos del vent). Aixi que la forca va
-        // per quatre canals alhora — llargada, GRUIX, ona i color — i cap d'ells
-        // no ha de carregar sol amb tota la diferencia.
-        var amp = 3.0 + 4.5 * f;
-        var voltes = 1.4 + 0.8 * f;   // corrent fort = ona mes atapeida
-        var ona = curOnaPath(18, rL, amp, voltes);
-        var hw = 6.5 + 4 * f;
+
+        var total, cap, rL, amp, voltes, ona, hw;
+        if (CUR_ESTIL === 'mini') {
+            total = 10 + 16 * f;
+            cap = 5 + 3 * f;
+            rL = total - cap;
+            amp = 2.0 + 3.0 * f;
+            voltes = 1.2 + 0.6 * f;
+            ona = curOnaPath(4, rL, amp, voltes);
+            hw = 4 + 3 * f;
+        } else {
+            total = 46 + (CUR_ROSA_MAX_R - 46) * f;
+            cap = 12 + 4 * f;
+            rL = total - cap;
+            amp = 3.0 + 4.5 * f;
+            voltes = 1.4 + 0.8 * f;
+            ona = curOnaPath(18, rL, amp, voltes);
+            hw = 6.5 + 4 * f;
+        }
         // Mateix to turquesa sempre (el vent ja es queda tota la paleta), pero
         // de mig apagat a ences: la saturacio i la claror si que son lliures.
         var gruix = 3.0 + 2.8 * f;
@@ -3156,7 +3163,7 @@
         // Com mes corrent, mes de pressa hi viatja el pols.
         orbit.style.setProperty('--cur-dur', (3.2 - 2.2 * f).toFixed(2) + 's');
         orbit.style.transform = 'rotate(' + c.dirDeg + 'deg)';
-        orbit.style.opacity = (CUR_ESTIL === 'ona') ? '1' : '0';
+        orbit.style.opacity = (CUR_ESTIL === 'ona' || CUR_ESTIL === 'mini') ? '1' : '0';
 
         /* Pill a l'estil Windy: la xifra viatja dins la fletxa. */
         var pOrb = document.getElementById('cur-pill-orbit');

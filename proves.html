@@ -58,6 +58,7 @@
     .tag-arc   { background: rgba(100,180,255,0.2); color: #64b5f6; }
     .tag-punt  { background: rgba(255,183,77,0.2); color: #ffb74d; }
     .tag-fons  { background: rgba(186,130,255,0.2); color: #ba82ff; }
+    .tag-mini  { background: rgba(0,230,200,0.25); color: #5ef0e6; }
     .tag-perill { background: rgba(255,100,80,0.2); color: #ff8a70; }
 
     .sep {
@@ -109,21 +110,25 @@
 <body>
 
 <h1>Proves Avui Regu?</h1>
-<div class="sub">Toca un escenari i s'obre l'app. Compara els 5 estils de corrent.</div>
+<div class="sub">Toca un escenari i s'obre l'app. Compara els 6 estils de corrent.</div>
 
-<div class="seccio">Solape crític — els 5 estils</div>
+<div class="seccio">Solape crític — els 6 estils</div>
 <div class="llista">
+    <a class="escenari" href="index.html?solape=0.55&corrent-estil=mini">
+        <div class="nom"><span class="tag tag-mini">mini</span> Ona dins el cercle</div>
+        <div class="desc">Ondulada dins el cercle interior, MAI solapa el vent</div>
+    </a>
+    <a class="escenari" href="index.html?solape=0.55&corrent-estil=arc">
+        <div class="nom"><span class="tag tag-arc">arc</span> Arc al cantell</div>
+        <div class="desc">Arc turquesa a la vora de la rosa, fora de la zona del vent</div>
+    </a>
     <a class="escenari" href="index.html?solape=0.55&corrent-estil=pill">
         <div class="nom"><span class="tag tag-pill">pill</span> Pill (Windy)</div>
         <div class="desc">Fletxa amb la xifra a dins, s'aparta si s'acosta al vent</div>
     </a>
     <a class="escenari" href="index.html?solape=0.55&corrent-estil=ona">
-        <div class="nom"><span class="tag tag-ona">ona</span> Ona ondulada</div>
+        <div class="nom"><span class="tag tag-ona">ona</span> Ona gran</div>
         <div class="desc">Línia ondulada des del centre, l'estil original</div>
-    </a>
-    <a class="escenari" href="index.html?solape=0.55&corrent-estil=arc">
-        <div class="nom"><span class="tag tag-arc">arc</span> Arc al cantell</div>
-        <div class="desc">Arc turquesa a la vora de la rosa, fora de la zona del vent</div>
     </a>
     <a class="escenari" href="index.html?solape=0.55&corrent-estil=punt">
         <div class="nom"><span class="tag tag-punt">punt</span> Punt amb estela</div>
@@ -136,16 +141,19 @@
 </div>
 
 <hr class="sep">
-<div class="seccio">Dades reals — els 5 estils</div>
+<div class="seccio">Dades reals — els 6 estils</div>
 <div class="llista">
+    <a class="escenari" href="index.html?corrent-estil=mini">
+        <div class="nom"><span class="tag tag-mini">mini</span> Real dins cercle</div>
+    </a>
+    <a class="escenari" href="index.html?corrent-estil=arc">
+        <div class="nom"><span class="tag tag-arc">arc</span> Real amb arc</div>
+    </a>
     <a class="escenari" href="index.html?corrent-estil=pill">
         <div class="nom"><span class="tag tag-pill">pill</span> Real amb pill</div>
     </a>
     <a class="escenari" href="index.html?corrent-estil=ona">
-        <div class="nom"><span class="tag tag-ona">ona</span> Real amb ona</div>
-    </a>
-    <a class="escenari" href="index.html?corrent-estil=arc">
-        <div class="nom"><span class="tag tag-arc">arc</span> Real amb arc</div>
+        <div class="nom"><span class="tag tag-ona">ona</span> Real amb ona gran</div>
     </a>
     <a class="escenari" href="index.html?corrent-estil=punt">
         <div class="nom"><span class="tag tag-punt">punt</span> Real amb punt</div>
@@ -161,9 +169,10 @@
     <div class="slider-title">Tria estil, configura i obre</div>
 
     <div class="toggle-row">
-        <button class="tog" data-estil="pill" aria-pressed="true">Pill</button>
-        <button class="tog" data-estil="ona" aria-pressed="false">Ona</button>
+        <button class="tog" data-estil="mini" aria-pressed="true">Mini</button>
         <button class="tog" data-estil="arc" aria-pressed="false">Arc</button>
+        <button class="tog" data-estil="pill" aria-pressed="false">Pill</button>
+        <button class="tog" data-estil="ona" aria-pressed="false">Ona</button>
         <button class="tog" data-estil="punt" aria-pressed="false">Punt</button>
         <button class="tog" data-estil="fons" aria-pressed="false">Fons</button>
     </div>
@@ -194,7 +203,7 @@
 
 <script>
 (function() {
-    var estil = 'pill';
+    var estil = 'mini';
 
     document.querySelectorAll('.tog').forEach(function(b) {
         b.addEventListener('click', function() {
