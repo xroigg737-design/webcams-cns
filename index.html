@@ -309,8 +309,8 @@
         }
         .wind-map-overlay {
             position: absolute;
-            top: 48%;
-            left: 55%;
+            top: 55%;
+            left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
@@ -1398,7 +1398,7 @@
             .wind-pill { width: 22px; height: 72px; top: -30px; border-radius: 10px 10px 3px 3px; }
             .wind-pill::after { border-left-width: 11px; border-right-width: 11px; border-top-width: 11px; bottom: -11px; }
             .wind-pill-text { font-size: 1.3em; }
-            .wind-map-overlay { top: 42%; left: 52%; }
+            .wind-map-overlay { top: 55%; left: 45%; }
             .wind-compass-label { font-size: 1.25em; }
             .wind-map-cur-label { font-size: 1.25em; }
             .wind-map-info-title { font-size: 0.65em; }
@@ -2005,7 +2005,6 @@
                                 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                                     <path id="cur-arc-trail" d="" fill="none" stroke="#00e6c8" stroke-width="5" stroke-linecap="round" opacity="0"/>
                                     <circle id="cur-arc-dot" cx="100" cy="8" r="5" fill="#00e6c8" opacity="0"/>
-                                    <text id="cur-arc-label" x="100" y="8" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="900" fill="#04231f" opacity="0"></text>
                                 </svg>
                             </div>
                             <!-- Punt amb estela al cantell -->
@@ -3219,12 +3218,6 @@
                 posa('cur-arc-dot', 'r', dotR.toFixed(1));
                 posa('cur-arc-dot', 'fill', color);
                 posa('cur-arc-dot', 'opacity', '1');
-                posa('cur-arc-label', 'x', dotX.toFixed(1));
-                posa('cur-arc-label', 'y', (dotY + 0.5).toFixed(1));
-                posa('cur-arc-label', 'font-size', (dotR > 6 ? '9' : '7'));
-                posa('cur-arc-label', 'opacity', (f > 0.15) ? '1' : '0');
-                var arcLbl = document.getElementById('cur-arc-label');
-                if (arcLbl) arcLbl.textContent = spd.toFixed(1).replace('.', ',');
             }
         }
 
