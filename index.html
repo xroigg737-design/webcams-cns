@@ -3117,20 +3117,20 @@
         var curXoff = 0;
         if (CUR_ESTIL === 'mini') {
             var r0mini = 16;
+            var kOverlap = 0;
             var vent = window.ventDirActual;
             if (vent != null && isFinite(vent)) {
                 var sep = Math.abs(((c.dirDeg - vent + 540) % 360) - 180);
-                var k = (CUR_SEP_MAX - sep) / (CUR_SEP_MAX - CUR_SEP_MIN);
-                k = Math.min(1, Math.max(0, k));
-                r0mini = 16 - k * 42;
+                kOverlap = Math.min(1, Math.max(0, (CUR_SEP_MAX - sep) / (CUR_SEP_MAX - CUR_SEP_MIN)));
+                r0mini = 16 - kOverlap * 12;
             }
-            total = 42;
-            cap = 10;
+            total = 42 - kOverlap * 20;
+            cap = 10 - kOverlap * 4;
             rL = total - cap;
             amp = 4.5;
             voltes = 1.8;
             ona = curOnaPath(r0mini, rL, amp, voltes);
-            hw = 8;
+            hw = 8 - kOverlap * 2;
         } else {
             total = 46 + (CUR_ROSA_MAX_R - 46) * f;
             cap = 12 + 4 * f;
