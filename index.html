@@ -3122,9 +3122,9 @@
             if (vent != null && isFinite(vent)) {
                 var sep = Math.abs(((c.dirDeg - vent + 540) % 360) - 180);
                 kOverlap = Math.min(1, Math.max(0, (CUR_SEP_MAX - sep) / (CUR_SEP_MAX - CUR_SEP_MIN)));
-                r0mini = 16 - kOverlap * 12;
+                r0mini = 16 - kOverlap * 42;
             }
-            total = 42 - kOverlap * 20;
+            total = 42 - kOverlap * 18;
             cap = 10 - kOverlap * 4;
             rL = total - cap;
             amp = 4.5;
