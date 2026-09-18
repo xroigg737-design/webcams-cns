@@ -309,8 +309,8 @@
         }
         .wind-map-overlay {
             position: absolute;
-            top: 55%;
-            left: 50%;
+            top: 48%;
+            left: 55%;
             transform: translate(-50%, -50%);
             display: flex;
             flex-direction: column;
@@ -492,6 +492,36 @@
         }
         .wg-combined-card {
             align-items: center;
+        }
+        .wind-map-info-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: flex;
+            padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+            gap: 0;
+            background: rgba(4, 16, 24, 0.78);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .wind-map-info-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        .wind-map-info-col.col-vent {
+            text-align: left;
+            align-items: flex-start;
+            padding-right: 6px;
+            border-right: 1px solid rgba(255,255,255,0.12);
+        }
+        .wind-map-info-col.col-corrent {
+            text-align: right;
+            align-items: flex-end;
+            padding-left: 6px;
         }
         .wind-map-info-right {
             position: absolute;
@@ -740,6 +770,14 @@
             font-weight: 800;
             color: #5ef0e6;
             margin-left: 4px;
+        }
+        /* Label gran del corrent a la barra inferior, simètrica a la del vent */
+        .wind-map-cur-label {
+            font-size: 2.1em;
+            font-weight: 900;
+            color: #00e6c8;
+            white-space: nowrap;
+            line-height: 1.1;
         }
 
         /* Rosa de vents */
@@ -1360,13 +1398,13 @@
             .wind-pill { width: 22px; height: 72px; top: -30px; border-radius: 10px 10px 3px 3px; }
             .wind-pill::after { border-left-width: 11px; border-right-width: 11px; border-top-width: 11px; bottom: -11px; }
             .wind-pill-text { font-size: 1.3em; }
-            .wind-map-overlay { top: 55%; left: 45%; }
+            .wind-map-overlay { top: 42%; left: 52%; }
             .wind-compass-label { font-size: 1.25em; }
+            .wind-map-cur-label { font-size: 1.25em; }
             .wind-map-info-title { font-size: 0.65em; }
             .wind-map-info-sub { font-size: 0.5em; }
             .wind-map-info-link { font-size: 0.45em; }
-            .wind-map-info-right { right: 2px; max-width: 50%; bottom: 2px; }
-            .wind-map-info-left { left: 2px; max-width: 48%; top: 2px; padding: 4px 7px 4px 6px; }
+            .wind-map-info-bottom { padding: 5px 6px; }
             .cur-pill { top: 24px; width: 17px; height: 32px; border-radius: 3px 3px 8px 8px; }
             .cur-pill::after { top: -9px; border-left-width: 8.5px; border-right-width: 8.5px; border-bottom-width: 9px; }
             .cur-pill-text { font-size: 0.62em; }
@@ -2084,20 +2122,20 @@
                             <div class="wg-temp-val" id="wm-temp-m">--<small>°C</small></div>
                         </div>
                     </div>
-                    <!-- Esquerra: Corrent Superficie (mateixa font que la
-                         seccio "Corrent superficial": radar HF de l'ICATMAR) -->
-                    <div class="wind-map-info-left" id="wm-cur-box" style="display:none;">
-                        <div class="wind-map-info-title" style="color:#00e6c8;">Corrent Superfície</div>
-                        <div class="wind-map-cur-val" id="wm-cur-val">--<small>kn</small></div>
-                        <div class="wind-map-info-sub" id="wm-cur-sub">--</div>
-                        <a class="wind-map-info-link" href="#current-section" id="wm-cur-link">Detall corrent &rarr;</a>
-                    </div>
-                    <!-- Dreta: Vent Real -->
-                    <div class="wind-map-info-right">
-                        <div class="wind-map-info-title" style="color:#66bb6a;">Vent Real</div>
-                        <div class="wind-compass-label" id="wind-map-dir" style="position:static;text-shadow:0 2px 8px rgba(0,0,0,0.8);">--</div>
-                        <div class="wind-map-info-sub" id="wm-time">--</div>
-                        <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall dades estació &rarr;</a>
+                    <!-- Barra inferior: Vent (esquerra) i Corrent (dreta) -->
+                    <div class="wind-map-info-bottom" id="wm-info-bottom">
+                        <div class="wind-map-info-col col-vent">
+                            <div class="wind-map-info-title" style="color:#66bb6a;">Vent Real</div>
+                            <div class="wind-compass-label" id="wind-map-dir" style="position:static;text-shadow:none;">--</div>
+                            <div class="wind-map-info-sub" id="wm-time" style="text-shadow:none;">--</div>
+                            <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind" style="text-shadow:none;">Detall estació &rarr;</a>
+                        </div>
+                        <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
+                            <div class="wind-map-info-title" style="color:#00e6c8;">Corrent</div>
+                            <div class="wind-map-cur-label" id="wm-cur-label">--</div>
+                            <div class="wind-map-info-sub" id="wm-cur-sub" style="text-shadow:none;">--</div>
+                            <a class="wind-map-info-link" href="#current-section" id="wm-cur-link" style="text-shadow:none;">Detall corrent &rarr;</a>
+                        </div>
                     </div>
                     <div class="role-detall-panel" id="role-detall-panel">
                         <div class="role-detall-header">
@@ -3158,7 +3196,7 @@
             arcOrb.style.opacity = (CUR_ESTIL === 'arc') ? '1' : '0';
             if (CUR_ESTIL === 'arc') {
                 var arcR = 92;
-                var halfAng = 15 + 30 * f;
+                var halfAng = 20 + 35 * f;
                 var rad = c.dirDeg * Math.PI / 180;
                 var a1 = rad - halfAng * Math.PI / 180;
                 var a2 = rad + halfAng * Math.PI / 180;
@@ -3168,14 +3206,14 @@
                 var arcD = 'M' + x1.toFixed(1) + ' ' + y1.toFixed(1) +
                            ' A' + arcR + ' ' + arcR + ' 0 ' + large + ' 1 ' +
                            x2.toFixed(1) + ' ' + y2.toFixed(1);
-                var arcW = 4 + 5 * f;
+                var arcW = 5 + 7 * f;
                 var arcOp = 0.5 + 0.5 * f;
                 posa('cur-arc-trail', 'd', arcD);
                 posa('cur-arc-trail', 'stroke', color);
                 posa('cur-arc-trail', 'stroke-width', arcW.toFixed(1));
                 posa('cur-arc-trail', 'opacity', arcOp.toFixed(2));
                 var dotX = 100 + arcR * Math.sin(rad), dotY = 100 - arcR * Math.cos(rad);
-                var dotR = 5 + 3 * f;
+                var dotR = 6 + 4 * f;
                 posa('cur-arc-dot', 'cx', dotX.toFixed(1));
                 posa('cur-arc-dot', 'cy', dotY.toFixed(1));
                 posa('cur-arc-dot', 'r', dotR.toFixed(1));
@@ -3231,11 +3269,10 @@
 
         if (box) {
             box.style.display = '';
-            var val = document.getElementById('wm-cur-val');
+            var curLabel = document.getElementById('wm-cur-label');
             var sub = document.getElementById('wm-cur-sub');
-            if (val) {
-                val.innerHTML = spd.toFixed(2).replace('.', ',') + '<small>kn</small>'
-                              + '<span class="cur-rumb">' + degToCompass(c.dirDeg) + '</span>';
+            if (curLabel) {
+                curLabel.textContent = degToCompass(c.dirDeg) + ' ' + spd.toFixed(2).replace('.', ',') + 'kn';
             }
             if (sub) {
                 var hl = c.time ? curHoraLocal(c.time) : null;
