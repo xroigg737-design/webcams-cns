@@ -646,6 +646,45 @@
         }
         .cur-pill-text small { font-size: 0.62em; font-weight: 800; opacity: 0.75; }
 
+        /* ===== ARC DE CORRENT al cantell de la rosa (18-set-2026) ===== */
+        .cur-arc-orbit {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+        .cur-arc-orbit svg { width: 100%; height: 100%; overflow: visible; }
+
+        /* ===== PUNT AMB ESTELA al cantell de la rosa (18-set-2026) ===== */
+        .cur-punt-orbit {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 1s ease, opacity 0.6s ease;
+        }
+        .cur-punt-orbit svg { width: 100%; height: 100%; overflow: visible; }
+
+        /* ===== FONS DIRECCIONAL de la rosa (18-set-2026) ===== */
+        .cur-fons-glow {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0;
+            pointer-events: none;
+            border-radius: 50%;
+            transition: opacity 0.6s ease;
+        }
+
         /* Targeta de corrent, a DALT a l'esquerra (17-set-2026). A baix es
            trepitjava amb el pill verd del vent quan aquest apunta al sud, que
            a Sitges es el cas mes frequent (migjorn). A dalt a l'esquerra no hi
@@ -1921,6 +1960,30 @@
                                 <text x="5" y="106" text-anchor="start" font-size="18" font-weight="700" fill="rgba(255,255,255,0.75)" font-family="system-ui,sans-serif">W</text>
                             </svg>
                             <!-- Pill Windy-style que radia des del centre — VENT (verd) -->
+                            <!-- Fons direccional del corrent (capa 0, al fons de tot) -->
+                            <div class="cur-fons-glow" id="cur-fons-glow"></div>
+                            <!-- Arc del corrent al cantell -->
+                            <div class="cur-arc-orbit" id="cur-arc-orbit">
+                                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                    <path id="cur-arc-trail" d="" fill="none" stroke="#00e6c8" stroke-width="5" stroke-linecap="round" opacity="0"/>
+                                    <circle id="cur-arc-dot" cx="100" cy="8" r="5" fill="#00e6c8" opacity="0"/>
+                                    <text id="cur-arc-label" x="100" y="8" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="900" fill="#04231f" opacity="0"></text>
+                                </svg>
+                            </div>
+                            <!-- Punt amb estela al cantell -->
+                            <div class="cur-punt-orbit" id="cur-punt-orbit">
+                                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <radialGradient id="cur-punt-grad" cx="50%" cy="0%" r="60%" fx="50%" fy="0%">
+                                            <stop offset="0%" stop-color="#00e6c8" stop-opacity="0.9"/>
+                                            <stop offset="100%" stop-color="#00e6c8" stop-opacity="0"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <ellipse id="cur-punt-estela" cx="100" cy="14" rx="8" ry="18" fill="url(#cur-punt-grad)" opacity="0.7"/>
+                                    <circle id="cur-punt-dot" cx="100" cy="8" r="6" fill="#00e6c8"/>
+                                    <circle cx="100" cy="8" r="3" fill="rgba(255,255,255,0.6)"/>
+                                </svg>
+                            </div>
                             <!-- Pill del corrent. Va ABANS del pill del vent
                                  al DOM: si mai es toquen, mana el vent. -->
                             <div class="cur-pill-orbit" id="cur-pill-orbit">
@@ -2985,7 +3048,10 @@
        pujar res:  ?corrent-estil=ona  torna a l'ona ondulada.
        Per defecte, el pill a l'estil Windy amb la xifra a dins. */
     var CUR_ESTIL = 'pill';
-    try { if (new URLSearchParams(location.search).get('corrent-estil') === 'ona') CUR_ESTIL = 'ona'; } catch (e) {}
+    try {
+        var _ce = new URLSearchParams(location.search).get('corrent-estil');
+        if (_ce && ['ona','pill','arc','punt','fons'].indexOf(_ce) !== -1) CUR_ESTIL = _ce;
+    } catch (e) {}
     /* Per sota d'aquesta separacio entre les dues marcacions, el pill del
        corrent s'aparta de costat. Per sobre de 36 graus no cal tocar res. */
     const CUR_SEP_MIN = 20, CUR_SEP_MAX = 36;
@@ -3085,6 +3151,84 @@
             pill.style.setProperty('--cur-off', off.toFixed(1) + 'px');
         }
 
+        /* ARC al cantell de la rosa: un arc turquesa a r=92 (el cercle exterior).
+           Longitud proporcional a la força, centrat a la direcció del corrent. */
+        var arcOrb = document.getElementById('cur-arc-orbit');
+        if (arcOrb) {
+            arcOrb.style.opacity = (CUR_ESTIL === 'arc') ? '1' : '0';
+            if (CUR_ESTIL === 'arc') {
+                var arcR = 92;
+                var halfAng = 15 + 30 * f;
+                var rad = c.dirDeg * Math.PI / 180;
+                var a1 = rad - halfAng * Math.PI / 180;
+                var a2 = rad + halfAng * Math.PI / 180;
+                var x1 = 100 + arcR * Math.sin(a1), y1 = 100 - arcR * Math.cos(a1);
+                var x2 = 100 + arcR * Math.sin(a2), y2 = 100 - arcR * Math.cos(a2);
+                var large = halfAng * 2 > 180 ? 1 : 0;
+                var arcD = 'M' + x1.toFixed(1) + ' ' + y1.toFixed(1) +
+                           ' A' + arcR + ' ' + arcR + ' 0 ' + large + ' 1 ' +
+                           x2.toFixed(1) + ' ' + y2.toFixed(1);
+                var arcW = 4 + 5 * f;
+                var arcOp = 0.5 + 0.5 * f;
+                posa('cur-arc-trail', 'd', arcD);
+                posa('cur-arc-trail', 'stroke', color);
+                posa('cur-arc-trail', 'stroke-width', arcW.toFixed(1));
+                posa('cur-arc-trail', 'opacity', arcOp.toFixed(2));
+                var dotX = 100 + arcR * Math.sin(rad), dotY = 100 - arcR * Math.cos(rad);
+                var dotR = 5 + 3 * f;
+                posa('cur-arc-dot', 'cx', dotX.toFixed(1));
+                posa('cur-arc-dot', 'cy', dotY.toFixed(1));
+                posa('cur-arc-dot', 'r', dotR.toFixed(1));
+                posa('cur-arc-dot', 'fill', color);
+                posa('cur-arc-dot', 'opacity', '1');
+                posa('cur-arc-label', 'x', dotX.toFixed(1));
+                posa('cur-arc-label', 'y', (dotY + 0.5).toFixed(1));
+                posa('cur-arc-label', 'font-size', (dotR > 6 ? '9' : '7'));
+                posa('cur-arc-label', 'opacity', (f > 0.15) ? '1' : '0');
+                var arcLbl = document.getElementById('cur-arc-label');
+                if (arcLbl) arcLbl.textContent = spd.toFixed(1).replace('.', ',');
+            }
+        }
+
+        /* PUNT AMB ESTELA: un punt turquesa a la vora amb degradat que s'esvaeix. */
+        var puntOrb = document.getElementById('cur-punt-orbit');
+        if (puntOrb) {
+            puntOrb.style.transform = 'rotate(' + c.dirDeg + 'deg)';
+            puntOrb.style.opacity = (CUR_ESTIL === 'punt') ? '1' : '0';
+            if (CUR_ESTIL === 'punt') {
+                var puntR = 5 + 4 * f;
+                var estelaRx = 6 + 8 * f;
+                var estelaRy = 12 + 20 * f;
+                var estelaOp = 0.4 + 0.5 * f;
+                posa('cur-punt-dot', 'r', puntR.toFixed(1));
+                posa('cur-punt-dot', 'fill', color);
+                posa('cur-punt-estela', 'rx', estelaRx.toFixed(1));
+                posa('cur-punt-estela', 'ry', estelaRy.toFixed(1));
+                posa('cur-punt-estela', 'opacity', estelaOp.toFixed(2));
+                var grad = document.getElementById('cur-punt-grad');
+                if (grad) {
+                    grad.querySelector('stop').setAttribute('stop-color', color);
+                    grad.querySelectorAll('stop')[1].setAttribute('stop-color', color);
+                }
+            }
+        }
+
+        /* FONS DIRECCIONAL: degradat radial suau des de la direcció del corrent. */
+        var fonsGlow = document.getElementById('cur-fons-glow');
+        if (fonsGlow) {
+            fonsGlow.style.opacity = (CUR_ESTIL === 'fons') ? '1' : '0';
+            if (CUR_ESTIL === 'fons') {
+                var glowInt = 0.12 + 0.22 * f;
+                var gRad = c.dirDeg * Math.PI / 180;
+                var gx = 50 + 40 * Math.sin(gRad);
+                var gy = 50 - 40 * Math.cos(gRad);
+                fonsGlow.style.background = 'radial-gradient(circle at ' +
+                    gx.toFixed(0) + '% ' + gy.toFixed(0) + '%, ' +
+                    color.replace(')', ', ' + glowInt.toFixed(2) + ')').replace('hsl(', 'hsla(') +
+                    ' 0%, transparent 65%)';
+            }
+        }
+
         if (box) {
             box.style.display = '';
             var val = document.getElementById('wm-cur-val');
@@ -3106,6 +3250,14 @@
         var box = document.getElementById('wm-cur-box');
         if (orbit) orbit.style.opacity = '0';
         if (box) box.style.display = 'none';
+        var pOrb = document.getElementById('cur-pill-orbit');
+        if (pOrb) pOrb.style.opacity = '0';
+        var arcOrb = document.getElementById('cur-arc-orbit');
+        if (arcOrb) arcOrb.style.opacity = '0';
+        var puntOrb = document.getElementById('cur-punt-orbit');
+        if (puntOrb) puntOrb.style.opacity = '0';
+        var fonsGlow = document.getElementById('cur-fons-glow');
+        if (fonsGlow) fonsGlow.style.opacity = '0';
     }
 
     /* Ajuda per a proves: des de la consola del navegador,
