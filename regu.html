@@ -306,6 +306,20 @@ select.sel optgroup{ background:#0d1c2e; color:var(--data); font-weight:800; }
   color:rgba(255,255,255,0.42);
 }
 
+/* ===== Indicació "polsa per veure historial" ===== */
+.hint-tap{
+  display:flex; align-items:center; gap:6px;
+  margin-bottom:12px; padding:10px 13px; border-radius:11px;
+  background:linear-gradient(135deg, rgba(77,216,196,0.12), rgba(77,216,196,0.04));
+  border:1px solid rgba(77,216,196,0.35);
+  color:var(--data); font-size:0.74em; font-weight:700; line-height:1.35;
+  animation:hint-glow 2.5s ease-in-out 1s 3;
+}
+@keyframes hint-glow{
+  0%,100%{ box-shadow:none; }
+  50%{ box-shadow:0 0 14px rgba(77,216,196,0.25); }
+}
+
 .msg{ padding:28px 16px; text-align:center; color:var(--muted); font-size:0.8em; line-height:1.6; }
 .msg a{ color:var(--accent); }
 .spinner{
@@ -391,6 +405,7 @@ footer a{ color:rgba(255,183,77,0.7); }
   <section id="viewGeneral" hidden>
     <div class="podium" id="podium"></div>
     <input class="search" id="filter" type="search" placeholder="Cerca embarcació o patró&hellip;" autocomplete="off">
+    <div class="hint-tap">&#9755; Polsa sobre qualsevol navegant per veure el seu historial de resultats de la temporada</div>
     <div class="list" id="genList"></div>
   </section>
 
