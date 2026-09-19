@@ -35,7 +35,7 @@ s = io.open(fitxer, encoding='utf-8').read()
 # 1) Fora el service worker. A més, esborrem el que ja hi hagi instal·lat en
 #    aquest entorn, que si no el mòbil seguiria servint la còpia antiga.
 #    Només toquem el nostre: a i-xr.duckdns.org hi viuen més aplicacions.
-nou = """    <script>
+nou = """    <script id="arrencada">
     /* ENTORN DE PROVES — aquí no s'instal·la cap service worker, i esborrem
        el que hi pugui haver: el que es veu al mòbil ha de ser sempre l'última
        pujada, sense còpies guardades pel mig. */
@@ -48,7 +48,7 @@ nou = """    <script>
     }
     if (window.caches) caches.delete('avui-regu');
     </script>"""
-s, n = re.subn(r"    <script>\n    if \('serviceWorker' in navigator\).*?\n    </script>",
+s, n = re.subn(r'    <script id="arrencada">.*?\n    </script>',
                nou, s, count=1, flags=re.S)
 assert n == 1, 'no he trobat el bloc del service worker'
 

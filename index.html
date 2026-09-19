@@ -37,14 +37,40 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Avui Regu?">
-    <script>
-    if ('serviceWorker' in navigator) {
+    <script id="arrencada">
+    /* Sortida d'emergència: obrint  index.html?reset  s'esborra el service
+       worker i totes les còpies guardades, i l'app torna a carregar neta de
+       la xarxa. És per als aparells que s'han quedat encallats en una versió
+       antiga i no en surten per molts refrescs que facis (19-set-2026: una
+       tauleta clavada a la v6.56 amb la v6.84 publicada). */
+    if (/[?&]reset(=|&|$)/.test(location.search)) {
+        var feines = [];
+        if ('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations) {
+            feines.push(navigator.serviceWorker.getRegistrations()
+                .then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); })
+                .catch(function () {}));
+        }
+        if (window.caches && caches.keys) {
+            feines.push(caches.keys()
+                .then(function (noms) { return Promise.all(noms.map(function (n) { return caches.delete(n); })); })
+                .catch(function () {}));
+        }
+        Promise.all(feines).catch(function () {}).then(function () {
+            // El paràmetre de l'hora és perquè el navegador no es pugui tornar
+            // la pàgina vella de la seva pròpia memòria (max-age=600).
+            location.replace(location.pathname + '?net=' + Date.now());
+        });
+    } else if ('serviceWorker' in navigator) {
         // updateViaCache:'none' — GitHub Pages serveix sw.js amb max-age=600, i
         // sense això el navegador es podia tornar el sw.js vell de la seva pròpia
         // memòria i no assabentar-se mai que hi ha versió nova.
         navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
             .then(reg => reg.update());
 
+        // Deixar l'adreça neta després d'una neteja, perquè no quedi el ?net=
+        if (/[?&]net=/.test(location.search) && history.replaceState) {
+            history.replaceState(null, '', location.pathname);
+        }
     }
     </script>
     <style>
@@ -1965,7 +1991,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.84<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.85<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
