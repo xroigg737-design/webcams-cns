@@ -82,6 +82,12 @@ Els tabs de la secció meteo (~línia 1692):
 - Selector temps: pills de dies + graella 8 columnes d'hores + play/pausa + botó ARA
 
 ## Problemes resolts (no repetir)
+- **Aparell encallat en una versió antiga** → el 19-set-2026 una tauleta servia
+  la v6.56 amb la v6.84 publicada, i no en sortia per molts refrescs que es fessin:
+  el service worker vell li tornava sempre la mateixa còpia. Solució permanent:
+  obrir **`index.html?reset`** — esborra tots els service workers i totes les
+  caches i recarrega de la xarxa amb `?net=<hora>`. El bloc d'arrencada té
+  `id="arrencada"` i `deploy-dev.sh` l'hi busca per aquest id.
 - MutationObserver + widget Windy.app = loop infinit → Eliminat, usar timeouts
 - `querySelectorAll('tr, div')` amb textContent check = molt lent → Usar selectors CSS específics
 - `offsetWidth` dins observer = reflow storms a mòbil → No usar dins observers
