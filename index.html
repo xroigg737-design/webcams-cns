@@ -1751,6 +1751,17 @@
             margin-top: 0.14em;
         }
         .ch-ic.cian { stroke: #8fe4ff; }
+        /* Rotació d'imatges al polsador de Webcams */
+        .ch-cam-stack { position: absolute; left: 7%; top: 5.5%; width: 86%; height: var(--th-h, 63%); border-radius: 17% / 23%; overflow: hidden; }
+        .ch-cam-stack img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity .8s ease; }
+        .ch-cam-stack img.cam-active { opacity: 1; }
+        .ch-cam-label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center;
+            font-size: 0.36em; letter-spacing: 1.4px; font-weight: 800; color: rgba(255,255,255,0.85);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.7); pointer-events: none; z-index: 1; }
+        .ch-cam-live { position: absolute; top: 6px; right: 6px; z-index: 1; font-size: 0.3em;
+            letter-spacing: 1px; font-weight: 800; color: #fff; background: rgba(228,69,58,0.85);
+            padding: 1px 6px; border-radius: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); pointer-events: none; }
         /* Targeta amb foto: mateixa estructura que el widget de Webcams
            (miniatura a dalt, franja d'etiqueta a baix). */
         .ch-slot.carta { display: block; padding: 0; }
@@ -1991,7 +2002,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.86<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.87<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2210,9 +2221,9 @@
                 <button class="ch-spot filled" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8;--peu-b:2.4%"
                         data-slot="radar" data-target="radar-section" aria-label="Radar de pluges">
                     <span class="ch-slot carta" id="slot-radar"><picture><source type="image/webp" srcset="img/w-radar.webp"><img class="ch-th" src="img/w-radar.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Radar pluges</span></span></span></button>
-                <button class="ch-spot filled peu" style="--x:8.8;--y:44.7;--w:25.0;--h:17.4"
+                <button class="ch-spot filled" style="--x:8.8;--y:44.7;--w:25.0;--h:17.4;--peu-b:5%"
                         data-slot="webcams" data-target="webcams-section" aria-label="Webcams">
-                    <span class="ch-slot ch-fit" id="slot-webcams"><span class="ch-tx">Webcams</span></span></button>
+                    <span class="ch-slot carta" id="slot-webcams"><span class="ch-cam-stack" id="camStack"><img class="cam-active" src="img/club-nautic.jpg" alt="" loading="lazy"><img src="img/calipolis.jpg" alt="" loading="lazy"><img src="img/esglesia-sitges.jpg" alt="" loading="lazy"></span><span class="ch-cam-live">&#9679; LIVE</span><span class="ch-cam-label" id="camLabel">NÀUTIC</span><span class="ch-peu ch-fit"><span class="ch-tx">Webcams</span></span></span></button>
                 <button class="ch-spot filled" style="--x:36.7;--y:44.7;--w:25.6;--h:17.5;--peu-b:2.35%"
                         data-slot="previsio" data-target="meteo-section" aria-label="Previsió">
                     <span class="ch-slot carta" id="slot-previsio"><picture><source type="image/webp" srcset="img/w-previ.webp"><img class="ch-th" src="img/w-previ.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Previsió</span></span></span></button>
@@ -2861,6 +2872,24 @@
         if (typeof fetchNeighbours === 'function') fetchNeighbours();
         if (typeof fetchCurrents === 'function') fetchCurrents();
     });
+
+    /* ===== ROTACIÓ WEBCAMS al polsador ===== */
+    (function(){
+        var CAM_NAMES = ['NÀUTIC','LLEVANT','SUD'];
+        var camIdx = 0;
+        var stack = document.getElementById('camStack');
+        var label = document.getElementById('camLabel');
+        if (!stack) return;
+        var imgs = stack.querySelectorAll('img');
+        function rotateCam(){
+            if (document.hidden || imgs.length < 2) return;
+            imgs[camIdx].classList.remove('cam-active');
+            camIdx = (camIdx + 1) % imgs.length;
+            imgs[camIdx].classList.add('cam-active');
+            if (label) label.textContent = CAM_NAMES[camIdx] || '';
+        }
+        setInterval(rotateCam, 5000);
+    })();
 
     /* ===== ROLADA (oscil·lació angular del vent) ===== */
     function calcRolada(history) {
