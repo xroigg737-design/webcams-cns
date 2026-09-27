@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.02<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.03<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3188,6 +3188,16 @@
         return { lines: lines, labels: labels, x: x, y: y };
     }
 
+    function evoSmooth(vals, r) {
+        var out = [];
+        for (var i = 0; i < vals.length; i++) {
+            var sum = 0, n = 0;
+            for (var j = Math.max(0, i - r); j <= Math.min(vals.length - 1, i + r); j++) { sum += vals[j]; n++; }
+            out.push(sum / n);
+        }
+        return out;
+    }
+
     function evoSpline(pts) {
         if (pts.length < 2) return '';
         if (pts.length === 2) return 'M' + pts[0][0] + ',' + pts[0][1] + 'L' + pts[1][0] + ',' + pts[1][1];
@@ -3197,7 +3207,7 @@
             var p1 = pts[i];
             var p2 = pts[i + 1];
             var p3 = pts[Math.min(i + 2, pts.length - 1)];
-            var t = 0.35;
+            var t = 0.5;
             var cp1x = p1[0] + (p2[0] - p0[0]) * t / 3;
             var cp1y = p1[1] + (p2[1] - p0[1]) * t / 3;
             var cp2x = p2[0] - (p3[0] - p1[0]) * t / 3;
@@ -3214,8 +3224,10 @@
         var W = 520, H = 300;
         var PAD_L = 44, PAD_R = 12, PAD_T = 12, PAD_B = 32;
 
-        var avgs = punts.map(function(p) { return p.avg || 0; });
-        var his = punts.map(function(p) { return p.hi || 0; });
+        var rawAvgs = punts.map(function(p) { return p.avg || 0; });
+        var rawHis = punts.map(function(p) { return p.hi || 0; });
+        var avgs = evoSmooth(rawAvgs, 2);
+        var his = evoSmooth(rawHis, 2);
         var rawMin = Math.min.apply(null, avgs);
         var rawMax = Math.max.apply(null, his);
         var vMin = Math.floor(rawMin / 2) * 2;
@@ -3229,8 +3241,8 @@
         var hiPts = [], avgPts = [];
         for (var i = 0; i < punts.length; i++) {
             var px = g.x(punts[i].ts);
-            hiPts.push([px, g.y(punts[i].hi || 0)]);
-            avgPts.push([px, g.y(punts[i].avg || 0)]);
+            hiPts.push([px, g.y(his[i])]);
+            avgPts.push([px, g.y(avgs[i])]);
         }
 
         var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
