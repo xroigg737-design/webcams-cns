@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.11<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.12<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3220,8 +3220,8 @@
                             font: { size: 12, weight: '600' },
                             color: '#999',
                             callback: function(val, i) {
-                                var l = labels[i];
-                                return l && l.endsWith(':00') ? l.substring(0, 2) : '';
+                                if (i % 4 !== 0 || !labels[i]) return '';
+                                return labels[i].substring(0, 2) + 'h';
                             },
                             autoSkip: false
                         }
@@ -3270,10 +3270,11 @@
                         ticks: {
                             font: { size: 12, weight: '600' }, color: '#999',
                             callback: function(val) {
-                                var l = labels[Math.round(val)];
-                                return l && l.endsWith(':00') ? l.substring(0, 2) : '';
+                                var idx = Math.round(val);
+                                if (idx < 0 || idx >= labels.length) return '';
+                                return labels[idx].substring(0, 2) + 'h';
                             },
-                            autoSkip: false, maxTicksLimit: 13
+                            autoSkip: false, maxTicksLimit: 9
                         }
                     },
                     y: {
