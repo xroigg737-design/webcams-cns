@@ -1105,7 +1105,7 @@
         .evo-panel {
             display: flex;
             flex-direction: column;
-            background: #f5f7fa;
+            background: #ffffff;
             padding: 14px 12px 16px;
             gap: 14px;
         }
@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.01<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.02<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3188,6 +3188,25 @@
         return { lines: lines, labels: labels, x: x, y: y };
     }
 
+    function evoSpline(pts) {
+        if (pts.length < 2) return '';
+        if (pts.length === 2) return 'M' + pts[0][0] + ',' + pts[0][1] + 'L' + pts[1][0] + ',' + pts[1][1];
+        var d = 'M' + pts[0][0] + ',' + pts[0][1];
+        for (var i = 0; i < pts.length - 1; i++) {
+            var p0 = pts[Math.max(i - 1, 0)];
+            var p1 = pts[i];
+            var p2 = pts[i + 1];
+            var p3 = pts[Math.min(i + 2, pts.length - 1)];
+            var t = 0.35;
+            var cp1x = p1[0] + (p2[0] - p0[0]) * t / 3;
+            var cp1y = p1[1] + (p2[1] - p0[1]) * t / 3;
+            var cp2x = p2[0] - (p3[0] - p1[0]) * t / 3;
+            var cp2y = p2[1] - (p3[1] - p1[1]) * t / 3;
+            d += 'C' + cp1x.toFixed(1) + ',' + cp1y.toFixed(1) + ' ' + cp2x.toFixed(1) + ',' + cp2y.toFixed(1) + ' ' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1);
+        }
+        return d;
+    }
+
     function renderEvoSpeedChart(punts) {
         var el = document.getElementById('evo-chart-speed');
         if (!el) return;
@@ -3207,18 +3226,18 @@
         var tsMin = punts[0].ts, tsMax = punts[punts.length - 1].ts;
         var g = evoMakeGrid(W, H, PAD_L, PAD_R, PAD_T, PAD_B, tsMin, tsMax, vMin, vMax, gridStep);
 
-        var hiPath = '', avgPath = '';
+        var hiPts = [], avgPts = [];
         for (var i = 0; i < punts.length; i++) {
             var px = g.x(punts[i].ts);
-            hiPath += (i === 0 ? 'M' : 'L') + px + ',' + g.y(punts[i].hi || 0);
-            avgPath += (i === 0 ? 'M' : 'L') + px + ',' + g.y(punts[i].avg || 0);
+            hiPts.push([px, g.y(punts[i].hi || 0)]);
+            avgPts.push([px, g.y(punts[i].avg || 0)]);
         }
 
         var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
             '<rect x="' + PAD_L + '" y="' + PAD_T + '" width="' + (W - PAD_L - PAD_R) + '" height="' + (H - PAD_T - PAD_B) + '" fill="#fff" rx="0"/>' +
             g.lines + g.labels +
-            '<path d="' + hiPath + '" fill="none" stroke="#1565c0" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>' +
-            '<path d="' + avgPath + '" fill="none" stroke="#42a5f5" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>' +
+            '<path d="' + evoSpline(hiPts) + '" fill="none" stroke="#1565c0" stroke-width="3" stroke-linecap="round"/>' +
+            '<path d="' + evoSpline(avgPts) + '" fill="none" stroke="#42a5f5" stroke-width="3" stroke-linecap="round"/>' +
             '</svg>';
 
         el.innerHTML = svg;
