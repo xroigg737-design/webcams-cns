@@ -1103,54 +1103,51 @@
 
         /* ===== BOTÓ I PANELL EVOLUCIÓ VENT ===== */
         .evo-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            padding: 10px 0;
-            border: none;
-            border-top: 1px solid rgba(102,187,106,0.15);
-            background: linear-gradient(180deg, rgba(102,187,106,0.06), rgba(102,187,106,0.02));
+            gap: 5px;
+            margin-top: 4px;
+            padding: 3px 9px 3px 5px;
+            border: 1.2px solid rgba(102,187,106,0.35);
+            border-radius: 14px;
+            background: radial-gradient(ellipse at 30% 30%, rgba(102,187,106,0.18), rgba(102,187,106,0.06) 70%);
             color: #66bb6a;
-            font-size: 0.72em;
+            font-size: 0.58em;
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.2s;
             -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 6px rgba(102,187,106,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
         }
-        .evo-btn:hover { background: rgba(102,187,106,0.12); }
-        .evo-btn:active { transform: scale(0.98); }
+        .evo-btn:hover {
+            background: rgba(102,187,106,0.22);
+            border-color: rgba(102,187,106,0.55);
+            box-shadow: 0 0 12px rgba(102,187,106,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .evo-btn:active { transform: scale(0.95); }
         .evo-btn-icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background: rgba(102,187,106,0.18);
-            border: 1.5px solid rgba(102,187,106,0.4);
-            box-shadow: 0 0 8px rgba(102,187,106,0.2);
-            transition: all 0.2s;
+            background: rgba(102,187,106,0.22);
+            border: 1px solid rgba(102,187,106,0.45);
+            box-shadow: 0 0 5px rgba(102,187,106,0.2);
+            flex-shrink: 0;
         }
         .evo-btn:hover .evo-btn-icon {
-            background: rgba(102,187,106,0.3);
-            box-shadow: 0 0 14px rgba(102,187,106,0.35);
+            background: rgba(102,187,106,0.35);
+            box-shadow: 0 0 10px rgba(102,187,106,0.35);
         }
-        .evo-btn-chevron {
-            display: inline-block;
-            font-size: 0.85em;
-            transition: transform 0.25s ease;
-            margin-left: 2px;
-        }
-        .evo-btn.open .evo-btn-chevron { transform: rotate(180deg); }
         .evo-panel {
             display: none;
             flex-direction: column;
-            background: rgba(11,31,51,0.85);
-            border-top: 1px solid rgba(102,187,106,0.12);
+            background: rgba(11,31,51,0.92);
+            border-top: 1px solid rgba(102,187,106,0.15);
             padding: 12px 10px 14px;
             gap: 8px;
         }
@@ -2121,7 +2118,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.88<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.89<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2308,6 +2305,15 @@
                         <div class="wind-compass-label" id="wind-map-dir" style="position:static;">--</div>
                         <div class="wind-map-info-sub" id="wm-time">--</div>
                         <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall estació &rarr;</a>
+                        <button class="evo-btn" id="evo-btn" onclick="toggleEvolucio()">
+                            <span class="evo-btn-icon">
+                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <polyline points="1,12 4,7 7,10 10,4 14,2" stroke="#66bb6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                    <polyline points="1,14 4,10 7,13 10,8 14,6" stroke="rgba(102,187,106,0.35)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                </svg>
+                            </span>
+                            Evolució
+                        </button>
                     </div>
                     <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
                         <div class="wind-map-info-title" style="color:#C89868;">Corrent</div>
@@ -2315,16 +2321,6 @@
                         <div class="wind-map-info-sub" id="wm-cur-max" style="color:rgba(255,255,255,0.45);">--</div>
                     </div>
                 </div>
-                <!-- Botó Evolució -->
-                <button class="evo-btn" id="evo-btn" onclick="toggleEvolucio()">
-                    <span class="evo-btn-icon">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <polyline points="1,12 4,8 7,10 10,4 14,2" stroke="#66bb6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                            <polyline points="1,14 4,11 7,13 10,9 14,7" stroke="rgba(102,187,106,0.35)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                        </svg>
-                    </span>
-                    Evolució <span class="evo-btn-chevron">▾</span>
-                </button>
                 <!-- Panell gràfic Evolució vent -->
                 <div class="evo-panel" id="evo-panel">
                     <div class="evo-loading" id="evo-loading">Carregant evolució...</div>
@@ -3137,11 +3133,9 @@
     var evoCarregat = false;
 
     window.toggleEvolucio = function() {
-        var btn = document.getElementById('evo-btn');
         var panel = document.getElementById('evo-panel');
-        if (!btn || !panel) return;
+        if (!panel) return;
         var obert = panel.classList.toggle('open');
-        btn.classList.toggle('open', obert);
         if (obert && !evoCarregat) {
             evoCarregat = true;
             fetchEvolucio();
