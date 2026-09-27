@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.17<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.18<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3577,16 +3577,16 @@
             rL = r0mini + 28;
             total = rL + 8;
             cap = 8;
-            amp = 5.0;
-            voltes = 2.0;
+            amp = 0;
+            voltes = 0;
             ona = curOnaPath(r0mini, rL, amp, voltes);
             hw = 7;
         } else {
             total = 46 + (CUR_ROSA_MAX_R - 46) * f;
             cap = 12 + 4 * f;
             rL = total - cap;
-            amp = 3.0 + 4.5 * f;
-            voltes = 1.4 + 0.8 * f;
+            amp = 0;
+            voltes = 0;
             ona = curOnaPath(18, rL, amp, voltes);
             hw = 6.5 + 4 * f;
         }
