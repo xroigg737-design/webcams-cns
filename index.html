@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.18<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.19<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2961,11 +2961,14 @@
 
     // Carrega inicial + refresh cada 60s
     fetchWind();
-    // Preflight del corrent: dispara el fetch ja, en paral·lel amb el vent,
-    // perquè les dades estiguin llestes quan el parser arribi a fetchCurrents().
-    var _curPreflight = fetch(API + '/corrent').then(function(r) {
-        return r.ok ? r.json() : null;
-    }).catch(function() { return null; });
+    var _curPreflight = (function() {
+        var ac = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        var tmr = ac ? setTimeout(function() { ac.abort(); }, 4000) : null;
+        return fetch(API + '/corrent', ac ? { signal: ac.signal } : {}).then(function(r) {
+            if (tmr) clearTimeout(tmr);
+            return r.ok ? r.json() : null;
+        }).catch(function() { return null; });
+    })();
     /* Els sondejos s'aturen quan la pestanya no es veu.
        Sense això, una pestanya oberta tot el dia fa ~7.400 peticions al
        servidor propi, i n'hi ha un límit diari. En tornar a primer pla es
@@ -3873,7 +3876,10 @@
                 c = await _curPreflight;
                 _curPreflight = null;
             } else {
-                var r = await fetch(API + '/corrent');
+                var ac2 = typeof AbortController !== 'undefined' ? new AbortController() : null;
+                var tmr2 = ac2 ? setTimeout(function() { ac2.abort(); }, 4000) : null;
+                var r = await fetch(API + '/corrent', ac2 ? { signal: ac2.signal } : {});
+                if (tmr2) clearTimeout(tmr2);
                 c = r.ok ? await r.json() : null;
             }
             if (c && c.convention === 'toward' && isFinite(c.spdKn)) {
