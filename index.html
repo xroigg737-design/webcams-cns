@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.12<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.13<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3163,19 +3163,24 @@
         var out = [];
         for (var i = 0; i < punts.length; i += step) {
             var end = Math.min(i + step, punts.length);
-            var sa = 0, sh = 0, cnt = 0;
-            for (var j = i; j < end; j++) { sa += (punts[j].avg||0); sh += (punts[j].hi||0); cnt++; }
-            out.push({ ts: punts[i].ts, avg: sa/cnt, hi: sh/cnt, dir: punts[i].dir });
+            var sa = 0, sh = 0, cnt = 0, mn = 9999, mx = 0;
+            for (var j = i; j < end; j++) {
+                var a = punts[j].avg || 0;
+                sa += a; sh += (punts[j].hi || 0); cnt++;
+                if (a < mn) mn = a;
+                if (a > mx) mx = a;
+            }
+            out.push({ ts: punts[i].ts, avg: sa/cnt, hi: sh/cnt, mn: mn, mx: mx, dir: punts[i].dir });
         }
         var last = punts[punts.length - 1];
-        if (out[out.length-1].ts !== last.ts) out.push({ ts: last.ts, avg: last.avg||0, hi: last.hi||0, dir: last.dir });
+        if (out[out.length-1].ts !== last.ts) out.push({ ts: last.ts, avg: last.avg||0, hi: last.hi||0, mn: last.avg||0, mx: last.avg||0, dir: last.dir });
         return out;
     }
 
     function renderEvoSpeedChart(punts) {
         var ctx = document.getElementById('evo-chart-speed');
         if (!ctx || typeof Chart === 'undefined') return;
-        var ds = evoDS(punts, 30);
+        var ds = evoDS(punts, 45);
         var labels = ds.map(function(p) {
             var d = new Date(p.ts * 1000);
             return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
@@ -3190,20 +3195,43 @@
                     {
                         label: 'Ratxa',
                         data: ds.map(function(p) { return p.hi; }),
-                        borderColor: '#1565c0',
-                        borderWidth: 2.5,
+                        borderColor: '#0d47a1',
+                        borderWidth: 2,
                         pointRadius: 0,
                         tension: 0.4,
-                        fill: false
+                        fill: false,
+                        order: 1
+                    },
+                    {
+                        label: 'Màx',
+                        data: ds.map(function(p) { return p.mx; }),
+                        borderColor: '#1565c0',
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: '+1',
+                        backgroundColor: 'rgba(66,165,245,0.12)',
+                        order: 2
                     },
                     {
                         label: 'Mitjana',
                         data: ds.map(function(p) { return p.avg; }),
                         borderColor: '#42a5f5',
-                        borderWidth: 2.5,
+                        borderWidth: 2,
                         pointRadius: 0,
                         tension: 0.4,
-                        fill: false
+                        fill: false,
+                        order: 3
+                    },
+                    {
+                        label: 'Mín',
+                        data: ds.map(function(p) { return p.mn; }),
+                        borderColor: '#90caf9',
+                        borderWidth: 1.5,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: false,
+                        order: 4
                     }
                 ]
             },
@@ -3211,7 +3239,7 @@
                 responsive: true,
                 maintainAspectRatio: true,
                 aspectRatio: 1.7,
-                plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, pointStyle: 'line', padding: 16, font: { size: 13, weight: '600' } } } },
+                plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, pointStyle: 'line', padding: 12, font: { size: 12, weight: '600' } } } },
                 scales: {
                     x: {
                         grid: { color: '#eee' },
@@ -3220,7 +3248,7 @@
                             font: { size: 12, weight: '600' },
                             color: '#999',
                             callback: function(val, i) {
-                                if (i % 4 !== 0 || !labels[i]) return '';
+                                if (i % 5 !== 0 || !labels[i]) return '';
                                 return labels[i].substring(0, 2) + 'h';
                             },
                             autoSkip: false
@@ -3241,7 +3269,7 @@
         var ctx = document.getElementById('evo-chart-dir');
         if (!ctx || typeof Chart === 'undefined') return;
         var RUMBS = ['N','NE','E','SE','S','SW','W','NW','N'];
-        var ds = evoDS(punts, 40);
+        var ds = evoDS(punts, 50);
         var labels = ds.map(function(p) {
             var d = new Date(p.ts * 1000);
             return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
@@ -3302,10 +3330,10 @@
         var el = document.getElementById('evo-stats');
         if (el) {
             el.innerHTML =
-                '<span class="evo-stat"><span class="evo-stat-badge" style="background:#81d4fa;">Mín</span> <span class="evo-stat-val">' + minAvg.toFixed(1) + ' kn</span></span>' +
+                '<span class="evo-stat"><span class="evo-stat-badge" style="background:#90caf9;">Mín</span> <span class="evo-stat-val">' + minAvg.toFixed(1) + ' kn</span></span>' +
                 '<span class="evo-stat"><span class="evo-stat-badge" style="background:#42a5f5;">Mitjana</span> <span class="evo-stat-val">' + avgAll.toFixed(1) + ' kn</span></span>' +
-                '<span class="evo-stat"><span class="evo-stat-badge" style="background:#1e88e5;">Màx</span> <span class="evo-stat-val">' + maxAvg.toFixed(1) + ' kn</span></span>' +
-                '<span class="evo-stat"><span class="evo-stat-badge" style="background:#1565c0;">Ratxa</span> <span class="evo-stat-val">' + maxHi.toFixed(1) + ' kn</span></span>';
+                '<span class="evo-stat"><span class="evo-stat-badge" style="background:#1565c0;">Màx</span> <span class="evo-stat-val">' + maxAvg.toFixed(1) + ' kn</span></span>' +
+                '<span class="evo-stat"><span class="evo-stat-badge" style="background:#0d47a1;">Ratxa</span> <span class="evo-stat-val">' + maxHi.toFixed(1) + ' kn</span></span>';
         }
 
         var sinSum = 0, cosSum = 0;
