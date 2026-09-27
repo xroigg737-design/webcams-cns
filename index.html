@@ -1101,57 +1101,14 @@
             .cur-hist-table th, .cur-hist-table td { padding-left: 4px; padding-right: 4px; }
         }
 
-        /* ===== BOTÓ I PANELL EVOLUCIÓ VENT ===== */
-        .evo-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 4px;
-            padding: 3px 9px 3px 5px;
-            border: 1.2px solid rgba(102,187,106,0.35);
-            border-radius: 14px;
-            background: radial-gradient(ellipse at 30% 30%, rgba(102,187,106,0.18), rgba(102,187,106,0.06) 70%);
-            color: #66bb6a;
-            font-size: 0.58em;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 0 6px rgba(102,187,106,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
-        }
-        .evo-btn:hover {
-            background: rgba(102,187,106,0.22);
-            border-color: rgba(102,187,106,0.55);
-            box-shadow: 0 0 12px rgba(102,187,106,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-        }
-        .evo-btn:active { transform: scale(0.95); }
-        .evo-btn-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: rgba(102,187,106,0.22);
-            border: 1px solid rgba(102,187,106,0.45);
-            box-shadow: 0 0 5px rgba(102,187,106,0.2);
-            flex-shrink: 0;
-        }
-        .evo-btn:hover .evo-btn-icon {
-            background: rgba(102,187,106,0.35);
-            box-shadow: 0 0 10px rgba(102,187,106,0.35);
-        }
+        /* ===== PANELL EVOLUCIÓ VENT ===== */
         .evo-panel {
-            display: none;
+            display: flex;
             flex-direction: column;
             background: #f5f7fa;
-            border-top: 1px solid rgba(102,187,106,0.15);
             padding: 14px 12px 16px;
             gap: 14px;
         }
-        .evo-panel.open { display: flex; }
         .evo-section-title {
             font-size: 1.05em;
             font-weight: 800;
@@ -2142,7 +2099,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.92<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.93<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2329,15 +2286,6 @@
                         <div class="wind-compass-label" id="wind-map-dir" style="position:static;">--</div>
                         <div class="wind-map-info-sub" id="wm-time">--</div>
                         <a class="wind-map-info-link" href="https://app.weathercloud.net/d1807591580#wind">Detall estació &rarr;</a>
-                        <button class="evo-btn" id="evo-btn" onclick="toggleEvolucio()">
-                            <span class="evo-btn-icon">
-                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <polyline points="1,12 4,7 7,10 10,4 14,2" stroke="#66bb6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                    <polyline points="1,14 4,10 7,13 10,8 14,6" stroke="rgba(102,187,106,0.35)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                </svg>
-                            </span>
-                            Evolució
-                        </button>
                     </div>
                     <div class="wind-map-info-col col-corrent" id="wm-cur-box" style="display:none;">
                         <div class="wind-map-info-title" style="color:#C89868;">Corrent</div>
@@ -2345,36 +2293,7 @@
                         <div class="wind-map-info-sub" id="wm-cur-max" style="color:rgba(255,255,255,0.45);">--</div>
                     </div>
                 </div>
-                <!-- Panell gràfic Evolució vent -->
-                <div class="evo-panel" id="evo-panel">
-                    <div class="evo-loading" id="evo-loading">Carregant evolució...</div>
-                    <div id="evo-content" style="display:none;">
-                        <!-- Velocitat del vent -->
-                        <div class="evo-header">
-                            <div class="evo-section-title">Velocitat del vent (kn)</div>
-                            <button class="evo-close" onclick="toggleEvolucio()" aria-label="Tancar">&#10005;</button>
-                        </div>
-                        <div class="evo-stats" id="evo-stats"></div>
-                        <div class="evo-chart-wrap" id="evo-chart-speed"></div>
-                        <div class="evo-legend">
-                            <span class="evo-legend-item"><span class="evo-legend-swatch" style="background:#42a5f5;"></span> Mitjana</span>
-                            <span class="evo-legend-item"><span class="evo-legend-swatch" style="background:#1565c0;"></span> Ratxa</span>
-                        </div>
-                        <!-- Direcció del vent -->
-                        <div class="evo-section-title" style="margin-top:10px;">Direcció del vent (°)</div>
-                        <div class="evo-stats" id="evo-stats-dir"></div>
-                        <div class="evo-chart-wrap" id="evo-chart-dir"></div>
-                        <button class="evo-btn" onclick="toggleEvolucio()" style="align-self:center;margin-top:6px;">
-                            <span class="evo-btn-icon">
-                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <line x1="4" y1="4" x2="12" y2="12" stroke="#66bb6a" stroke-width="2" stroke-linecap="round"/>
-                                    <line x1="12" y1="4" x2="4" y2="12" stroke="#66bb6a" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                            </span>
-                            Tancar
-                        </button>
-                    </div>
-                </div>
+                <!-- (Evolució vent mogut a secció pròpia evo-vent-section) -->
             </div>
         </section>
 
@@ -2395,8 +2314,8 @@
                         data-slot="veins" data-target="neighbours-section" aria-label="Vent veïns">
                     <span class="ch-slot carta" id="slot-veins"><picture><source type="image/webp" srcset="img/w-veleta.webp"><img class="ch-th" src="img/w-veleta.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Vent veïns</span></span></span></button>
                 <button class="ch-spot filled" style="--x:36.8;--y:27.6;--w:25.5;--h:15.9;--peu-b:0.2%;--peu-h:40%;--th-h:56%"
-                        data-slot="corrent2" data-target="corrent-pressio-section" aria-label="Corrent superficial">
-                    <span class="ch-slot carta" id="slot-corrent2"><picture><source type="image/webp" srcset="img/w-corrent.webp"><img class="ch-th" src="img/w-corrent.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Corrent &amp;<br>Pressió</span></span></span></button>
+                        data-slot="corrent2" data-target="corrent-pressio-section" aria-label="Evolució">
+                    <span class="ch-slot carta" id="slot-corrent2"><picture><source type="image/webp" srcset="img/w-corrent.webp"><img class="ch-th" src="img/w-corrent.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Evolució</span></span></span></button>
                 <button class="ch-spot filled" style="--x:64.8;--y:27.9;--w:25.8;--h:15.8;--peu-b:2.4%"
                         data-slot="radar" data-target="radar-section" aria-label="Radar de pluges">
                     <span class="ch-slot carta" id="slot-radar"><picture><source type="image/webp" srcset="img/w-radar.webp"><img class="ch-th" src="img/w-radar.jpg" alt="" loading="lazy"></picture><span class="ch-peu ch-fit"><span class="ch-tx">Radar pluges</span></span></span></button>
@@ -2578,15 +2497,41 @@
         <!-- CORRENT & PRESSIÓ — tria d'opcions -->
         <section class="category plegable" id="corrent-pressio-section">
             <div class="category-header">
-                <span class="category-icon">&#127754;</span>
-                <span class="category-title title-current">Corrent &amp; Pressió</span>
+                <span class="category-icon">&#128200;</span>
+                <span class="category-title title-current">Evolució</span>
             </div>
             <hr class="category-line line-current">
             <div class="previ-matriu">
+                <button class="previ-card" type="button" data-secc="evo-vent-section">
+                    <img src="img/cp-pressio.jpg" alt="" loading="lazy"><span>Vent</span></button>
                 <button class="previ-card" type="button" data-secc="current-section">
-                    <img src="img/cp-corrent.jpg" alt="" loading="lazy"><span>Corrent superfície</span></button>
+                    <img src="img/cp-corrent.jpg" alt="" loading="lazy"><span>Corrent</span></button>
                 <button class="previ-card" type="button" data-secc="pressio-section">
-                    <img src="img/cp-pressio.jpg" alt="" loading="lazy"><span>Pressió atmosfèrica</span></button>
+                    <img src="img/cp-pressio.jpg" alt="" loading="lazy"><span>Pressió</span></button>
+            </div>
+        </section>
+
+        <!-- EVOLUCIÓ VENT -->
+        <section class="category plegable" id="evo-vent-section">
+            <div class="category-header">
+                <span class="category-icon">&#128168;</span>
+                <span class="category-title title-meteo">Evolució vent</span>
+            </div>
+            <hr class="category-line line-meteo">
+            <div class="evo-panel" id="evo-panel">
+                <div class="evo-loading" id="evo-loading">Carregant evolució...</div>
+                <div id="evo-content" style="display:none;">
+                    <div class="evo-section-title">Velocitat del vent (kn)</div>
+                    <div class="evo-stats" id="evo-stats"></div>
+                    <div class="evo-chart-wrap" id="evo-chart-speed"></div>
+                    <div class="evo-legend">
+                        <span class="evo-legend-item"><span class="evo-legend-swatch" style="background:#42a5f5;"></span> Mitjana</span>
+                        <span class="evo-legend-item"><span class="evo-legend-swatch" style="background:#1565c0;"></span> Ratxa</span>
+                    </div>
+                    <div class="evo-section-title" style="margin-top:10px;">Direcció del vent (°)</div>
+                    <div class="evo-stats" id="evo-stats-dir"></div>
+                    <div class="evo-chart-wrap" id="evo-chart-dir"></div>
+                </div>
             </div>
         </section>
 
@@ -3175,15 +3120,12 @@
     /* ===== EVOLUCIÓ VENT (gràfic últimes 6h) ===== */
     var evoCarregat = false;
 
-    window.toggleEvolucio = function() {
-        var panel = document.getElementById('evo-panel');
-        if (!panel) return;
-        var obert = panel.classList.toggle('open');
-        if (obert && !evoCarregat) {
-            evoCarregat = true;
-            fetchEvolucio();
-        }
-    };
+    function carregaEvoSiVisible() {
+        if (evoCarregat) return;
+        evoCarregat = true;
+        fetchEvolucio();
+    }
+    window.iniciaEvoVent = carregaEvoSiVisible;
 
     async function fetchEvolucio() {
         var loading = document.getElementById('evo-loading');
@@ -5289,7 +5231,7 @@ window.CockpitSlots = (function() {
     /* Cada indicador obre la seva secció just sota el cockpit. Les altres
        queden plegades, i el contingut pesat (radar, mapes) no es carrega
        fins que s'obre per primera vegada. */
-    var ARRENCADA = { 'radar-section': 'iniciaRadar', 'pressio-section': 'iniciaPressio' };
+    var ARRENCADA = { 'radar-section': 'iniciaRadar', 'pressio-section': 'iniciaPressio', 'evo-vent-section': 'iniciaEvoVent' };
 
     function plega() {
         var oberta = document.querySelector('.plegable.obert');
@@ -5541,7 +5483,7 @@ window.CockpitSlots = (function() {
                 var b = document.createElement('button');
                 b.className = 'previ-tornar';
                 b.type = 'button';
-                b.innerHTML = '\u2039 Corrent &amp; Pressi\u00f3';
+                b.innerHTML = '\u2039 Evoluci\u00f3';
                 b.style.margin = '4px auto 10px';
                 b.addEventListener('click', function() { window.cockpitObre('corrent-pressio-section'); });
                 sec.insertBefore(b, sec.children[2] || null);
