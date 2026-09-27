@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.07<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.08<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3232,14 +3232,34 @@
         return out;
     }
 
+    function evoCanvasSpline(ctx, pts) {
+        if (pts.length < 2) return;
+        ctx.moveTo(pts[0][0], pts[0][1]);
+        if (pts.length === 2) { ctx.lineTo(pts[1][0], pts[1][1]); return; }
+        for (var i = 0; i < pts.length - 1; i++) {
+            var p0 = pts[Math.max(i - 1, 0)];
+            var p1 = pts[i];
+            var p2 = pts[i + 1];
+            var p3 = pts[Math.min(i + 2, pts.length - 1)];
+            var t = 0.4;
+            ctx.bezierCurveTo(
+                p1[0] + (p2[0] - p0[0]) * t / 3, p1[1] + (p2[1] - p0[1]) * t / 3,
+                p2[0] - (p3[0] - p1[0]) * t / 3, p2[1] - (p3[1] - p1[1]) * t / 3,
+                p2[0], p2[1]
+            );
+        }
+    }
+
     function renderEvoSpeedChart(punts) {
         var el = document.getElementById('evo-chart-speed');
         if (!el) return;
 
         var step = Math.max(1, Math.round(punts.length / 24));
         var ds = evoDownsample(punts, step);
+
+        var dpr = window.devicePixelRatio || 1;
         var W = 520, H = 300;
-        var PAD_L = 44, PAD_R = 12, PAD_T = 12, PAD_B = 32;
+        var PAD_L = 44, PAD_R = 12, PAD_T = 12, PAD_B = 36;
 
         var rawMax = 0;
         for (var k = 0; k < ds.length; k++) { if (ds[k].hi > rawMax) rawMax = ds[k].hi; if (ds[k].avg > rawMax) rawMax = ds[k].avg; }
@@ -3249,23 +3269,56 @@
         var gridStep = vMax <= 10 ? 1 : vMax <= 20 ? 2 : 5;
 
         var tsMin = ds[0].ts, tsMax = ds[ds.length - 1].ts;
-        var g = evoMakeGrid(W, H, PAD_L, PAD_R, PAD_T, PAD_B, tsMin, tsMax, vMin, vMax, gridStep);
+        var tsRange = tsMax - tsMin || 1;
+        var vRange = vMax - vMin || 1;
+        var gW = W - PAD_L - PAD_R, gH = H - PAD_T - PAD_B;
+        function xc(ts) { return PAD_L + (ts - tsMin) / tsRange * gW; }
+        function yc(v) { return PAD_T + gH - (v - vMin) / vRange * gH; }
+
+        var c = document.createElement('canvas');
+        c.width = W * dpr; c.height = H * dpr;
+        c.style.width = '100%'; c.style.height = 'auto';
+        var ctx = c.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(PAD_L, PAD_T, gW, gH);
+
+        ctx.font = '600 13px system-ui, sans-serif';
+        ctx.textBaseline = 'middle';
+        for (var v = vMin; v <= vMax + 0.01; v += gridStep) {
+            var yy = yc(v);
+            ctx.strokeStyle = '#e8eaed'; ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(PAD_L, yy); ctx.lineTo(W - PAD_R, yy); ctx.stroke();
+            ctx.fillStyle = '#999'; ctx.textAlign = 'right';
+            ctx.fillText(v.toFixed(0), PAD_L - 8, yy);
+        }
+        var firstHour = new Date(tsMin * 1000);
+        firstHour.setMinutes(0, 0, 0);
+        var startH = Math.floor(firstHour.getTime() / 1000) + 3600;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (var ht = startH; ht <= tsMax; ht += 3600) {
+            var xx = xc(ht);
+            if (xx < PAD_L + 12 || xx > W - PAD_R - 12) continue;
+            ctx.strokeStyle = '#e8eaed'; ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.moveTo(xx, PAD_T); ctx.lineTo(xx, H - PAD_B); ctx.stroke();
+            var dd = new Date(ht * 1000);
+            ctx.fillStyle = '#999';
+            ctx.fillText(String(dd.getHours()).padStart(2, '0'), xx, H - PAD_B + 6);
+        }
 
         var hiPts = [], avgPts = [];
         for (var i = 0; i < ds.length; i++) {
-            var px = g.x(ds[i].ts);
-            hiPts.push([px, g.y(ds[i].hi)]);
-            avgPts.push([px, g.y(ds[i].avg)]);
+            hiPts.push([xc(ds[i].ts), yc(ds[i].hi)]);
+            avgPts.push([xc(ds[i].ts), yc(ds[i].avg)]);
         }
 
-        var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
-            '<rect x="' + PAD_L + '" y="' + PAD_T + '" width="' + (W - PAD_L - PAD_R) + '" height="' + (H - PAD_T - PAD_B) + '" fill="#fff" rx="0"/>' +
-            g.lines + g.labels +
-            '<path d="' + evoSpline(hiPts) + '" fill="none" stroke="#1565c0" stroke-width="3.5" stroke-linecap="round"/>' +
-            '<path d="' + evoSpline(avgPts) + '" fill="none" stroke="#42a5f5" stroke-width="3.5" stroke-linecap="round"/>' +
-            '</svg>';
+        ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#1565c0'; ctx.beginPath(); evoCanvasSpline(ctx, hiPts); ctx.stroke();
+        ctx.strokeStyle = '#42a5f5'; ctx.beginPath(); evoCanvasSpline(ctx, avgPts); ctx.stroke();
 
-        el.innerHTML = svg;
+        el.innerHTML = '';
+        el.appendChild(c);
     }
 
     function renderEvoDirChart(punts) {
@@ -3274,35 +3327,58 @@
 
         var stepD = Math.max(1, Math.round(punts.length / 24));
         var ds = evoDownsample(punts, stepD);
+
+        var dpr = window.devicePixelRatio || 1;
         var W = 520, H = 260;
-        var PAD_L = 44, PAD_R = 36, PAD_T = 12, PAD_B = 32;
+        var PAD_L = 44, PAD_R = 36, PAD_T = 12, PAD_B = 36;
+        var gW = W - PAD_L - PAD_R, gH = H - PAD_T - PAD_B;
         var tsMin = ds[0].ts, tsMax = ds[ds.length - 1].ts;
-        var g = evoMakeGrid(W, H, PAD_L, PAD_R, PAD_T, PAD_B, tsMin, tsMax, 0, 360, 45);
+        var tsRange = tsMax - tsMin || 1;
+        function xc(ts) { return PAD_L + (ts - tsMin) / tsRange * gW; }
+        function yc(v) { return PAD_T + gH - v / 360 * gH; }
+
+        var c = document.createElement('canvas');
+        c.width = W * dpr; c.height = H * dpr;
+        c.style.width = '100%'; c.style.height = 'auto';
+        var ctx = c.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(PAD_L, PAD_T, gW, gH);
 
         var RUMBS = {0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW',360:'N'};
-        var rumbLabels = '';
+        ctx.font = '800 13px system-ui, sans-serif';
         for (var v = 0; v <= 360; v += 45) {
-            var yy = g.y(v);
-            var rumb = RUMBS[v] || '';
-            if (rumb) {
-                rumbLabels += '<text x="' + (W - PAD_R + 7) + '" y="' + (yy + 5) + '" text-anchor="start" font-size="13" font-weight="800" fill="#42a5f5" font-family="system-ui,sans-serif">' + rumb + '</text>';
-            }
+            var yy = yc(v);
+            ctx.strokeStyle = '#e8eaed'; ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.moveTo(PAD_L, yy); ctx.lineTo(W - PAD_R, yy); ctx.stroke();
+            ctx.fillStyle = '#42a5f5'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+            if (RUMBS[v]) ctx.fillText(RUMBS[v], W - PAD_R + 7, yy);
+        }
+        var firstHour = new Date(tsMin * 1000);
+        firstHour.setMinutes(0, 0, 0);
+        var startH = Math.floor(firstHour.getTime() / 1000) + 3600;
+        ctx.font = '600 13px system-ui, sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = '#999';
+        for (var ht = startH; ht <= tsMax; ht += 3600) {
+            var xx = xc(ht);
+            if (xx < PAD_L + 12 || xx > W - PAD_R - 12) continue;
+            ctx.strokeStyle = '#e8eaed'; ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.moveTo(xx, PAD_T); ctx.lineTo(xx, H - PAD_B); ctx.stroke();
+            ctx.fillStyle = '#999';
+            ctx.fillText(String(new Date(ht * 1000).getHours()).padStart(2, '0'), xx, H - PAD_B + 6);
         }
 
-        var dots = '';
         for (var i = 0; i < ds.length; i++) {
             if (ds[i].dir == null) continue;
-            var px = g.x(ds[i].ts);
-            var py = g.y(ds[i].dir);
-            dots += '<circle cx="' + px + '" cy="' + py + '" r="5" fill="#42a5f5" opacity="0.85"/>';
+            ctx.beginPath();
+            ctx.arc(xc(ds[i].ts), yc(ds[i].dir), 5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(66,165,245,0.85)';
+            ctx.fill();
         }
 
-        var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
-            '<rect x="' + PAD_L + '" y="' + PAD_T + '" width="' + (W - PAD_L - PAD_R) + '" height="' + (H - PAD_T - PAD_B) + '" fill="#fff" rx="0"/>' +
-            g.lines + g.labels + rumbLabels + dots +
-            '</svg>';
-
-        el.innerHTML = svg;
+        el.innerHTML = '';
+        el.appendChild(c);
     }
 
     function renderEvoStats(punts) {
