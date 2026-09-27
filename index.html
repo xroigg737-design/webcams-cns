@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.05<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.06<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3217,32 +3217,46 @@
         return d;
     }
 
+    function evoDownsample(punts, step) {
+        var out = [];
+        for (var i = 0; i < punts.length; i += step) {
+            var end = Math.min(i + step, punts.length);
+            var sumAvg = 0, sumHi = 0, sumDir = 0, n = 0;
+            for (var j = i; j < end; j++) { sumAvg += (punts[j].avg||0); sumHi += (punts[j].hi||0); n++; }
+            out.push({ ts: punts[i].ts, avg: sumAvg/n, hi: sumHi/n, dir: punts[i].dir, dir_hi: punts[i].dir_hi });
+        }
+        if (out[out.length-1].ts !== punts[punts.length-1].ts) {
+            var last = punts[punts.length-1];
+            out.push({ ts: last.ts, avg: last.avg||0, hi: last.hi||0, dir: last.dir, dir_hi: last.dir_hi });
+        }
+        return out;
+    }
+
     function renderEvoSpeedChart(punts) {
         var el = document.getElementById('evo-chart-speed');
         if (!el) return;
 
+        var ds = evoDownsample(punts, 4);
         var W = 520, H = 300;
         var PAD_L = 44, PAD_R = 12, PAD_T = 12, PAD_B = 32;
 
-        var rawAvgs = punts.map(function(p) { return p.avg || 0; });
-        var rawHis = punts.map(function(p) { return p.hi || 0; });
-        var avgs = evoSmooth(rawAvgs, 3);
-        var his = evoSmooth(rawHis, 3);
-        var rawMin = Math.min.apply(null, avgs);
-        var rawMax = Math.max.apply(null, his);
-        var vMin = Math.floor(rawMin / 2) * 2;
-        var vMax = Math.ceil(rawMax / 2) * 2;
+        var allVals = [];
+        for (var k = 0; k < ds.length; k++) { allVals.push(ds[k].avg); allVals.push(ds[k].hi); }
+        var rawMin = Math.min.apply(null, allVals);
+        var rawMax = Math.max.apply(null, allVals);
+        var vMin = Math.floor(rawMin);
+        var vMax = Math.ceil(rawMax);
         if (vMax - vMin < 4) vMax = vMin + 4;
         var gridStep = (vMax - vMin) <= 8 ? 1 : 2;
 
-        var tsMin = punts[0].ts, tsMax = punts[punts.length - 1].ts;
+        var tsMin = ds[0].ts, tsMax = ds[ds.length - 1].ts;
         var g = evoMakeGrid(W, H, PAD_L, PAD_R, PAD_T, PAD_B, tsMin, tsMax, vMin, vMax, gridStep);
 
         var hiPts = [], avgPts = [];
-        for (var i = 0; i < punts.length; i++) {
-            var px = g.x(punts[i].ts);
-            hiPts.push([px, g.y(his[i])]);
-            avgPts.push([px, g.y(avgs[i])]);
+        for (var i = 0; i < ds.length; i++) {
+            var px = g.x(ds[i].ts);
+            hiPts.push([px, g.y(ds[i].hi)]);
+            avgPts.push([px, g.y(ds[i].avg)]);
         }
 
         var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
@@ -3259,9 +3273,10 @@
         var el = document.getElementById('evo-chart-dir');
         if (!el) return;
 
+        var ds = evoDownsample(punts, 4);
         var W = 520, H = 260;
         var PAD_L = 44, PAD_R = 36, PAD_T = 12, PAD_B = 32;
-        var tsMin = punts[0].ts, tsMax = punts[punts.length - 1].ts;
+        var tsMin = ds[0].ts, tsMax = ds[ds.length - 1].ts;
         var g = evoMakeGrid(W, H, PAD_L, PAD_R, PAD_T, PAD_B, tsMin, tsMax, 0, 360, 45);
 
         var RUMBS = {0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW',360:'N'};
@@ -3275,11 +3290,11 @@
         }
 
         var dots = '';
-        for (var i = 0; i < punts.length; i++) {
-            if (punts[i].dir == null) continue;
-            var px = g.x(punts[i].ts);
-            var py = g.y(punts[i].dir);
-            dots += '<circle cx="' + px + '" cy="' + py + '" r="4.5" fill="#42a5f5" opacity="0.8"/>';
+        for (var i = 0; i < ds.length; i++) {
+            if (ds[i].dir == null) continue;
+            var px = g.x(ds[i].ts);
+            var py = g.y(ds[i].dir);
+            dots += '<circle cx="' + px + '" cy="' + py + '" r="5" fill="#42a5f5" opacity="0.85"/>';
         }
 
         var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
