@@ -1101,6 +1101,128 @@
             .cur-hist-table th, .cur-hist-table td { padding-left: 4px; padding-right: 4px; }
         }
 
+        /* ===== BOTÓ I PANELL EVOLUCIÓ VENT ===== */
+        .evo-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-top: 1px solid rgba(102,187,106,0.15);
+            background: linear-gradient(180deg, rgba(102,187,106,0.06), rgba(102,187,106,0.02));
+            color: #66bb6a;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .evo-btn:hover { background: rgba(102,187,106,0.12); }
+        .evo-btn:active { transform: scale(0.98); }
+        .evo-btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(102,187,106,0.18);
+            border: 1.5px solid rgba(102,187,106,0.4);
+            box-shadow: 0 0 8px rgba(102,187,106,0.2);
+            transition: all 0.2s;
+        }
+        .evo-btn:hover .evo-btn-icon {
+            background: rgba(102,187,106,0.3);
+            box-shadow: 0 0 14px rgba(102,187,106,0.35);
+        }
+        .evo-btn-chevron {
+            display: inline-block;
+            font-size: 0.85em;
+            transition: transform 0.25s ease;
+            margin-left: 2px;
+        }
+        .evo-btn.open .evo-btn-chevron { transform: rotate(180deg); }
+        .evo-panel {
+            display: none;
+            flex-direction: column;
+            background: rgba(11,31,51,0.85);
+            border-top: 1px solid rgba(102,187,106,0.12);
+            padding: 12px 10px 14px;
+            gap: 8px;
+        }
+        .evo-panel.open { display: flex; }
+        .evo-chart-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2.2 / 1;
+            min-height: 140px;
+        }
+        .evo-chart-wrap svg { width: 100%; height: 100%; }
+        .evo-legend {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .evo-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.62em;
+            font-weight: 700;
+            color: rgba(255,255,255,0.6);
+        }
+        .evo-legend-swatch {
+            width: 14px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        .evo-stats {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .evo-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            min-width: 60px;
+        }
+        .evo-stat-label {
+            font-size: 0.5em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255,255,255,0.4);
+        }
+        .evo-stat-val {
+            font-size: 0.95em;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+        }
+        .evo-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+            font-size: 0.72em;
+            color: rgba(255,255,255,0.4);
+        }
+        @media (max-width: 360px) {
+            .evo-panel { padding: 10px 6px 12px; }
+            .evo-stat { padding: 4px 7px; min-width: 52px; }
+        }
+
         .category-line { height: 1px; margin: 8px 14px 0; border: none; }
         .line-webcam { background: linear-gradient(90deg, rgba(239,83,80,0.4), transparent); }
         .line-meteo { background: linear-gradient(90deg, rgba(102,187,106,0.4), transparent); }
@@ -1999,7 +2121,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v6.87<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v6.88<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -2191,6 +2313,27 @@
                         <div class="wind-map-info-title" style="color:#C89868;">Corrent</div>
                         <div class="wind-map-cur-label" id="wm-cur-label">--</div>
                         <div class="wind-map-info-sub" id="wm-cur-max" style="color:rgba(255,255,255,0.45);">--</div>
+                    </div>
+                </div>
+                <!-- Botó Evolució -->
+                <button class="evo-btn" id="evo-btn" onclick="toggleEvolucio()">
+                    <span class="evo-btn-icon">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="1,12 4,8 7,10 10,4 14,2" stroke="#66bb6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            <polyline points="1,14 4,11 7,13 10,9 14,7" stroke="rgba(102,187,106,0.35)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg>
+                    </span>
+                    Evolució <span class="evo-btn-chevron">▾</span>
+                </button>
+                <!-- Panell gràfic Evolució vent -->
+                <div class="evo-panel" id="evo-panel">
+                    <div class="evo-loading" id="evo-loading">Carregant evolució...</div>
+                    <div class="evo-chart-wrap" id="evo-chart" style="display:none;"></div>
+                    <div class="evo-stats" id="evo-stats" style="display:none;"></div>
+                    <div class="evo-legend" id="evo-legend" style="display:none;">
+                        <span class="evo-legend-item"><span class="evo-legend-swatch" style="background:#5ef0e6;"></span> Mitjana</span>
+                        <span class="evo-legend-item"><span class="evo-legend-swatch" style="background:#ff9a76;"></span> Ratxa</span>
+                        <span class="evo-legend-item"><span class="evo-legend-item" style="gap:3px;"><svg width="10" height="10" viewBox="0 0 10 10"><polygon points="5,0 10,10 0,10" fill="#8ab4d6" opacity="0.7"/></svg> Direcció</span></span>
                     </div>
                 </div>
             </div>
@@ -2989,6 +3132,179 @@
 
     fetchRolada();
     sondeja(fetchRolada, 60000);
+
+    /* ===== EVOLUCIÓ VENT (gràfic últimes 6h) ===== */
+    var evoCarregat = false;
+
+    window.toggleEvolucio = function() {
+        var btn = document.getElementById('evo-btn');
+        var panel = document.getElementById('evo-panel');
+        if (!btn || !panel) return;
+        var obert = panel.classList.toggle('open');
+        btn.classList.toggle('open', obert);
+        if (obert && !evoCarregat) {
+            evoCarregat = true;
+            fetchEvolucio();
+        }
+    };
+
+    async function fetchEvolucio() {
+        var loading = document.getElementById('evo-loading');
+        var chartEl = document.getElementById('evo-chart');
+        var statsEl = document.getElementById('evo-stats');
+        var legendEl = document.getElementById('evo-legend');
+        try {
+            var r = await fetch(API + '/vent-historic');
+            if (!r.ok) throw new Error();
+            var data = await r.json();
+            var punts = data.punts || [];
+            if (punts.length < 2) {
+                if (loading) loading.textContent = 'Sense dades suficients';
+                return;
+            }
+            if (loading) loading.style.display = 'none';
+            if (chartEl) chartEl.style.display = '';
+            if (statsEl) statsEl.style.display = '';
+            if (legendEl) legendEl.style.display = '';
+            renderEvoChart(punts);
+            renderEvoStats(punts);
+        } catch (e) {
+            if (loading) loading.textContent = 'Error carregant dades';
+        }
+    }
+
+    function renderEvoChart(punts) {
+        var el = document.getElementById('evo-chart');
+        if (!el) return;
+
+        var W = 600, H = 260;
+        var PAD_L = 38, PAD_R = 10, PAD_T = 24, PAD_B = 36;
+        var gW = W - PAD_L - PAD_R;
+        var gH = H - PAD_T - PAD_B;
+
+        var avgs = punts.map(function(p) { return p.avg || 0; });
+        var his = punts.map(function(p) { return p.hi || 0; });
+        var allVals = avgs.concat(his);
+        var vMin = 0;
+        var vMax = Math.ceil(Math.max.apply(null, allVals) / 2) * 2 + 2;
+        if (vMax < 6) vMax = 6;
+        var vRange = vMax - vMin;
+
+        var tsMin = punts[0].ts;
+        var tsMax = punts[punts.length - 1].ts;
+        var tsRange = tsMax - tsMin || 1;
+
+        function x(ts) { return PAD_L + (ts - tsMin) / tsRange * gW; }
+        function y(v) { return PAD_T + gH - (v - vMin) / vRange * gH; }
+
+        // Línies horitzontals
+        var gridStep = vMax <= 12 ? 2 : vMax <= 24 ? 4 : vMax <= 40 ? 5 : 10;
+        var gridLines = '';
+        var yLabels = '';
+        for (var v = 0; v <= vMax; v += gridStep) {
+            var yy = y(v);
+            gridLines += '<line x1="' + PAD_L + '" y1="' + yy + '" x2="' + (W - PAD_R) + '" y2="' + yy + '" stroke="rgba(255,255,255,0.07)" stroke-width="0.8"/>';
+            yLabels += '<text x="' + (PAD_L - 5) + '" y="' + (yy + 3.5) + '" text-anchor="end" font-size="9" fill="rgba(255,255,255,0.35)" font-family="system-ui,sans-serif">' + v + '</text>';
+        }
+
+        // Etiquetes de temps (cada hora)
+        var tLabels = '';
+        var firstHour = new Date(tsMin * 1000);
+        firstHour.setMinutes(0, 0, 0);
+        var startHourTs = Math.floor(firstHour.getTime() / 1000) + 3600;
+        for (var ht = startHourTs; ht <= tsMax; ht += 3600) {
+            var xx = x(ht);
+            if (xx < PAD_L + 10 || xx > W - PAD_R - 10) continue;
+            var d = new Date(ht * 1000);
+            var hh = String(d.getHours()).padStart(2, '0') + ':00';
+            gridLines += '<line x1="' + xx + '" y1="' + PAD_T + '" x2="' + xx + '" y2="' + (H - PAD_B) + '" stroke="rgba(255,255,255,0.05)" stroke-width="0.6"/>';
+            tLabels += '<text x="' + xx + '" y="' + (H - PAD_B + 14) + '" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.35)" font-family="system-ui,sans-serif">' + hh + '</text>';
+        }
+
+        // Àrea i línia de ratxa
+        var hiPath = '';
+        var hiArea = 'M' + x(punts[0].ts) + ',' + y(0);
+        for (var i = 0; i < punts.length; i++) {
+            var px = x(punts[i].ts);
+            var py = y(punts[i].hi || 0);
+            hiPath += (i === 0 ? 'M' : 'L') + px + ',' + py;
+            hiArea += 'L' + px + ',' + py;
+        }
+        hiArea += 'L' + x(punts[punts.length - 1].ts) + ',' + y(0) + 'Z';
+
+        // Àrea i línia de mitjana
+        var avgPath = '';
+        var avgArea = 'M' + x(punts[0].ts) + ',' + y(0);
+        for (var i = 0; i < punts.length; i++) {
+            var px = x(punts[i].ts);
+            var py = y(punts[i].avg || 0);
+            avgPath += (i === 0 ? 'M' : 'L') + px + ',' + py;
+            avgArea += 'L' + px + ',' + py;
+        }
+        avgArea += 'L' + x(punts[punts.length - 1].ts) + ',' + y(0) + 'Z';
+
+        // Fletxetes de direcció (cada ~30 min = cada 6 punts)
+        var arrows = '';
+        var arrowStep = Math.max(1, Math.round(punts.length / 12));
+        for (var i = 0; i < punts.length; i += arrowStep) {
+            var p = punts[i];
+            if (p.dir == null) continue;
+            var ax = x(p.ts);
+            var ay = PAD_T - 2;
+            var rot = p.dir;
+            arrows += '<g transform="translate(' + ax + ',' + ay + ') rotate(' + rot + ')">' +
+                '<polygon points="0,-6 3,3 -3,3" fill="#8ab4d6" opacity="0.6"/>' +
+                '</g>';
+        }
+
+        // Unitat
+        var unitLabel = '<text x="' + PAD_L + '" y="' + (PAD_T - 8) + '" font-size="9" fill="rgba(255,255,255,0.3)" font-family="system-ui,sans-serif">kn</text>';
+
+        var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">' +
+            '<defs>' +
+            '<linearGradient id="evo-grad-hi" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff9a76" stop-opacity="0.25"/><stop offset="100%" stop-color="#ff9a76" stop-opacity="0.02"/></linearGradient>' +
+            '<linearGradient id="evo-grad-avg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5ef0e6" stop-opacity="0.2"/><stop offset="100%" stop-color="#5ef0e6" stop-opacity="0.02"/></linearGradient>' +
+            '</defs>' +
+            gridLines + yLabels + tLabels + unitLabel +
+            '<path d="' + hiArea + '" fill="url(#evo-grad-hi)"/>' +
+            '<path d="' + hiPath + '" fill="none" stroke="#ff9a76" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>' +
+            '<path d="' + avgArea + '" fill="url(#evo-grad-avg)"/>' +
+            '<path d="' + avgPath + '" fill="none" stroke="#5ef0e6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+            arrows +
+            '</svg>';
+
+        el.innerHTML = svg;
+    }
+
+    function renderEvoStats(punts) {
+        var el = document.getElementById('evo-stats');
+        if (!el) return;
+        var avgs = punts.map(function(p) { return p.avg || 0; });
+        var his = punts.map(function(p) { return p.hi || 0; });
+        var avgAll = avgs.reduce(function(a, b) { return a + b; }, 0) / avgs.length;
+        var minAvg = Math.min.apply(null, avgs);
+        var maxAvg = Math.max.apply(null, avgs);
+        var maxHi = Math.max.apply(null, his);
+
+        // Direcció predominant (moda vectorial)
+        var sinSum = 0, cosSum = 0;
+        punts.forEach(function(p) {
+            if (p.dir != null) {
+                sinSum += Math.sin(p.dir * Math.PI / 180);
+                cosSum += Math.cos(p.dir * Math.PI / 180);
+            }
+        });
+        var dirPred = Math.round((Math.atan2(sinSum, cosSum) * 180 / Math.PI + 360) % 360);
+        var DIRS = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+        var rumb = DIRS[Math.round(dirPred / 22.5) % 16];
+
+        el.innerHTML =
+            '<div class="evo-stat"><span class="evo-stat-label">Mitjana</span><span class="evo-stat-val" style="color:#5ef0e6;">' + avgAll.toFixed(1) + ' <small style="font-size:0.55em;opacity:0.5;">kn</small></span></div>' +
+            '<div class="evo-stat"><span class="evo-stat-label">Mín</span><span class="evo-stat-val" style="color:#66bb6a;">' + minAvg.toFixed(1) + '</span></div>' +
+            '<div class="evo-stat"><span class="evo-stat-label">Màx</span><span class="evo-stat-val" style="color:#ffd740;">' + maxAvg.toFixed(1) + '</span></div>' +
+            '<div class="evo-stat"><span class="evo-stat-label">Ratxa</span><span class="evo-stat-val" style="color:#ff9a76;">' + maxHi.toFixed(1) + '</span></div>' +
+            '<div class="evo-stat"><span class="evo-stat-label">Dir.</span><span class="evo-stat-val" style="color:#8ab4d6;">' + rumb + ' ' + dirPred + '°</span></div>';
+    }
 
     /* ===== ESTACIONS VEÏNES ===== */
     const WU_API = API + '/wu';
