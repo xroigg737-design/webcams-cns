@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.14<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.15<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3268,7 +3268,7 @@
     function renderEvoDirChart(punts) {
         var ctx = document.getElementById('evo-chart-dir');
         if (!ctx || typeof Chart === 'undefined') return;
-        var RUMBS = ['N','NE','E','SE','S','SW','W','NW','N'];
+        var RUMBS = ['N','NE','E','SE','S','SO','O','NO','N'];
         var ds = evoDS(punts, 50);
         var labels = ds.map(function(p) {
             var d = new Date(p.ts * 1000);
@@ -3282,13 +3282,15 @@
                     data: ds.map(function(p, i) { return { x: i, y: p.dir }; }).filter(function(d) { return d.y != null; }),
                     backgroundColor: 'rgba(66,165,245,0.85)',
                     pointRadius: 5,
-                    pointHoverRadius: 7
+                    pointHoverRadius: 7,
+                    clip: { top: 8, bottom: 8, left: 0, right: 0 }
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                aspectRatio: 1.7,
+                aspectRatio: 1.5,
+                layout: { padding: { top: 4, bottom: 4 } },
                 plugins: { legend: { display: false } },
                 scales: {
                     x: {
@@ -3306,22 +3308,23 @@
                         }
                     },
                     y: {
-                        min: -10, max: 370,
+                        position: 'left',
+                        min: 0, max: 360,
                         grid: { color: '#eee' },
                         ticks: {
                             stepSize: 45,
-                            font: { size: 12, weight: '600' }, color: '#999',
-                            callback: function(v) { if (v < 0 || v > 360) return ''; return RUMBS[v / 45] || ''; }
+                            font: { size: 11, weight: '600' }, color: '#999',
+                            callback: function(v) { return v; }
                         }
                     },
                     y2: {
                         position: 'right',
-                        min: -10, max: 370,
+                        min: 0, max: 360,
                         grid: { drawOnChartArea: false },
                         ticks: {
                             stepSize: 45,
                             font: { size: 11, weight: '600' }, color: '#42a5f5',
-                            callback: function(v) { if (v < 0 || v > 360) return ''; return v + '°'; }
+                            callback: function(v) { return RUMBS[v / 45] || ''; }
                         }
                     }
                 }
