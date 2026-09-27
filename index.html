@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.09<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.10<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3129,7 +3129,7 @@
         if (evoCarregat) return;
         evoCarregat = true;
         var sc = document.createElement('script');
-        sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.7/chart.umd.min.js';
+        sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js';
         sc.onload = fetchEvolucio;
         sc.onerror = function() { var l = document.getElementById('evo-loading'); if (l) l.textContent = 'Error carregant gràfics'; };
         document.head.appendChild(sc);
