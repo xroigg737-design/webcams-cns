@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.06<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.07<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3126,7 +3126,7 @@
     fetchRolada();
     sondeja(fetchRolada, 60000);
 
-    /* ===== EVOLUCIÓ VENT (gràfic últimes 6h) ===== */
+    /* ===== EVOLUCIÓ VENT (gràfic últimes 24h) ===== */
     var evoCarregat = false;
 
     function carregaEvoSiVisible() {
@@ -3236,18 +3236,17 @@
         var el = document.getElementById('evo-chart-speed');
         if (!el) return;
 
-        var ds = evoDownsample(punts, 4);
+        var step = Math.max(1, Math.round(punts.length / 24));
+        var ds = evoDownsample(punts, step);
         var W = 520, H = 300;
         var PAD_L = 44, PAD_R = 12, PAD_T = 12, PAD_B = 32;
 
-        var allVals = [];
-        for (var k = 0; k < ds.length; k++) { allVals.push(ds[k].avg); allVals.push(ds[k].hi); }
-        var rawMin = Math.min.apply(null, allVals);
-        var rawMax = Math.max.apply(null, allVals);
-        var vMin = Math.floor(rawMin);
-        var vMax = Math.ceil(rawMax);
-        if (vMax - vMin < 4) vMax = vMin + 4;
-        var gridStep = (vMax - vMin) <= 8 ? 1 : 2;
+        var rawMax = 0;
+        for (var k = 0; k < ds.length; k++) { if (ds[k].hi > rawMax) rawMax = ds[k].hi; if (ds[k].avg > rawMax) rawMax = ds[k].avg; }
+        var vMin = 0;
+        var vMax = Math.ceil(rawMax / 2) * 2;
+        if (vMax < 4) vMax = 4;
+        var gridStep = vMax <= 10 ? 1 : vMax <= 20 ? 2 : 5;
 
         var tsMin = ds[0].ts, tsMax = ds[ds.length - 1].ts;
         var g = evoMakeGrid(W, H, PAD_L, PAD_R, PAD_T, PAD_B, tsMin, tsMax, vMin, vMax, gridStep);
@@ -3273,7 +3272,8 @@
         var el = document.getElementById('evo-chart-dir');
         if (!el) return;
 
-        var ds = evoDownsample(punts, 4);
+        var stepD = Math.max(1, Math.round(punts.length / 24));
+        var ds = evoDownsample(punts, stepD);
         var W = 520, H = 260;
         var PAD_L = 44, PAD_R = 36, PAD_T = 12, PAD_B = 32;
         var tsMin = ds[0].ts, tsMax = ds[ds.length - 1].ts;
