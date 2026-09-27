@@ -2090,7 +2090,7 @@
         <img class="header-photo" src="img/verdi.jpg?v=596" alt="Patí català navegant">
         <div class="header-text">
             <h1>Avui Regu ?<span class="title-accent">&mdash; Sitges &mdash;</span></h1>
-            <div class="subtitle">v7.10<span id="tempsCarrega"></span></div>
+            <div class="subtitle">v7.11<span id="tempsCarrega"></span></div>
         </div>
     </div>
 </header>
@@ -3158,14 +3158,30 @@
         }
     }
 
+    function evoDS(punts, n) {
+        var step = Math.max(1, Math.round(punts.length / n));
+        var out = [];
+        for (var i = 0; i < punts.length; i += step) {
+            var end = Math.min(i + step, punts.length);
+            var sa = 0, sh = 0, cnt = 0;
+            for (var j = i; j < end; j++) { sa += (punts[j].avg||0); sh += (punts[j].hi||0); cnt++; }
+            out.push({ ts: punts[i].ts, avg: sa/cnt, hi: sh/cnt, dir: punts[i].dir });
+        }
+        var last = punts[punts.length - 1];
+        if (out[out.length-1].ts !== last.ts) out.push({ ts: last.ts, avg: last.avg||0, hi: last.hi||0, dir: last.dir });
+        return out;
+    }
+
     function renderEvoSpeedChart(punts) {
         var ctx = document.getElementById('evo-chart-speed');
         if (!ctx || typeof Chart === 'undefined') return;
-        var labels = punts.map(function(p) {
+        var ds = evoDS(punts, 30);
+        var labels = ds.map(function(p) {
             var d = new Date(p.ts * 1000);
             return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
         });
-        var maxHi = Math.max.apply(null, punts.map(function(p) { return p.hi || 0; }));
+        var maxHi = Math.max.apply(null, ds.map(function(p) { return p.hi || 0; }));
+        var yMax = Math.ceil(maxHi / 2) * 2; if (yMax < 4) yMax = 4;
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -3173,7 +3189,7 @@
                 datasets: [
                     {
                         label: 'Ratxa',
-                        data: punts.map(function(p) { return p.hi; }),
+                        data: ds.map(function(p) { return p.hi; }),
                         borderColor: '#1565c0',
                         borderWidth: 2.5,
                         pointRadius: 0,
@@ -3182,7 +3198,7 @@
                     },
                     {
                         label: 'Mitjana',
-                        data: punts.map(function(p) { return p.avg; }),
+                        data: ds.map(function(p) { return p.avg; }),
                         borderColor: '#42a5f5',
                         borderWidth: 2.5,
                         pointRadius: 0,
@@ -3204,18 +3220,17 @@
                             font: { size: 12, weight: '600' },
                             color: '#999',
                             callback: function(val, i) {
-                                var l = this.getLabelForValue(val);
+                                var l = labels[i];
                                 return l && l.endsWith(':00') ? l.substring(0, 2) : '';
                             },
-                            autoSkip: true,
-                            maxTicksLimit: 13
+                            autoSkip: false
                         }
                     },
                     y: {
                         beginAtZero: true,
-                        max: Math.ceil(maxHi / 2) * 2,
+                        max: yMax,
                         grid: { color: '#eee' },
-                        ticks: { font: { size: 12, weight: '600' }, color: '#999', stepSize: Math.ceil(maxHi / 2) * 2 <= 10 ? 1 : 2 }
+                        ticks: { font: { size: 12, weight: '600' }, color: '#999', stepSize: yMax <= 10 ? 1 : 2 }
                     }
                 }
             }
@@ -3226,7 +3241,8 @@
         var ctx = document.getElementById('evo-chart-dir');
         if (!ctx || typeof Chart === 'undefined') return;
         var RUMBS = ['N','NE','E','SE','S','SW','W','NW','N'];
-        var labels = punts.map(function(p) {
+        var ds = evoDS(punts, 40);
+        var labels = ds.map(function(p) {
             var d = new Date(p.ts * 1000);
             return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
         });
@@ -3235,9 +3251,9 @@
             data: {
                 datasets: [{
                     label: 'Direcció',
-                    data: punts.map(function(p, i) { return { x: i, y: p.dir }; }).filter(function(d) { return d.y != null; }),
+                    data: ds.map(function(p, i) { return { x: i, y: p.dir }; }).filter(function(d) { return d.y != null; }),
                     backgroundColor: 'rgba(66,165,245,0.8)',
-                    pointRadius: 5,
+                    pointRadius: 5.5,
                     pointHoverRadius: 7
                 }]
             },
@@ -3249,17 +3265,15 @@
                 scales: {
                     x: {
                         type: 'linear',
-                        min: 0, max: punts.length - 1,
+                        min: 0, max: ds.length - 1,
                         grid: { color: '#eee' },
                         ticks: {
                             font: { size: 12, weight: '600' }, color: '#999',
                             callback: function(val) {
-                                var p = punts[Math.round(val)];
-                                if (!p) return '';
-                                var d = new Date(p.ts * 1000);
-                                return d.getMinutes() === 0 ? String(d.getHours()).padStart(2, '0') : '';
+                                var l = labels[Math.round(val)];
+                                return l && l.endsWith(':00') ? l.substring(0, 2) : '';
                             },
-                            autoSkip: true, maxTicksLimit: 13
+                            autoSkip: false, maxTicksLimit: 13
                         }
                     },
                     y: {
