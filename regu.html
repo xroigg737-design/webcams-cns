@@ -224,7 +224,7 @@ body{
 .detail .dh{ font-size:0.6em; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; }
 .res-grid{ display:flex; flex-wrap:wrap; gap:4px; }
 .res{
-  min-width:50px; padding:4px 6px; border-radius:7px; text-align:center;
+  min-width:40px; padding:4px 5px; border-radius:7px; text-align:center;
   background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.07);
 }
 .res .n{ font-size:0.5em; color:rgba(255,255,255,0.65); line-height:1; }
@@ -873,7 +873,7 @@ function detailHTML(d, b){
       txt = '<span class="rpos">' + v + '</span><span class="rtot">/' + parts + '</span>';
       if (v === 1) cls = ' g1'; else if (v === 2) cls = ' g2'; else if (v === 3) cls = ' g3';
     }
-    return '<div class="res' + cls + '"><div class="n">Regu ' + rc.n + '</div><div class="v">' + txt + '</div></div>';
+    return '<div class="res' + cls + '"><div class="n">P' + rc.n + '</div><div class="v">' + txt + '</div></div>';
   }).join('');
   return '<div class="detail"><div class="dh">Resultat prova a prova</div>' +
          '<div class="res-grid">' + cells + '</div>' +
