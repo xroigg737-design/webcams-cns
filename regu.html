@@ -861,13 +861,10 @@ function paintGeneralList(d, q){
 function detailHTML(d, b){
   var cells = d.races.map(function(rc, k){
     var v = b.res[k], kind = resultKind(v, rc, d.dns), cls = '', txt;
-    var parts = rc.sortits;
-    if (!parts){
-      parts = 0;
-      for (var j = 0; j < d.boats.length; j++){
-        var ok = resultKind(d.boats[j].res[k], rc, d.dns);
-        if (ok === 'pos' || ok === 'dnf') parts++;
-      }
+    var parts = 0;
+    for (var j = 0; j < d.boats.length; j++){
+      var ok = resultKind(d.boats[j].res[k], rc, d.dns);
+      if (ok === 'pos' || ok === 'dnf') parts++;
     }
     if (kind === 'buit') txt = '·';
     else if (kind === 'dns'){ txt = 'DNS'; cls = ' out'; }
@@ -880,7 +877,7 @@ function detailHTML(d, b){
   }).join('');
   return '<div class="detail"><div class="dh">Resultat prova a prova</div>' +
          '<div class="res-grid">' + cells + '</div>' +
-         '<div class="res-legend">&#128204; <span class="rpos">posició</span><span class="rtot">/participants</span> a cada prova</div>' +
+         '<div class="res-legend">&#128204; <span class="rpos">Posició d\'arribada</span> <span class="rtot">/ Nº participants</span></div>' +
          '</div>';
 }
 
